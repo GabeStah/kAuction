@@ -17,17 +17,8 @@
 	<Include file="Libs\Ace3\AceTimer-3.0\AceTimer-3.0.xml"/>
 	<Include file="Libs\LibSharedMedia-3.0\lib.xml"/>
 	<Include file="Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml"/>
-	<Include file="Libs\CandyBar\embeds.xml"/>
 	<Include file="Libs\LibEffects-1.0\LibEffects-1.0\LibEffects-1.0.lua"/>
-	<Script file="Libs\CandyBar\CandyBar-2.0\CandyBar-2.0.lua"/>
 	<Script file="Libs\LibQTip-1.0\LibQTip-1.0\LibQTip-1.0.lua"/>
-	<Script file="Libs\LibQTip-1.0\LibStub\LibStub.lua"/>
-	<Script file="Libs\kRotaryLib-1.0\kRotaryLib-1.0\kRotaryLib-1.0.lua"/>
-	<Script file="Libs\kRotaryLib-1.0\LibStub\LibStub.lua"/>
-	<Script file="Libs\TabletLib\Tablet-2.0\Tablet-2.0.lua"/>
-	<Script file="Libs\RosterLib\AceOO-2.0\AceOO-2.0.lua"/>
-	<Script file="Libs\RosterLib\AceEvent-2.0\AceEvent-2.0.lua"/>
-	<Script file="Libs\RosterLib\Roster-2.1\Roster-2.1.lua"/>
 	<Script file="Libs\LibStatLogic-1.1\LibStatLogic-1.1.lua"/>
 	<!-- kAuction Widgets -->	
 	<Include file="Frames\Widgets\AuctionItemWidget.xml"/>

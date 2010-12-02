@@ -3,17 +3,17 @@
 function kAuction:Wishlist_AddItem(wishlistId, name, itemId)
 	local iIndex = kAuction:Wishlist_GetIndexById(wishlistId);
 	-- Ensure proper wishlist is manipulated
-	if kAuction.db.profile.wishlists[iIndex] then
-		if not kAuction.db.profile.wishlists[iIndex].items then
-			kAuction.db.profile.wishlists[iIndex].items = {};
+	if self.db.profile.wishlists[iIndex] then
+		if not self.db.profile.wishlists[iIndex].items then
+			self.db.profile.wishlists[iIndex].items = {};
 		end
 		local bidType = "normal";
-		if strlower(kAuction.db.profile.wishlists[iIndex].name) == "normal" then
-			bidType = strlower(kAuction.db.profile.wishlists[iIndex].name);
-		elseif strlower(kAuction.db.profile.wishlists[iIndex].name) == "offspec" then
-			bidType = strlower(kAuction.db.profile.wishlists[iIndex].name);
-		elseif strlower(kAuction.db.profile.wishlists[iIndex].name) == "rot" then
-			bidType = strlower(kAuction.db.profile.wishlists[iIndex].name);
+		if strlower(self.db.profile.wishlists[iIndex].name) == "normal" then
+			bidType = strlower(self.db.profile.wishlists[iIndex].name);
+		elseif strlower(self.db.profile.wishlists[iIndex].name) == "offspec" then
+			bidType = strlower(self.db.profile.wishlists[iIndex].name);
+		elseif strlower(self.db.profile.wishlists[iIndex].name) == "rot" then
+			bidType = strlower(self.db.profile.wishlists[iIndex].name);
 		end 
 		local itemLevel = nil;
 		local itemSlot = nil;
@@ -21,7 +21,7 @@ function kAuction:Wishlist_AddItem(wishlistId, name, itemId)
 			itemLevel = select(4, GetItemInfo(itemId));
 			itemSlot = kAuction:Item_GetEquipSlotNumberOfItem(select(2, GetItemInfo(itemId)), 'formattedName');
 		end
-		tinsert(kAuction.db.profile.wishlists[iIndex].items, {
+		tinsert(self.db.profile.wishlists[iIndex].items, {
 			alert = true,
 			autoBid = true,
 			autoRemove = true,
@@ -36,40 +36,40 @@ function kAuction:Wishlist_AddItem(wishlistId, name, itemId)
 	end
 end
 function kAuction:Wishlist_CreateOptionTable()
-	kAuction.options.args.wishlist.args = {};
-	kAuction.options.args.wishlist.args.header = {
+	self.options.args.wishlist.args = {};
+	self.options.args.wishlist.args.header = {
 		name = 'General Settings',
 		type = 'header',
 		order = 1,
 	};		
-	kAuction.options.args.wishlist.args.enabled = {
+	self.options.args.wishlist.args.enabled = {
 		name = 'Enabled',
 		type = 'toggle',
 		desc = 'Enable Wishlist functionality.',
-		set = function(info,value) kAuction.db.profile.wishlist.enabled = value end,
-		get = function(info) return kAuction.db.profile.wishlist.enabled end,
+		set = function(info,value) self.db.profile.wishlist.enabled = value end,
+		get = function(info) return self.db.profile.wishlist.enabled end,
 		order = 2,
 	};
-	kAuction.options.args.wishlist.args.autoUpdate = {
+	self.options.args.wishlist.args.autoUpdate = {
 		name = 'Auto-Update',
 		type = 'toggle',
 		desc = 'Allow kAuction to automatically update your Wishlist data from AtlasLoot Wishlist data.',
 		set = function(info,value)
-			kAuction.db.profile.wishlist.autoUpdate = value;
+			self.db.profile.wishlist.autoUpdate = value;
 		end,
-		get = function(info) return kAuction.db.profile.wishlist.autoUpdate end,
+		get = function(info) return self.db.profile.wishlist.autoUpdate end,
 		order = 3,
 	};
-	kAuction.options.args.wishlist.args.forceUpdate = {
+	self.options.args.wishlist.args.forceUpdate = {
 		name = 'Force Update',
 		type = 'execute',
 		desc = 'Manually force kAuction to update wishlist data from AtlasLoot Wishlists.',
 		func = function() kAuction:Wishlist_UpdateFromAtlasLoot() end,
 		order = 4,
 	};
-	if kAuction.db.profile.wishlists and #kAuction.db.profile.wishlists > 0 then
-		for iList, vList in pairs(kAuction.db.profile.wishlists) do
-			kAuction.options.args.wishlist.args[tostring(vList.id)] = {
+	if self.db.profile.wishlists and #self.db.profile.wishlists > 0 then
+		for iList, vList in pairs(self.db.profile.wishlists) do
+			self.options.args.wishlist.args[tostring(vList.id)] = {
 				name = vList.name,
 				type = 'group',
 				cmdHidden = true,
@@ -84,7 +84,7 @@ function kAuction:Wishlist_CreateOptionTable()
 				},
 			};			
 			for iItem, vItem in pairs(vList.items) do
-				kAuction.options.args.wishlist.args[tostring(vList.id)].args.items.args[tostring(vItem.id)] = {
+				self.options.args.wishlist.args[tostring(vList.id)].args.items.args[tostring(vItem.id)] = {
 					name = vItem.name,
 					type = 'group',
 					args = {
@@ -205,11 +205,11 @@ function kAuction:Wishlist_Create(name, enabled, icon)
 	-- Check if exists
 	local iId = kAuction:Wishlist_GetIdByName(name);
 	local iIndex = kAuction:Wishlist_GetIndexById(iId);
-	if kAuction.db.profile.wishlists[iIndex] then -- Exists, return id
+	if self.db.profile.wishlists[iIndex] then -- Exists, return id
 		return iId;	
 	else -- Doesn't exist, create
 		local id = kAuction:Wishlist_GetUniqueWishlistId();
-		tinsert(kAuction.db.profile.wishlists, {
+		tinsert(self.db.profile.wishlists, {
 			id = id,
 			name = name,
 			enabled = true,
@@ -221,12 +221,12 @@ end
 function kAuction:Wishlist_DoesWishlistExistInAtlas(wishlistId)
 	local iIndex = kAuction:Wishlist_GetIndexById(wishlistId);
 	-- Ensure proper wishlist is manipulated
-	if kAuction.db.profile.wishlists[iIndex] then
-		local oAtlas = _G[kAuction.const.wishlist.atlasLootTableName];
+	if self.db.profile.wishlists[iIndex] then
+		local oAtlas = _G[self.const.wishlist.atlasLootTableName];
 		if oAtlas then
-			if oAtlas.Own[UnitName("player")] then
-				for iList, vList in pairs(oAtlas.Own[UnitName("player")]) do
-					if strlower(vList.info[1]) == strlower(kAuction.db.profile.wishlists[iIndex].name) then
+			if oAtlas.Own[self.playerName] then
+				for iList, vList in pairs(oAtlas.Own[self.playerName]) do
+					if strlower(vList.info[1]) == strlower(self.db.profile.wishlists[iIndex].name) then
 						return true;
 					end
 				end				
@@ -238,12 +238,12 @@ end
 function kAuction:Wishlist_DoesWishlistItemExistInAtlas(wishlistId, itemId)
 	local iIndex = kAuction:Wishlist_GetIndexById(wishlistId);
 	-- Ensure proper wishlist is manipulated
-	if kAuction.db.profile.wishlists[iIndex] then
-		local oAtlas = _G[kAuction.const.wishlist.atlasLootTableName];
+	if self.db.profile.wishlists[iIndex] then
+		local oAtlas = _G[self.const.wishlist.atlasLootTableName];
 		if oAtlas then
-			if oAtlas.Own[UnitName("player")] then
-				for iList, vList in pairs(oAtlas.Own[UnitName("player")]) do
-					if strlower(vList.info[1]) == strlower(kAuction.db.profile.wishlists[iIndex].name) then
+			if oAtlas.Own[self.playerName] then
+				for iList, vList in pairs(oAtlas.Own[self.playerName]) do
+					if strlower(vList.info[1]) == strlower(self.db.profile.wishlists[iIndex].name) then
 						-- Matching list, check for item
 						for iItem, vItem in pairs(vList) do
 							if iItem ~= "info" then
@@ -310,7 +310,7 @@ function kAuction:Wishlist_GetHighestPriorityItemFromSet(itemList)
 	end
 end
 function kAuction:Wishlist_GetIdByName(name)
-	for i,wishlist in pairs(kAuction.db.profile.wishlists) do
+	for i,wishlist in pairs(self.db.profile.wishlists) do
 		if strlower(wishlist.name) == strlower(name) then
 			-- Item exists already
 			return wishlist.id;
@@ -319,7 +319,7 @@ function kAuction:Wishlist_GetIdByName(name)
 	return nil;
 end
 function kAuction:Wishlist_GetIndexById(id)
-	for i,wishlist in pairs(kAuction.db.profile.wishlists) do
+	for i,wishlist in pairs(self.db.profile.wishlists) do
 		if tonumber(wishlist.id) == tonumber(id) then
 			-- Item exists already
 			return i;
@@ -331,16 +331,16 @@ function kAuction:Wishlist_GetItemFlag(wishlistId, itemId, flagType)
 	local listIndex = kAuction:Wishlist_GetIndexById(wishlistId);
 	local itemIndex = kAuction:Wishlist_IsItemInList(wishlistId, itemId);
 	if itemIndex then
-		return kAuction.db.profile.wishlists[listIndex].items[itemIndex][flagType];
+		return self.db.profile.wishlists[listIndex].items[itemIndex][flagType];
 	end
 	return false;
 end
 function kAuction:Wishlist_GetLists()
-	return kAuction.db.profile.wishlists;
+	return self.db.profile.wishlists;
 end
 function kAuction:Wishlist_GetListById(id)
-	if kAuction.db.profile.wishlists and id then
-		for i,v in pairs(kAuction.db.profile.wishlists) do
+	if self.db.profile.wishlists and id then
+		for i,v in pairs(self.db.profile.wishlists) do
 			if id == v.id then
 				return v;
 			end
@@ -349,7 +349,7 @@ function kAuction:Wishlist_GetListById(id)
 	return nil;
 end
 function kAuction:Wishlist_GetNameById(id)
-	for i,wishlist in pairs(kAuction.db.profile.wishlists) do
+	for i,wishlist in pairs(self.db.profile.wishlists) do
 		if wishlist.id == id then
 			-- Item exists already
 			return wishlist.name;
@@ -358,7 +358,7 @@ function kAuction:Wishlist_GetNameById(id)
 	return nil;
 end
 function kAuction:Wishlist_GetFilterIndexById(id)
-	for i,v in pairs(kAuction.db.profile.wishlist.config.searchFilters) do
+	for i,v in pairs(self.db.profile.wishlist.config.searchFilters) do
 		if v.id == id then
 			return i;		
 		end
@@ -366,7 +366,7 @@ function kAuction:Wishlist_GetFilterIndexById(id)
 	return nil;
 end
 function kAuction:Wishlist_GetFilterIndexByKey(key)
-	for i,v in pairs(kAuction.db.profile.wishlist.config.searchFilters) do
+	for i,v in pairs(self.db.profile.wishlist.config.searchFilters) do
 		if v.key == key then
 			return i;		
 		end
@@ -376,7 +376,7 @@ end
 function kAuction:Wishlist_GetFilterValueIndexByValueAndType(filterId, value, type)
 	local iFilter = kAuction:Wishlist_GetFilterIndexById(filterId);
 	if iFilter then -- Exists
-		for i,v in pairs(kAuction.db.profile.wishlist.config.searchFilters[iFilter].values) do
+		for i,v in pairs(self.db.profile.wishlist.config.searchFilters[iFilter].values) do
 			if v.type == type and v.value == value then
 				return i;		
 			end
@@ -385,7 +385,7 @@ function kAuction:Wishlist_GetFilterValueIndexByValueAndType(filterId, value, ty
 	return nil;
 end
 function kAuction:Wishlist_GetFilterValueIndexById(id)
-	for i,v in pairs(kAuction.db.profile.wishlist.config.searchFilters) do
+	for i,v in pairs(self.db.profile.wishlist.config.searchFilters) do
 		if v.values then
 			for iVal, vVal in pairs(v.values) do
 				if vVal.id == id then
@@ -411,10 +411,10 @@ function kAuction:Wishlist_AddValidSearchFilter(key, value, type, name)
 	local iFilter = kAuction:Wishlist_GetFilterIndexByKey(key);
 	if iFilter then -- Exists
 		-- Check if value and type exists
-		local iValue = kAuction:Wishlist_GetFilterValueIndexByValueAndType(kAuction.db.profile.wishlist.config.searchFilters[iFilter].id, value, type);
+		local iValue = kAuction:Wishlist_GetFilterValueIndexByValueAndType(self.db.profile.wishlist.config.searchFilters[iFilter].id, value, type);
 		if not iValue then -- Doesn't exist, create
 			if type == 'match' then
-				tinsert(kAuction.db.profile.wishlist.config.searchFilters[iFilter].values, {
+				tinsert(self.db.profile.wishlist.config.searchFilters[iFilter].values, {
 					id = kAuction:Wishlist_GetUniqueSearchFilterId(),
 					type = type,
 					name = name,
@@ -422,7 +422,7 @@ function kAuction:Wishlist_AddValidSearchFilter(key, value, type, name)
 					enabled = true,
 				});
 			else
-				tinsert(kAuction.db.profile.wishlist.config.searchFilters[iFilter].values, {
+				tinsert(self.db.profile.wishlist.config.searchFilters[iFilter].values, {
 					id = kAuction:Wishlist_GetUniqueSearchFilterId(),
 					type = type,
 					name = name,
@@ -430,7 +430,7 @@ function kAuction:Wishlist_AddValidSearchFilter(key, value, type, name)
 				});
 			end
 			-- Sort
-			table.sort(kAuction.db.profile.wishlist.config.searchFilters[iFilter].values, function(a,b)
+			table.sort(self.db.profile.wishlist.config.searchFilters[iFilter].values, function(a,b)
 				if a.name and b.name then
 					if tostring(a.name) < tostring(b.name) then
 						return true;
@@ -445,7 +445,7 @@ function kAuction:Wishlist_AddValidSearchFilter(key, value, type, name)
 			end);
 		end
 	else -- Create
-		tinsert(kAuction.db.profile.wishlist.config.searchFilters, {
+		tinsert(self.db.profile.wishlist.config.searchFilters, {
 			id = kAuction:Wishlist_GetUniqueSearchFilterId(),
 			key = key,
 			values = {},
@@ -458,7 +458,7 @@ function kAuction:Wishlist_GetUniqueSearchFilterId()
 	while isValidId == false do
 		matchFound = false;
 		newId = (math.random(0,2147483647) * -1);
-		for i,val in pairs(kAuction.db.profile.wishlist.config.searchFilters) do
+		for i,val in pairs(self.db.profile.wishlist.config.searchFilters) do
 			if val.id == newId then
 				matchFound = true;
 			end
@@ -480,7 +480,7 @@ function kAuction:Wishlist_GetUniqueWishlistId()
 	while isValidId == false do
 		matchFound = false;
 		newId = (math.random(0,2147483647) * -1);
-		for i,val in pairs(kAuction.db.profile.wishlists) do
+		for i,val in pairs(self.db.profile.wishlists) do
 			if val.id == newId then
 				matchFound = true;
 			end
@@ -493,9 +493,9 @@ function kAuction:Wishlist_GetUniqueWishlistId()
 end
 function kAuction:Wishlist_GetWishlistItemMatches(itemId)
 	local items = {};
-	if kAuction.db.profile.wishlists then
+	if self.db.profile.wishlists then
 		-- Loop through lists
-		for iList, vList in pairs(kAuction.db.profile.wishlists) do
+		for iList, vList in pairs(self.db.profile.wishlists) do
 			-- Loop through items
 			if vList.items then
 				for iItem, vItem in pairs(vList.items) do
@@ -515,9 +515,9 @@ function kAuction:Wishlist_GetWishlistItemMatches(itemId)
 end
 function kAuction:Wishlist_GetWishlistsWithItem(itemId)
 	local lists = {};
-	if kAuction.db.profile.wishlists then
+	if self.db.profile.wishlists then
 		-- Loop through lists
-		for iList, vList in pairs(kAuction.db.profile.wishlists) do
+		for iList, vList in pairs(self.db.profile.wishlists) do
 			-- Loop through items
 			if vList.items then
 				for iItem, vItem in pairs(vList.items) do
@@ -536,9 +536,9 @@ function kAuction:Wishlist_GetWishlistsWithItem(itemId)
 end
 function kAuction:Wishlist_GetWishlistsWithoutItem(itemId)
 	local lists = {};
-	if kAuction.db.profile.wishlists then
+	if self.db.profile.wishlists then
 		-- Loop through lists
-		for iList, vList in pairs(kAuction.db.profile.wishlists) do
+		for iList, vList in pairs(self.db.profile.wishlists) do
 			local booFound = false;
 			-- Loop through items
 			if vList.items then
@@ -560,15 +560,15 @@ function kAuction:Wishlist_GetWishlistsWithoutItem(itemId)
 	end
 end
 function kAuction:Wishlist_IsEnabled()
-	return kAuction.db.profile.wishlist.enabled;
+	return self.db.profile.wishlist.enabled;
 end
 function kAuction:Wishlist_IsItemInList(wishlistId, itemId)
 	local iIndex = kAuction:Wishlist_GetIndexById(wishlistId);
 	-- Ensure proper wishlist is manipulated
-	if kAuction.db.profile.wishlists[iIndex] then
+	if self.db.profile.wishlists[iIndex] then
 		-- Loop through items
-		if kAuction.db.profile.wishlists[iIndex].items then
-			for iItem, vItem in pairs(kAuction.db.profile.wishlists[iIndex].items) do
+		if self.db.profile.wishlists[iIndex].items then
+			for iItem, vItem in pairs(self.db.profile.wishlists[iIndex].items) do
 				if tonumber(vItem.id) == tonumber(itemId) then
 					return iItem;
 				end	
@@ -583,10 +583,10 @@ function kAuction:Wishlist_RemoveItem(wishlistId, itemId)
 	local itemIndex = kAuction:Wishlist_IsItemInList(wishlistId, itemId);
 	if itemIndex then
 		kAuction:Debug("FUNC: kAuction:Wishlist_RemoveItem, index found " .. itemIndex, 3);
-		if kAuction.db.profile.wishlists[index].items[itemIndex] then
+		if self.db.profile.wishlists[index].items[itemIndex] then
 			kAuction:Debug("FUNC: kAuction:Wishlist_RemoveItem, list ("..index..") and item found " .. itemIndex, 1);
 			-- Remove item from local
-			tremove(kAuction.db.profile.wishlists[index].items, itemIndex);
+			tremove(self.db.profile.wishlists[index].items, itemIndex);
 		end
 	end	
 end
@@ -594,14 +594,14 @@ function kAuction:Wishlist_RemoveList(wishlistId)
 	local index = kAuction:Wishlist_GetIndexById(wishlistId);
 	if index then
 		-- Remove item from local
-		tremove(kAuction.db.profile.wishlists, index);
+		tremove(self.db.profile.wishlists, index);
 	end	
 end
 function kAuction:Wishlist_SetItemFlag(wishlistId, itemId, flagType, value)
 	local listIndex = kAuction:Wishlist_GetIndexById(wishlistId);
 	local itemIndex = kAuction:Wishlist_IsItemInList(wishlistId, itemId);
 	if itemIndex then
-		kAuction.db.profile.wishlists[listIndex].items[itemIndex][flagType] = value;
+		self.db.profile.wishlists[listIndex].items[itemIndex][flagType] = value;
 		return true;
 	end
 	return false;
@@ -609,14 +609,14 @@ end
 function kAuction:Wishlist_SetListFlag(wishlistId, flagType, value)
 	local listIndex = kAuction:Wishlist_GetIndexById(wishlistId);
 	if listIndex then
-		kAuction.db.profile.wishlists[listIndex][flagType] = value;
+		self.db.profile.wishlists[listIndex][flagType] = value;
 		return true;
 	end
 	return false;
 end
 function kAuction:Wishlist_SetFilterValueFlag(valueId, flagType, value)
 	local iValue = kAuction:Wishlist_GetFilterValueIndexById(valueId);
-	for iF, vF in pairs(kAuction.db.profile.wishlist.config.searchFilters) do
+	for iF, vF in pairs(self.db.profile.wishlist.config.searchFilters) do
 		for iV, vV in pairs(vF.values) do
 			if vV.id == valueId then
 				vV[flagType] = value;
@@ -628,40 +628,40 @@ end
 function kAuction:Wishlist_SortList(listId, sortKey)
 	local index = kAuction:Wishlist_GetIndexById(listId);
 	if index then
-		if kAuction.db.profile.wishlists[index].items and #kAuction.db.profile.wishlists[index].items > 0 then
+		if self.db.profile.wishlists[index].items and #self.db.profile.wishlists[index].items > 0 then
 			-- Verify key exists
-			--if kAuction.db.profile.wishlists[index].items[1][sortKey] then
+			--if self.db.profile.wishlists[index].items[1][sortKey] then
 				-- Check if current sort key matches this sort key, if so, reverse the sort order, if not, set order normal
-				if kAuction.db.profile.wishlist.config.listSortKey == sortKey then
+				if self.db.profile.wishlist.config.listSortKey == sortKey then
 					-- Reverse current sort flag due to click
-					if kAuction.db.profile.wishlist.config.listSortOrderNormal then
-						kAuction.db.profile.wishlist.config.listSortOrderNormal = false
+					if self.db.profile.wishlist.config.listSortOrderNormal then
+						self.db.profile.wishlist.config.listSortOrderNormal = false
 					else
-						kAuction.db.profile.wishlist.config.listSortOrderNormal = true;
+						self.db.profile.wishlist.config.listSortOrderNormal = true;
 					end
 				else
-					kAuction.db.profile.wishlist.config.listSortOrderNormal = true;
+					self.db.profile.wishlist.config.listSortOrderNormal = true;
 				end
 				-- Set key
-				kAuction.db.profile.wishlist.config.listSortKey = sortKey;
-				table.sort(kAuction.db.profile.wishlists[index].items, function(a,b)
-					if a[kAuction.db.profile.wishlist.config.listSortKey] and b[kAuction.db.profile.wishlist.config.listSortKey] then
-						if kAuction.db.profile.wishlist.config.listSortOrderNormal then
-							if a[kAuction.db.profile.wishlist.config.listSortKey] < b[kAuction.db.profile.wishlist.config.listSortKey] then
+				self.db.profile.wishlist.config.listSortKey = sortKey;
+				table.sort(self.db.profile.wishlists[index].items, function(a,b)
+					if a[self.db.profile.wishlist.config.listSortKey] and b[self.db.profile.wishlist.config.listSortKey] then
+						if self.db.profile.wishlist.config.listSortOrderNormal then
+							if a[self.db.profile.wishlist.config.listSortKey] < b[self.db.profile.wishlist.config.listSortKey] then
 								return true;
 							else
 								return false;
 							end
 						else
-							if a[kAuction.db.profile.wishlist.config.listSortKey] > b[kAuction.db.profile.wishlist.config.listSortKey] then
+							if a[self.db.profile.wishlist.config.listSortKey] > b[self.db.profile.wishlist.config.listSortKey] then
 								return true;
 							else
 								return false;
 							end
 						end
-					elseif a[kAuction.db.profile.wishlist.config.listSortKey] then
+					elseif a[self.db.profile.wishlist.config.listSortKey] then
 						return true
-					elseif b[kAuction.db.profile.wishlist.config.listSortKey] then
+					elseif b[self.db.profile.wishlist.config.listSortKey] then
 						return false;
 					end
 				end);		
@@ -672,16 +672,16 @@ end
 --[[ DEPRECATED
 function kAuction:Wishlist_UpdateFromAtlasLoot()
 	if kAuction:Wishlist_IsEnabled() then -- Check if enabled
-		local oAtlas = _G[kAuction.const.wishlist.atlasLootTableName];
+		local oAtlas = _G[self.const.wishlist.atlasLootTableName];
 		if oAtlas then
-			if oAtlas.Own[UnitName("player")] then
+			if oAtlas.Own[self.playerName] then
 				-- Loop through each list
-				for iList, vList in pairs(oAtlas.Own[UnitName("player")]) do
+				for iList, vList in pairs(oAtlas.Own[self.playerName]) do
 					-- Add wishlist
 					local iListId = kAuction:Wishlist_Create(vList.info[1], true, vList.info[3]);
 					local iListIndex = kAuction:Wishlist_GetIndexById(iListId);
 					-- Ensure proper wishlist is manipulated
-					if kAuction.db.profile.wishlists[iListIndex] then
+					if self.db.profile.wishlists[iListIndex] then
 						for iItem, vItem in pairs(vList) do
 							-- Check for actual item entry
 							if iItem ~= "info" then
@@ -693,8 +693,8 @@ function kAuction:Wishlist_UpdateFromAtlasLoot()
 									itemName = strsub(vItem[4], 11);
 								end
 								-- Ensure item doesn't exist, then add
-								if kAuction:Wishlist_IsItemInList(kAuction.db.profile.wishlists[iListIndex].id, itemId) == false then
-									kAuction:Wishlist_AddItem(kAuction.db.profile.wishlists[iListIndex].id, itemName, itemId);
+								if kAuction:Wishlist_IsItemInList(self.db.profile.wishlists[iListIndex].id, itemId) == false then
+									kAuction:Wishlist_AddItem(self.db.profile.wishlists[iListIndex].id, itemName, itemId);
 								end
 							end
 						end												

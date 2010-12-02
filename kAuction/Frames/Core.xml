@@ -203,18 +203,7 @@
 						<Scripts>
 							<OnClick>
 								kAuction.db.profile.gui.frames.main.visible = false;
-								--kAuction.db.profile.gui.frames.bids.visible = false;
 								kAuctionMainFrame:Hide();
-								--kAuctionBidsFrame:Hide();
-								for i = 1,5 do
-								row = "auction" .. i;
-								if kAuction.candyBar:IsRegistered(row) then
-								kAuction.candyBar:Unregister(row)
-								end
-								if kAuction.candyBar:IsRegistered("SelectedAuction"..row) then
-								kAuction.candyBar:Unregister("SelectedAuction"..row)
-								end
-								end
 							</OnClick>
 							<OnEnter> </OnEnter>
 						</Scripts>

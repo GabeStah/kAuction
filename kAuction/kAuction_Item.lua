@@ -11,7 +11,7 @@ kAuction.regex.patterns = {
 function kAuction:Item_CleanupWhitelistDropdownValues()
 	local booPlayerFound = false;
 	local tempCouncilMembers = {};
-	for iItem,vItem in pairs(kAuction.db.profile.items.whiteList) do
+	for iItem,vItem in pairs(self.db.profile.items.whiteList) do
 		local matchFound = false;
 		for iTemp,vTemp in pairs(tempCouncilMembers) do
 			if vTemp == vCouncil then
@@ -21,16 +21,16 @@ function kAuction:Item_CleanupWhitelistDropdownValues()
 		if matchFound == false then
 			tinsert(tempCouncilMembers, vCouncil);
 		end
-		if vCouncil == UnitName("player") then
+		if vCouncil == self.playerName then
 			booPlayerFound = true;
 		end
 	end
-	kAuction.db.profile.looting.councilMembers = tempCouncilMembers;
+	self.db.profile.looting.councilMembers = tempCouncilMembers;
 	if booPlayerFound == false then
-		local playerName = UnitName("player");
-		tinsert(kAuction.db.profile.looting.councilMembers, playerName);
+		local playerName = self.playerName;
+		tinsert(self.db.profile.looting.councilMembers, playerName);
 	end
-	table.sort(kAuction.db.profile.looting.councilMembers);
+	table.sort(self.db.profile.looting.councilMembers);
 end
 function kAuction:Item_GetRGBColorByRarity(rarity)
 	if rarity == 4 then
@@ -46,7 +46,7 @@ function kAuction:Item_GetRGBColorByRarity(rarity)
 end
 function kAuction:Item_GetWhitelistDropdownValues()
 	local slotList = {};
-	for i,val in pairs(kAuction.db.profile.items.whiteList) do
+	for i,val in pairs(self.db.profile.items.whiteList) do
 		tinsert(slotList, val.name);
 	end
 	return slotList;
@@ -54,7 +54,7 @@ end
 function kAuction:Item_GetItemSlotDropdownValues()
 	local slotList = {};
 	slotList[0] = "None";
-	for i,val in pairs(kAuction.const.items.ItemEquipLocs) do
+	for i,val in pairs(self.const.items.ItemEquipLocs) do
 		local booExists = false;
 		for iList,vList in pairs(slotList) do
 			if vList == val.formattedName then
@@ -69,7 +69,7 @@ function kAuction:Item_GetItemSlotDropdownValues()
 end
 function kAuction:Item_GetItemSlotByDropdownIndex(index)
 	local list = kAuction:Item_GetItemSlotDropdownValues();
-	for i,val in pairs(kAuction.const.items.ItemEquipLocs) do
+	for i,val in pairs(self.const.items.ItemEquipLocs) do
 		if val.formattedName == list[index] then
 			return val.slotNumber;
 		end
@@ -92,7 +92,7 @@ function kAuction:Item_CanPlayerEquip(itemId)
 	tooltip:SetHyperlink(itemLink)
 	for i=2,tooltip:NumLines() do
 		txt = _G["kAuctionTooltipTextLeft"..i]:GetText()
-		if kAuction:Gui_IsTooltipTextRed("Right"..i) and not string.find(txt,kAuction.regex.patterns.DURABILITY_PATTERN) and not string.match(txt,kAuction.regex.patterns.REQUIRES_PATTERN) then
+		if kAuction:Gui_IsTooltipTextRed("Right"..i) and not string.find(txt,self.regex.patterns.DURABILITY_PATTERN) and not string.match(txt,self.regex.patterns.REQUIRES_PATTERN) then
 			return nil
 		end
 	end
@@ -112,7 +112,7 @@ function kAuction:Item_CanPlayerEquipItem(invslot,bag,slot)
 	tooltip:SetBagItem(bag,slot)
 	for i=2,tooltip:NumLines() do
 		txt = _G["kAuctionTooltipTextLeft"..i]:GetText()
-		if (kAuction:Gui_IsTooltipTextRed("Left"..i) or kAuction:Gui_IsTooltipTextRed("Right"..i)) and not string.find(txt,kAuction.regex.patterns.DURABILITY_PATTERN) and not string.match(txt,kAuction.regex.patterns.REQUIRES_PATTERN) then
+		if (kAuction:Gui_IsTooltipTextRed("Left"..i) or kAuction:Gui_IsTooltipTextRed("Right"..i)) and not string.find(txt,self.regex.patterns.DURABILITY_PATTERN) and not string.match(txt,self.regex.patterns.REQUIRES_PATTERN) then
 			return nil
 		end
 	end
@@ -133,7 +133,7 @@ function kAuction:Item_GetItemTypeWhitelistData(itemLink)
 	for i=2,tooltip:NumLines() do
 		textLeft = _G["kAuctionTooltipTextLeft"..i]:GetText()
 		textRight = _G["kAuctionTooltipTextRight"..i]:GetText()
-		for iList,vList in pairs(kAuction.db.profile.items.itemTypeWhiteList) do
+		for iList,vList in pairs(self.db.profile.items.itemTypeWhiteList) do
 			if textLeft then
 				if string.find(textLeft,vList.pattern) then
 					return vList;
@@ -161,7 +161,7 @@ function kAuction:Item_GetItemWhitelistData(item)
 	end
 	-- Check if item is in local cache
 	local name = GetItemInfo(item);
-	for iList,vList in pairs(kAuction.db.profile.items.whiteList) do
+	for iList,vList in pairs(self.db.profile.items.whiteList) do
 		if vList.name == name then
 			return vList;
 		end
@@ -182,7 +182,7 @@ function kAuction:Item_GetEquipSlotNumberOfItem(item, returnType)
 	-- Check if item is in local cache
 	local name, _, _, _, _, _, _, _, itemEquipLoc = GetItemInfo(item);
 	if not name then return end
-	for i,loc in pairs(kAuction.const.items.ItemEquipLocs) do
+	for i,loc in pairs(self.const.items.ItemEquipLocs) do
 		if loc.name == itemEquipLoc then
 			kAuction:Debug("FUNC: Item_GetItemEquipSlotNumber, loc.name: " .. loc.name .. ", loc.SlotNumber: " .. loc.slotNumber, 3);
 			if returnType then
@@ -208,7 +208,7 @@ function kAuction:Item_GetEmptyPaperdollTextureOfItem(item)
 	-- Check if item is in local cache
 	local name, _, _, _, _, _, _, _, itemEquipLoc = GetItemInfo(item);
 	if not name then return end
-	for i,loc in pairs(kAuction.const.items.ItemEquipLocs) do
+	for i,loc in pairs(self.const.items.ItemEquipLocs) do
 		if loc.name == itemEquipLoc then
 			kAuction:Debug("FUNC: Item_GetItemEmptyPaperdollTexture, loc.name: " .. loc.name .. ", loc.slotName: " .. loc.slotName, 3);
 			_,texture = GetInventorySlotInfo(loc.slotName)
@@ -218,7 +218,7 @@ function kAuction:Item_GetEmptyPaperdollTextureOfItem(item)
 	return nil;
 end
 function kAuction:Item_GetEmptyPaperdollTextureOfItemSlot(slot)
-	for i,loc in pairs(kAuction.const.items.ItemEquipLocs) do
+	for i,loc in pairs(self.const.items.ItemEquipLocs) do
 		if loc.slotNumber == slot then
 			_,texture = GetInventorySlotInfo(loc.slotName)
 			return texture;
@@ -307,8 +307,8 @@ function kAuction:Item_GetInventoryItemMatchTable(matchItem)
 		end
 		-- Add inventory equipped item
 		kAuction:Debug("FUNC: Item_GetInventoryItemMatchTable, id: " .. id, 3);
-		if kAuction.popout.SlotInfo[id].other then
-			equippedItemLink = GetInventoryItemLink("player", kAuction.popout.SlotInfo[id].other);
+		if self.popout.SlotInfo[id].other then
+			equippedItemLink = GetInventoryItemLink("player", self.popout.SlotInfo[id].other);
 			if equippedItemLink and not kAuction:Gui_AlreadyInPopoutMenu(equippedItemLink) then
 				tinsert(matchTable, equippedItemLink);
 			end
@@ -336,7 +336,7 @@ function kAuction:Item_GetInventoryItemMatchTable(matchItem)
 end
 function kAuction:Item_GetPlayerWonItemList(player, bidType)
 	local objItems = {};
-	for iAuction,vAuction in pairs(kAuction.auctions) do
+	for iAuction,vAuction in pairs(self.auctions) do
 		if vAuction.winner and vAuction.winner == player then
 			for iBid,vBid in pairs(vAuction.bids) do
 				if bidType then
@@ -356,13 +356,13 @@ end
 function kAuction:Item_GetItemDataValueById(id, flag)
 	if id and flag then
 		if flag == 'mobName' then
-			for i,v in pairs(kAuction.itemData.mobs) do
+			for i,v in pairs(self.itemData.mobs) do
 				if v.id == id then
 					return v.name;
 				end
 			end
 		elseif flag == 'zoneName' then
-			for i,v in pairs(kAuction.itemData.zones) do
+			for i,v in pairs(self.itemData.zones) do
 				if v.id == id then
 					return v.name;
 				end
@@ -386,12 +386,12 @@ function kAuction:Item_IsQuestItem(itemLink)
 		textLeft = _G["kAuctionTooltipTextLeft"..i]:GetText()
 		textRight = _G["kAuctionTooltipTextRight"..i]:GetText()
 		if textLeft then
-			if string.find(textLeft,kAuction.regex.patterns.ITEM_BIND_QUEST) then
+			if string.find(textLeft,self.regex.patterns.ITEM_BIND_QUEST) then
 				return true;
 			end
 		end
 		if textRight then
-			if string.find(textRight,kAuction.regex.patterns.ITEM_BIND_QUEST) then
+			if string.find(textRight,self.regex.patterns.ITEM_BIND_QUEST) then
 				return true;
 			end
 		end
@@ -414,12 +414,12 @@ function kAuction:Item_IsStartQuestItem(itemLink)
 		textLeft = _G["kAuctionTooltipTextLeft"..i]:GetText()
 		textRight = _G["kAuctionTooltipTextRight"..i]:GetText()
 		if textLeft then
-			if string.find(textLeft,kAuction.regex.patterns.ITEM_STARTS_QUEST) then
+			if string.find(textLeft,self.regex.patterns.ITEM_STARTS_QUEST) then
 				return true;
 			end
 		end
 		if textRight then
-			if string.find(textRight,kAuction.regex.patterns.ITEM_STARTS_QUEST) then
+			if string.find(textRight,self.regex.patterns.ITEM_STARTS_QUEST) then
 				return true;
 			end
 		end
@@ -516,7 +516,7 @@ function kAuction:Item_PopulateItemData(dataSet)
 	if dataSet then
 		for i,v in pairs(dataSet) do
 			-- Loop through ItemData
-			for iItem,vItem in pairs(kAuction.itemData.items) do
+			for iItem,vItem in pairs(self.itemData.items) do
 				if v.id == vItem.id then
 					-- Match, populate
 					dataSet[i].mobId = vItem.mobId;
@@ -558,7 +558,7 @@ function kAuction:Item_PopulateItemData(dataSet)
 				kAuction:Wishlist_AddValidSearchFilter('equipSlot', nil, 'match', 'Empty');
 			end
 			-- Loop through Enabled Weight Scales
-			for iWeight,vWeight in pairs(kAuction.db.profile.weights) do
+			for iWeight,vWeight in pairs(self.db.profile.weights) do
 				if vWeight.enabled then -- Enabled
 					if vWeight.defaultClass then
 						if UnitClass("player") == vWeight.defaultClass then
@@ -595,7 +595,7 @@ end
 function kAuction:Wishlist_UpdateFromCacheData(dataSet)
 	if dataSet then
 		for i,v in pairs(dataSet) do
-			for iList,vList in pairs(kAuction.db.profile.wishlists) do
+			for iList,vList in pairs(self.db.profile.wishlists) do
 				if vList.items then
 					for iItem,vItem in pairs(vList.items) do
 						if not vItem.level then

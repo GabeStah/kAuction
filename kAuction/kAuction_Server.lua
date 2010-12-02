@@ -21,12 +21,12 @@ function kAuction:Server_AddBidToAuction(sender, localAuctionData)
 				id = kAuction:Server_GetUniqueBidId(),
 				lootCouncilVoters = {},
 				name = sender, 
-				roll = math.random(1,kAuction.db.profile.looting.rollMaximum),
+				roll = math.random(1,self.db.profile.looting.rollMaximum),
 				setBonus = localAuctionData.setBonus,
 			};
 			tinsert(auction.bids, bid);
 		end
-		kAuction:SendCommunication("DataUpdate", kAuction:Serialize("auction", auction))
+		kAuction:SendCommunication("DataUpdate", kAuction:Serialize("auction", auction), 3)
 	end
 end
 function kAuction:Server_AddBidVote(sender, auction, bid)
@@ -34,12 +34,12 @@ function kAuction:Server_AddBidVote(sender, auction, bid)
 		return;
 	end
 	local iAuction, iBid = kAuction:Client_GetAuctionBidIndexByBidId(bid.id);
-	if kAuction.auctions[iAuction].bids[iBid] then
-		if kAuction:IsLootCouncilMember(kAuction.auctions[iAuction], sender) then
-			kAuction:ClearLootCouncilVoteFromAuction(kAuction.auctions[iAuction], sender);
-			tinsert(kAuction.auctions[iAuction].bids[iBid].lootCouncilVoters, sender);
+	if self.auctions[iAuction].bids[iBid] then
+		if kAuction:IsLootCouncilMember(self.auctions[iAuction], sender) then
+			kAuction:ClearLootCouncilVoteFromAuction(self.auctions[iAuction], sender);
+			tinsert(self.auctions[iAuction].bids[iBid].lootCouncilVoters, sender);
 		end
-		kAuction:SendCommunication("DataUpdate", kAuction:Serialize("auction", kAuction.auctions[iAuction]))
+		kAuction:SendCommunication("DataUpdate", kAuction:Serialize("auction", self.auctions[iAuction]), 3)
 	end
 end
 function kAuction:Server_AwardAuction(auction, winner)
@@ -54,14 +54,14 @@ function kAuction:Server_AwardAuction(auction, winner)
 	end
 	if auction.winner or auction.disenchant then
 		-- Auto-assign via master loot
-		local unit = kAuction.roster:GetUnitObjectFromName(UnitName("player"))
+		local lootMethod, masterLooterId = GetLootMethod();
 		local corpseGuid = UnitGUID("target") -- NPC Looted
 		if not corpseGuid then -- Else Container Looted
-			corpseGuid = kAuction.guids.lastObjectOpened;
+			corpseGuid = self.guids.lastObjectOpened;
 		end	
 		-- Check if autoML enabled, player is raid leader, player is ML, player is looting a corpse/object of matching corpseGuid of auction, 
 		-- and auction has not been looted (ensures duplicate named items don't get autoassigned)
-		if kAuction.db.profile.looting.autoAssignIfMasterLoot and IsRaidLeader() and unit.ML and kAuction.isLooting and corpseGuid == auction.corpseGuid and auction.looted == false then
+		if self.db.profile.looting.autoAssignIfMasterLoot and IsRaidLeader() and (lootMethod=='master' and masterLooterId==0) and self.isLooting and corpseGuid == auction.corpseGuid and auction.looted == false then
 			if #(auction.bids) == 0 then -- Disenchant
 				auction.disenchant = true;
 			end
@@ -116,43 +116,42 @@ function kAuction:Server_AwardAuction(auction, winner)
 		end
 		auction.awarded = true;
 		auction.looted = true;
-		kAuction:SendCommunication("DataUpdate", kAuction:Serialize("auction", auction));
+		kAuction:SendCommunication("DataUpdate", kAuction:Serialize("auction", auction), 3);
 		if auction.winner then
 			kAuction:Debug("auctionwinner: " .. auction.winner, 1);
-			SendChatMessage(kAuction.const.chatPrefix.."Auto-Response: Congratulations, you are the auction winner for " .. auction.itemLink .. "!", "WHISPER", nil, auction.winner);
+			SendChatMessage(self.const.chatPrefix.."Auto-Response: Congratulations, you are the auction winner for " .. auction.itemLink .. "!", "WHISPER", nil, auction.winner);
 			kAuction:SendCommunication("AuctionWinner", auction);
 		end
 	end
 end
 function kAuction:Server_WhisperAuctionToRaidRoster(itemLink)
-	kAuction.roster:ScanFullRoster();
+	local i, name, online
 	for i = 1, GetNumRaidMembers() do
-		local objMember = kAuction.roster:GetUnitObjectFromName(GetRaidRosterInfo(i));
-		if objMember then
-			if objMember.online then
-				if not (objMember.name == (UnitName("player"))) then
-					SendChatMessage(kAuction.const.chatPrefix.."Auto-Generated: An auction has been created for "..itemLink ..".  To bid, /whisper "..UnitName("player").." with the itemlink and appropriate keywords.  For keyword help, /whisper "..UnitName("player").." ka help.", "WHISPER", nil, objMember.name);
-				end
+		name, _, _, _, _, _, _, online = GetRaidRosterInfo(i)
+		if online then
+			if not (name == (self.player)) then
+				SendChatMessage(self.const.chatPrefix.."Auto-Generated: An auction has been created for "..itemLink ..".  To bid, /whisper "..self.playerName.." with the itemlink and appropriate keywords.  For keyword help, /whisper "..self.playerName.." ka help.", "WHISPER", nil, name);
 			end
 		end
 	end
 end
 function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
-	if not kAuction:Client_IsServer() or not kAuction.isActiveRaid then
+	if not kAuction:Client_IsServer() or not self.isActiveRaid then
 		kAuction:Debug("Not active raid.", 1);
 		return;
 	end
+	kAuction:Debug(("Server_AuctionItem %s."):format(id), 1);
 	local _, itemLink = GetItemInfo(id);
 	-- Check if rarity requirements are met
 	local _, _, rarity = GetItemInfo(itemLink);
 	if not rarity then return end
-	if rarity < kAuction.db.profile.looting.rarityThreshold then
+	if rarity < self.db.profile.looting.rarityThreshold then
 		return;
 	end
 	-- Is item in blacklist?
 	local booItemInBlacklist = false
 	local strItemName = GetItemInfo(itemLink)
-	for i,val in pairs(kAuction.db.profile.items.blackList) do
+	for i,val in pairs(self.db.profile.items.blackList) do
 		if strItemName == val then
 			booItemInBlacklist = true
 		end
@@ -167,7 +166,7 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 		kAuction:Debug("FUNC: Create auction, whitelist Data found, name: " .. whitelistData.name, 1);
 	end
 	if IsEquippableItem(itemLink) or whitelistData.currentItemSlot then
-		if kAuction.db.profile.bidding.autoPopulateCurrentItem then
+		if self.db.profile.bidding.autoPopulateCurrentItem then
 			local slotItemLink = GetInventoryItemLink("player", whitelistData.currentItemSlot or kAuction:Item_GetEquipSlotNumberOfItem(itemLink));
 			if slotItemLink then
 				currentItemLink = slotItemLink;
@@ -177,15 +176,15 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 	end
 	local id = kAuction:Server_GetUniqueAuctionId();
 	local councilMembers = {};
-	for iCouncil,vCouncil in pairs(kAuction.db.profile.looting.councilMembers) do
-		if kAuction.roster:GetUnitIDFromName(vCouncil) then
+	for iCouncil,vCouncil in pairs(self.db.profile.looting.councilMembers) do
+		if kAuction:Client_IsPlayerInRaid(vCouncil) then
 			tinsert(councilMembers, vCouncil);
 		end
 	end
-	tinsert(kAuction.auctions, {
-		auctionType = whitelistData.auctionType or kAuction.db.profile.looting.auctionType,
-		auctionCloseDelay = kAuction.db.profile.looting.auctionCloseDelay,
-		auctionCloseVoteDuration = kAuction.db.profile.looting.auctionCloseVoteDuration,
+	tinsert(self.auctions, {
+		auctionType = whitelistData.auctionType or self.db.profile.looting.auctionType,
+		auctionCloseDelay = self.db.profile.looting.auctionCloseDelay,
+		auctionCloseVoteDuration = self.db.profile.looting.auctionCloseVoteDuration,
 		awarded = false,
 		bids = {},
 		closed = false, 
@@ -194,17 +193,17 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 		corpseName = corpseName,
 		currentItemSlot = whitelistData.currentItemSlot or kAuction:Item_GetEquipSlotNumberOfItem(itemLink),
 		dateTime = date("%m/%d/%y %H:%M:%S"),
-		duration = kAuction.db.profile.looting.auctionDuration, 
+		duration = self.db.profile.looting.auctionDuration, 
 		id = id, 
 		itemLink = itemLink, 
 		looted = false,
 		seedTime = time(), 
-		visiblePublicBidCurrentItems = kAuction.db.profile.looting.visiblePublicBidCurrentItems,
-		visiblePublicBidRolls = kAuction.db.profile.looting.visiblePublicBidRolls,
-		visiblePublicBidVoters = kAuction.db.profile.looting.visiblePublicBidVoters,
-		visiblePublicDetails = kAuction.db.profile.looting.visiblePublicDetails,
+		visiblePublicBidCurrentItems = self.db.profile.looting.visiblePublicBidCurrentItems,
+		visiblePublicBidRolls = self.db.profile.looting.visiblePublicBidRolls,
+		visiblePublicBidVoters = self.db.profile.looting.visiblePublicBidVoters,
+		visiblePublicDetails = self.db.profile.looting.visiblePublicDetails,
 		winner = false});
-	tinsert(kAuction.localAuctionData, {
+	tinsert(self.localAuctionData, {
 		bestInSlot = false,
 		bid = false, 
 		bidType = false, 
@@ -214,20 +213,20 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 		setBonus = false,
 	});		
 	-- Send out auction Whisper Bid messages
-	if kAuction.db.profile.looting.auctionWhisperBidEnabled then
+	if self.db.profile.looting.auctionWhisperBidEnabled then
 		kAuction:Server_WhisperAuctionToRaidRoster(itemLink);
 	end
-	if #(kAuction.auctions) > 0 and kAuction.db.profile.looting.displayFirstOpenAuction == true then
+	if #(self.auctions) > 0 and self.db.profile.looting.displayFirstOpenAuction == true then
 		FauxScrollFrame_SetOffset(kAuctionMainFrameMainScrollContainerScrollFrame, kAuction:GetFirstOpenAuctionIndex()-1);
 	end
 	-- Visible main frame
-	kAuction.db.profile.gui.frames.main.visible = true;
-	kAuction.db.profile.gui.frames.bids.visible = true;
+	self.db.profile.gui.frames.main.visible = true;
+	self.db.profile.gui.frames.bids.visible = true;
 	kAuction:Gui_HookFrameRefreshUpdate();
 	-- SendComm
-	kAuction:SendCommunication("Auction", kAuction.auctions[#(kAuction.auctions)])
-	kAuction:ScheduleTimer(Server_OnAuctionExpire, kAuction.auctions[#(kAuction.auctions)].duration + kAuction.db.profile.looting.auctionCloseDelay, #(kAuction.auctions));
-	kAuction:ScheduleTimer("Gui_HookFrameRefreshUpdate", kAuction.db.profile.looting.auctionDuration + kAuction.db.profile.looting.auctionCloseVoteDuration + kAuction.db.profile.looting.auctionCloseDelay);
+	kAuction:SendCommunication("Auction", self.auctions[#(self.auctions)])
+	kAuction:ScheduleTimer(Server_OnAuctionExpire, self.auctions[#(self.auctions)].duration + self.db.profile.looting.auctionCloseDelay, #(self.auctions));
+	kAuction:ScheduleTimer("Gui_HookFrameRefreshUpdate", self.db.profile.looting.auctionDuration + self.db.profile.looting.auctionCloseVoteDuration + self.db.profile.looting.auctionCloseDelay);
 	kAuction:Debug("FUNC: Server_AuctionItem: Item: " .. itemLink .. ", corpse: " .. corpseGuid, 1);
 	-- Check if wishlist requires auto-bid
 	if kAuction:Wishlist_IsEnabled() then
@@ -237,7 +236,7 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 			local wishlistItem = kAuction:Wishlist_GetHighestPriorityItemFromSet(oMatches);
 			if wishlistItem then
 				if wishlistItem.autoBid == true then
-					kAuction:Gui_AuctionBidButtonOnClick(kAuction.auctions[#kAuction.auctions], wishlistItem.bidType, wishlistItem.bestInSlot, wishlistItem.setBonus);				
+					kAuction:Gui_AuctionBidButtonOnClick(self.auctions[#self.auctions], wishlistItem.bidType, wishlistItem.bestInSlot, wishlistItem.setBonus);				
 					-- Auto bid, check if alert
 					if wishlistItem.alert == true then
 						local sBidType;
@@ -274,9 +273,9 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 							button1 = "Keep Bid",
 							button2 = "Cancel Bid",
 							OnCancel = function()
-								kAuction:Gui_AuctionBidButtonOnClick(kAuction.auctions[#kAuction.auctions], 'none');				
+								kAuction:Gui_AuctionBidButtonOnClick(self.auctions[#self.auctions], 'none');				
 							end,
-							timeout = kAuction.auctions[#(kAuction.auctions)].duration,
+							timeout = self.auctions[#(self.auctions)].duration,
 							whileDead = 1,
 							hideOnEscape = 1,
 							hasEditBox = false,
@@ -315,14 +314,14 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 						"Best in Slot: " .. sBestInSlot .. "|n" ..
 						"Set Bonus: " .. sSetBonus .. "|n",
 						OnAccept = function()
-							kAuction:Gui_AuctionBidButtonOnClick(kAuction.auctions[#kAuction.auctions], wishlistItem.bidType, wishlistItem.bestInSlot, wishlistItem.setBonus);
+							kAuction:Gui_AuctionBidButtonOnClick(self.auctions[#self.auctions], wishlistItem.bidType, wishlistItem.bestInSlot, wishlistItem.setBonus);
 						end,
 						button1 = "Bid",
 						button2 = "No Thanks",
 						OnCancel = function()
 							return;
 						end,
-						timeout = kAuction.auctions[#(kAuction.auctions)].duration,
+						timeout = self.auctions[#(self.auctions)].duration,
 						whileDead = 1,
 						hideOnEscape = 1,
 						hasEditBox = false,
@@ -363,35 +362,38 @@ function kAuction:Server_IsPreviousRaidClosed() -- Not finished
 		return;
 	end
 	local sXml = kAuction:Server_GetRaidXmlString();
-	if kAuction.raidStartTime and kAuction.currentZone then
+	if self.raidStartTime and self.currentZone then
 		local booFound = false;
-		if #(kAuction.raidDb.global.raids) > 0 then
-			if not kAuction.raidDb.global.raids[#kAuction.raidDb.global.raids].endTime then
+		if #(self.raidDb.global.raids) > 0 then
+			if not self.raidDb.global.raids[#self.raidDb.global.raids].endTime then
 				-- Previous raid has no closure date, prompt to continue
 				
 			end
 		end
-		for i,raid in pairs(kAuction.raidDb.global.raids) do
+		for i,raid in pairs(self.raidDb.global.raids) do
 			-- Check for existing entry matching this zone without end datetime
-			if raid.startTime == kAuction.raidStartTime then
+			if raid.startTime == self.raidStartTime then
 				-- Update existing entry
-				kAuction.raidDb.global.raids[i].xml = sXml;
+				self.raidDb.global.raids[i].xml = sXml;
 				booFound = true;
 			end
 		end
 		if booFound == false then
-			tinsert(kAuction.raidDb.global.raids, {startTime = kAuction.raidStartTime, xml = sXml});
+			tinsert(self.raidDb.global.raids, {startTime = self.raidStartTime, xml = sXml});
 		end
 	end
 end
 function kAuction:Server_GetLootCouncilMemberCount()
 	local iCount = 0;
+	local i, member, name, rank
 	local booRaidLeaderInList = false;
-	for i,member in pairs(kAuction.db.profile.looting.councilMembers) do
-		local objMember = kAuction.roster:GetUnitObjectFromName(member);
-		if objMember then
+	for i,member in pairs(self.db.profile.looting.councilMembers) do
+		for iR = 1, GetNumRaidMembers() do
+			name, rank = GetRaidRosterInfo(iR)
+		end
+		if member == name then
 			iCount = iCount + 1;
-			if objMember.rank == 2 then
+			if rank == 2 then
 				booRaidLeaderInList = true;
 			end
 		end
@@ -416,7 +418,7 @@ function kAuction:Server_GetAuctionByItem(item,checkWinner)
 		end
 	end
 	local rAuction = nil;
-	for i,auction in pairs(kAuction.auctions) do
+	for i,auction in pairs(self.auctions) do
 		kAuction:Debug("FUNC: Server_GetAuctionIdByItem, Auction Link: " .. auction.itemLink .. ", searchlink: " .. itemLink, 3);		
 		if tonumber(kAuction:Item_GetItemIdFromItemLink(auction.itemLink)) == tonumber(kAuction:Item_GetItemIdFromItemLink(itemLink)) then
 			if checkWinner then
@@ -437,19 +439,17 @@ function kAuction:Server_GetRaidRoster()
 		return;
 	end
 	local roster = {};
-	kAuction.roster:ScanFullRoster();
+	local i, name, class, online
 	for i = 1, GetNumRaidMembers() do
-		local objMember = kAuction.roster:GetUnitObjectFromName(GetRaidRosterInfo(i));
-		if objMember then
-			if objMember.online then
-				local class;
-				local s1, s2 = strsplit(" ", objMember.class);
-				class = strupper(strsub(s1, 1, 1)) .. strlower(strsub(s1, 2));
-				if s2 then
-					class = class .. " " .. strupper(strsub(s2, 1, 1)) .. strlower(strsub(s2, 2));
-				end
-				tinsert(roster, {name = objMember.name, class = class});
+		name, _, _, _, class, _, _, online = GetRaidRosterInfo(i)
+		if online then
+			local class;
+			local s1, s2 = strsplit(" ", class);
+			class = strupper(strsub(s1, 1, 1)) .. strlower(strsub(s1, 2));
+			if s2 then
+				class = class .. " " .. strupper(strsub(s2, 1, 1)) .. strlower(strsub(s2, 2));
 			end
+			tinsert(roster, {name = name, class = class});
 		end
 	end
 	return roster;
@@ -460,7 +460,7 @@ function kAuction:Server_GetUniqueAuctionId()
 	while isValidId == false do
 		matchFound = false;
 		newId = (math.random(0,2147483647) * -1);
-		for i,val in pairs(kAuction.auctions) do
+		for i,val in pairs(self.auctions) do
 			if val.id == newId then
 				matchFound = true;
 			end
@@ -477,7 +477,7 @@ function kAuction:Server_GetUniqueBidId()
 	while isValidId == false do
 		matchFound = false;
 		newId = (math.random(0,2147483647) * -1);
-		for iAuction,vAuction in pairs(kAuction.auctions) do
+		for iAuction,vAuction in pairs(self.auctions) do
 			for iBid,vBid in pairs(vAuction.bids) do
 				if vBid.id == newId then
 					matchFound = true;
@@ -492,7 +492,7 @@ function kAuction:Server_GetUniqueBidId()
 end
 function kAuction:Server_HasCorpseBeenAuctioned(guid)
 	local booWasAuctioned = false;
-	for i,val in pairs(kAuction.guids.wasAuctioned) do
+	for i,val in pairs(self.guids.wasAuctioned) do
 		if val == guid then
 			booWasAuctioned = true;
 		end
@@ -507,7 +507,7 @@ end
 function kAuction:Server_InitializeCouncilMemberList()
 	local booPlayerFound = false;
 	local tempCouncilMembers = {};
-	for iCouncil,vCouncil in pairs(kAuction.db.profile.looting.councilMembers) do
+	for iCouncil,vCouncil in pairs(self.db.profile.looting.councilMembers) do
 		local matchFound = false;
 		for iTemp,vTemp in pairs(tempCouncilMembers) do
 			if vTemp == vCouncil then
@@ -517,37 +517,37 @@ function kAuction:Server_InitializeCouncilMemberList()
 		if matchFound == false then
 			tinsert(tempCouncilMembers, vCouncil);
 		end
-		if vCouncil == UnitName("player") then
+		if vCouncil == self.playerName then
 			booPlayerFound = true;
 		end
 	end
-	kAuction.db.profile.looting.councilMembers = tempCouncilMembers;
+	self.db.profile.looting.councilMembers = tempCouncilMembers;
 	if booPlayerFound == false then
-		local playerName = UnitName("player");
-		tinsert(kAuction.db.profile.looting.councilMembers, playerName);
+		local playerName = self.playerName;
+		tinsert(self.db.profile.looting.councilMembers, playerName);
 	end
-	table.sort(kAuction.db.profile.looting.councilMembers);
+	table.sort(self.db.profile.looting.councilMembers);
 end
 -- Fires when auction timer ends, 
 function Server_OnAuctionExpire(iAuction)
 	if not kAuction:Client_IsServer() then
 		return;
 	end
-	if kAuction.auctions[iAuction] then
+	if self.auctions[iAuction] then
 		kAuction:ScheduleTimer(kAuction:MainFrameScrollUpdate(), 0.5);
 		kAuction:ScheduleTimer(kAuction:BidsFrameScrollUpdate(), 0.5);
-		kAuction.auctions[iAuction].closed = true;
+		self.auctions[iAuction].closed = true;
 		-- No bids, auto DE
-		if #kAuction.auctions[iAuction].bids == 0 then
-			kAuction.auctions[iAuction].disenchant = true;
-			kAuction:Server_AwardAuction(kAuction.auctions[iAuction]);
-		elseif #kAuction.auctions[iAuction].bids == 1 then
-			for i,v in pairs(kAuction.auctions[iAuction].bids) do
-				kAuction:Server_AwardAuction(kAuction.auctions[iAuction], v.name);				
+		if #self.auctions[iAuction].bids == 0 then
+			self.auctions[iAuction].disenchant = true;
+			kAuction:Server_AwardAuction(self.auctions[iAuction]);
+		elseif #self.auctions[iAuction].bids == 1 then
+			for i,v in pairs(self.auctions[iAuction].bids) do
+				kAuction:Server_AwardAuction(self.auctions[iAuction], v.name);				
 			end
-		elseif kAuction.db.profile.looting.autoAwardRandomAuctions then
-			kAuction:ScheduleTimer("DetermineRandomAuctionWinner", kAuction.db.profile.looting.auctionCloseDelay, iAuction);	
-			kAuction:ScheduleTimer("Server_AwardAuction", kAuction.db.profile.looting.auctionCloseDelay + 1, kAuction.auctions[iAuction]);	
+		elseif self.db.profile.looting.autoAwardRandomAuctions then
+			kAuction:ScheduleTimer("DetermineRandomAuctionWinner", self.db.profile.looting.auctionCloseDelay, iAuction);	
+			kAuction:ScheduleTimer("Server_AwardAuction", self.db.profile.looting.auctionCloseDelay + 1, self.auctions[iAuction]);	
 		end
 	end
 end
@@ -563,12 +563,12 @@ function kAuction:Server_RemoveBidFromAuction(sender, auction)
 		return;
 	end
 	local iAuction = kAuction:Client_GetAuctionIndexByAuctionId(auction.id);
-	if kAuction.auctions[iAuction] then
-		for i,bid in pairs(kAuction.auctions[iAuction].bids) do
+	if self.auctions[iAuction] then
+		for i,bid in pairs(self.auctions[iAuction].bids) do
 			if bid.name == sender then
 				kAuction:Debug("FUNC: Server_RemoveBidFromAuction, REMOVING BID: " .. sender, 1);
-				tremove(kAuction.auctions[iAuction].bids, i);
-				kAuction:SendCommunication("DataUpdate", kAuction:Serialize("auction", kAuction.auctions[iAuction]))
+				tremove(self.auctions[iAuction].bids, i);
+				kAuction:SendCommunication("DataUpdate", kAuction:Serialize("auction", self.auctions[iAuction]), 3)
 			end
 		end
 	end
@@ -583,12 +583,12 @@ function kAuction:Server_RemoveBidVote(sender, auction, bid)
 		if kAuction:IsLootCouncilMember(localAuction, sender) then
 			kAuction:ClearLootCouncilVoteFromAuction(localAuction, sender);
 		end
-		kAuction:SendCommunication("DataUpdate", kAuction:Serialize("auction", localAuction))
+		kAuction:SendCommunication("DataUpdate", kAuction:Serialize("auction", localAuction), 3)
 	end
 end
 function kAuction:Server_SetCorpseAsAuctioned(guid)
 	if kAuction:Server_HasCorpseBeenAuctioned(guid) == false then
-		tinsert(kAuction.guids.wasAuctioned, guid);
+		tinsert(self.guids.wasAuctioned, guid);
 		return true;		
 	end
 	return nil;
@@ -611,9 +611,9 @@ function kAuction:Server_IsInValidRaidZone()
 	if not kAuction:Client_IsServer() then
 		return;
 	end
-	kAuction.currentZone = GetRealZoneText();
-	for iZone,vZone in pairs(kAuction.db.profile.zones.validZones) do
-		if kAuction.currentZone == vZone then
+	self.currentZone = GetRealZoneText();
+	for iZone,vZone in pairs(self.db.profile.zones.validZones) do
+		if self.currentZone == vZone then
 			return true;
 		end
 	end
@@ -632,13 +632,13 @@ function kAuction:Server_StartRaidTracking()
 	if not kAuction:Client_IsServer() then
 		return;
 	end
-	kAuction.enabled = true;
-	kAuction.isActiveRaid = true;
-	kAuction.actors = {};
-	kAuction.raidStartTime = date("%m/%d/%y %H:%M:%S");
-	kAuction.raidStartTick = time();
-	kAuction.raidZone = GetRealZoneText();
-	kAuction.rosterUpdateTimer = kAuction:ScheduleRepeatingTimer("Server_UpdateRaidRoster", kAuction.const.raid.presenceTick);
+	self.enabled = true;
+	self.isActiveRaid = true;
+	self.actors = {};
+	self.raidStartTime = date("%m/%d/%y %H:%M:%S");
+	self.raidStartTick = time();
+	self.raidZone = GetRealZoneText();
+	self.rosterUpdateTimer = kAuction:ScheduleRepeatingTimer("Server_UpdateRaidRoster", self.const.raid.presenceTick);
 	-- Check if previous raid exists for this zone
 	
 	-- Create raid entry
@@ -648,10 +648,10 @@ function kAuction:Server_StopRaidTracking()
 	if not kAuction:Client_IsServer() then
 		return;
 	end
-	kAuction.enabled = false;
-	kAuction.isActiveRaid = false;
-	kAuction.raidEndTime = date("%m/%d/%y %H:%M:%S");
-	kAuction.raidDuration = time() - kAuction.raidStartTick;
+	self.enabled = false;
+	self.isActiveRaid = false;
+	self.raidEndTime = date("%m/%d/%y %H:%M:%S");
+	self.raidDuration = time() - self.raidStartTick;
 	-- Final Xml DB Update
 	kAuction:Server_UpdateRaidDb();
 	-- Create raid xml
@@ -674,8 +674,8 @@ function kAuction:Server_StopRaidTracking()
 		hasEditBox = 1,
 	};	
 	StaticPopup_Show("kAuctionPopup_GetRaidXmlString");
-	kAuction:CancelTimer(kAuction.rosterUpdateTimer);
-	kAuction.actors = {};
+	kAuction:CancelTimer(self.rosterUpdateTimer);
+	self.actors = {};
 	kAuction:SendCommunication("RaidEnd");
 	kAuction:Debug("FUNC: Server_StopRaidtracking", 1);
 end
@@ -684,29 +684,29 @@ function kAuction:Server_UpdateRaidDb()
 		return;
 	end
 	-- Update raid Duration
-	kAuction.raidDuration = time() - kAuction.raidStartTick;
+	self.raidDuration = time() - self.raidStartTick;
 	local sXml = kAuction:Server_GetRaidXmlString();
-	if sXml and kAuction.raidStartTime then
+	if sXml and self.raidStartTime then
 		local booFound = false;
-		if kAuction.raidDb.global.raids then
-			for i,raid in pairs(kAuction.raidDb.global.raids) do
+		if self.raidDb.global.raids then
+			for i,raid in pairs(self.raidDb.global.raids) do
 				-- Check for existing entry
-				if raid.startTime == kAuction.raidStartTime then
+				if raid.startTime == self.raidStartTime then
 					-- Update existing entry
-					kAuction.raidDb.global.raids[i].xml = sXml;
+					self.raidDb.global.raids[i].xml = sXml;
 					booFound = true;
 				end
 			end
 		end
 		if booFound == false then
-			local tInsert = {startTime = kAuction.raidStartTime, xml = sXml};
-			if kAuction.raidEndTime then
-				tInsert.endTime = kAuction.raidEndTime;
+			local tInsert = {startTime = self.raidStartTime, xml = sXml};
+			if self.raidEndTime then
+				tInsert.endTime = self.raidEndTime;
 			end
-			if not kAuction.raidDb.global.raids then
-				kAuction.raidDb.global.raids = {};
+			if not self.raidDb.global.raids then
+				self.raidDb.global.raids = {};
 			end
-			tinsert(kAuction.raidDb.global.raids, tInsert);
+			tinsert(self.raidDb.global.raids, tInsert);
 		end
 	end
 end
@@ -715,25 +715,25 @@ function kAuction:Server_GetRaidXmlString()
 		return;
 	end
 	local xFull = '<kAuction><raid>';
-	local xStartDate = '<startDate>'..kAuction.raidStartTime..'</startDate>';
+	local xStartDate = '<startDate>'..self.raidStartTime..'</startDate>';
 	local xEndDate = '<endDate>';	
-	if kAuction.raidEndTime then
-		xEndDate = xEndDate .. kAuction.raidEndTime;
+	if self.raidEndTime then
+		xEndDate = xEndDate .. self.raidEndTime;
 	end
 	xEndDate = xEndDate .. '</endDate>';
 	local xDuration = '<duration>'
-	if kAuction.raidDuration then
-		xDuration = xDuration .. kAuction.raidDuration;
+	if self.raidDuration then
+		xDuration = xDuration .. self.raidDuration;
 	end
 	xDuration = xDuration .. '</duration>';
-	local xZone = '<zone>'..kAuction.raidZone..'</zone>';
+	local xZone = '<zone>'..self.raidZone..'</zone>';
 	local xItem = "";
 	local xItems = "";
 	local xBids = "";
-	if #kAuction.auctions > 0 then
+	if #self.auctions > 0 then
 		-- START <items>
 		xItems = '<items>';
-		for i,auction in pairs(kAuction.auctions) do
+		for i,auction in pairs(self.auctions) do
 			local found, _, itemString = string.find(auction.itemLink, '^|c%x+|H(.+)|h%[.*%]')
 			local _,itemId = strsplit(':', itemString);
 			local itemName = GetItemInfo(auction.itemLink);
@@ -825,10 +825,10 @@ function kAuction:Server_GetRaidXmlString()
 	-- START <actors>
 	local xActor, xActors;
 	xActors = '<actors>';
-	for name,actor in pairs(kAuction.actors) do
+	for name,actor in pairs(self.actors) do
 		local presence = 1;
-		if actor.presence + kAuction.const.raid.presenceTick < kAuction.raidDuration then
-			presence = actor.presence / kAuction.raidDuration;
+		if actor.presence + self.const.raid.presenceTick < self.raidDuration then
+			presence = actor.presence / self.raidDuration;
 		end
 		xActor = '<actor>';
 		xActor = xActor .. '<class>' .. actor.class .. '</class>';
@@ -844,22 +844,20 @@ function kAuction:Server_GetRaidXmlString()
 	return xFull;
 end
 function kAuction:Server_UpdateRaidRoster()
-	kAuction.roster:ScanFullRoster();
+	local i, name, class, online
 	for i = 1, GetNumRaidMembers() do
-		local objMember = kAuction.roster:GetUnitObjectFromName(GetRaidRosterInfo(i));
-		if objMember then
-			if objMember.online then
-				local class;
-				local s1, s2 = strsplit(" ", objMember.class);
-				class = strupper(strsub(s1, 1, 1)) .. strlower(strsub(s1, 2));
-				if s2 then
-					class = class .. " " .. strupper(strsub(s2, 1, 1)) .. strlower(strsub(s2, 2));
-				end
-				if kAuction.actors[objMember.name] then
-					kAuction.actors[objMember.name].presence = kAuction.actors[objMember.name].presence + kAuction.const.raid.presenceTick;
-				else -- new
-					kAuction.actors[objMember.name] = {class = class, presence = kAuction.const.raid.presenceTick};
-				end
+		name, _, _, _, class, _, _, online = GetRaidRosterInfo(i)
+		if online then
+			local class;
+			local s1, s2 = strsplit(" ", class);
+			class = strupper(strsub(s1, 1, 1)) .. strlower(strsub(s1, 2));
+			if s2 then
+				class = class .. " " .. strupper(strsub(s2, 1, 1)) .. strlower(strsub(s2, 2));
+			end
+			if self.actors[name] then
+				self.actors[name].presence = self.actors[name].presence + self.const.raid.presenceTick;
+			else -- new
+				self.actors[name] = {class = class, presence = self.const.raid.presenceTick};
 			end
 		end
 	end
@@ -869,20 +867,20 @@ function kAuction:Server_VersionCheck(outputResult)
 		return;
 	end
 	for i=1,GetNumRaidMembers() do
-		kAuction.versions[GetRaidRosterInfo(i)] = false;
+		self.versions[GetRaidRosterInfo(i)] = false;
 	end
 	if outputResult then
 		kAuction:ScheduleTimer("Server_VerifyVersions", 6, outputResult);
 	else
 		kAuction:ScheduleTimer("Server_VerifyVersions", 6);
 	end
-	kAuction:SendCommunication("VersionRequest", kAuction.version)
+	kAuction:SendCommunication("VersionRequest", self.version)
 end
 function kAuction:Server_VersionReceived(sender, version)
 	if not kAuction:Client_IsServer() then
 		return;
 	end
-	kAuction.versions[sender] = version;
+	self.versions[sender] = version;
 	kAuction:Debug("FUNC: Server_VersionReceived sender: "..sender.. ", version: " .. version,1);
 	kAuction:Server_VerifyVersions();
 end
@@ -891,19 +889,19 @@ function kAuction:Server_VerifyVersions(outputResult)
 		return;
 	end
 	local booIncompatibleFound = false;
-	for name,version in pairs(kAuction.versions) do
+	for name,version in pairs(self.versions) do
 		if version == false then
 			if outputResult then
 				kAuction:Print("|cFF"..kAuction:RGBToHex(255,0,0).."No kAuction Install Found|r: " .. name);
 			end
 			booIncompatibleFound = true;
-		elseif version < kAuction.version then
+		elseif version < self.version then
 			booIncompatibleFound = true;
-			if version < kAuction.minRequiredVersion then
+			if version < self.minRequiredVersion then
 				if outputResult then
 					kAuction:Print("|cFF"..kAuction:RGBToHex(255,0,0).."Incompatible Version|r: " .. name .. " [" .. version .. "]");
 				end
-				kAuction:SendCommunication("VersionInvalid", kAuction:Serialize(name, kAuction.minRequiredVersion, kAuction.version));
+				kAuction:SendCommunication("VersionInvalid", kAuction:Serialize(name, self.minRequiredVersion, self.version));
 			else
 				if outputResult then
 					kAuction:Print("|cFF"..kAuction:RGBToHex(255,255,0).."Out of Date Version|r: " .. name .. " [" .. version .. "]");

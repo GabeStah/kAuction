@@ -10,11 +10,7 @@ kAuction.lua
 kAuction_Client.lua
 kAuction_Gui.lua
 kAuction_Item.lua
-kAuction_ItemData.lua
 kAuction_Options.lua
 kAuction_Server.lua
-kAuction_Threading.lua
-kAuction_Weight.lua
 kAuction_Wishlist.lua
 kAuction_WishlistGui.lua
-Module_Aura.lua
