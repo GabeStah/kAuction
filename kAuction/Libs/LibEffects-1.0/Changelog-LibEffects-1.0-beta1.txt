@@ -1,0 +1,32 @@
+------------------------------------------------------------------------
+r4 | xocide | 2009-01-05 04:04:19 +0000 (Mon, 05 Jan 2009) | 1 line
+Changed paths:
+   A /tags/beta1 (from /trunk:3)
+
+Tagging as beta1
+------------------------------------------------------------------------
+r3 | xocide | 2008-12-27 14:03:00 +0000 (Sat, 27 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/LibEffects-1.0/LibEffects-1.0.lua
+
+Added :AddSound(), :PlaySound() and :UpdateSound()
+------------------------------------------------------------------------
+r2 | xocide | 2008-12-27 13:21:32 +0000 (Sat, 27 Dec 2008) | 2 lines
+Changed paths:
+   A /trunk/.pkgmeta
+   A /trunk/LibEffects-1.0
+   A /trunk/LibEffects-1.0/LibEffects-1.0.lua
+   A /trunk/LibEffects-1.0/lib.xml
+   A /trunk/LibEffects-1.0.toc
+
+First Commit.
+Contains the Flash() and Shake() functions, Play Sound function soon.
+------------------------------------------------------------------------
+r1 | root | 2008-12-27 12:44:19 +0000 (Sat, 27 Dec 2008) | 1 line
+Changed paths:
+   A /branches
+   A /tags
+   A /trunk
+
+"libeffects/mainline: Initial Import"
+------------------------------------------------------------------------

@@ -1,0 +1,713 @@
+------------------------------------------------------------------------
+r127 | nevcairiel | 2009-01-27 12:45:11 +0000 (Tue, 27 Jan 2009) | 1 line
+Changed paths:
+   A /tags/3.0-release (from /trunk:126)
+
+Tagging as 3.0-release
+------------------------------------------------------------------------
+r126 | nevcairiel | 2009-01-27 12:43:02 +0000 (Tue, 27 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/Waterfall-1.0.toc
+
+Waterfall-1.0: update toc
+------------------------------------------------------------------------
+r125 | nevcairiel | 2008-10-09 21:55:55 +0000 (Thu, 09 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/Waterfall-1.0/Waterfall-1.0.lua
+
+WoWAce Post-Processing: Virtually inflate Library Revision numbers for proper upgrade path
+------------------------------------------------------------------------
+r124 | root | 2008-09-30 15:07:15 +0000 (Tue, 30 Sep 2008) | 1 line
+Changed paths:
+   M /trunk/.pkgmeta
+
+Hopefully fix .pkgmeta
+------------------------------------------------------------------------
+r123 | root | 2008-09-29 21:53:34 +0000 (Mon, 29 Sep 2008) | 1 line
+Changed paths:
+   M /trunk
+   A /trunk/.pkgmeta
+
+Facilitate WowAce-on-CurseForge transition
+------------------------------------------------------------------------
+r121 | root | 2008-09-29 20:58:53 +0000 (Mon, 29 Sep 2008) | 1 line
+Changed paths:
+   D /tmp/trunk/Waterfall-1.0
+   A /trunk (from /tmp/trunk/Waterfall-1.0:120)
+
+Importing old repo data under /trunk
+------------------------------------------------------------------------
+r118 | StingerSoft | 2008-07-18 00:28:36 +0000 (Fri, 18 Jul 2008) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: added ruRU translation
+------------------------------------------------------------------------
+r117 | toadkiller | 2008-06-04 19:40:32 +0000 (Wed, 04 Jun 2008) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0 : 
+-- Use English name for spell CLASS.
+------------------------------------------------------------------------
+r115 | toadkiller | 2008-04-28 13:43:42 +0000 (Mon, 28 Apr 2008) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0 : 
+-- WaterfallDragLink Instant Cast tooltip text for 0 castTime.
+
+------------------------------------------------------------------------
+r114 | toadkiller | 2008-04-28 13:39:00 +0000 (Mon, 28 Apr 2008) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0 : 
+-- WaterfallDragLink support for built in macros, rip out LibBabbleSpell, fix icons for items, spells and macros.
+
+------------------------------------------------------------------------
+r113 | orionshock | 2008-03-30 04:40:48 +0000 (Sun, 30 Mar 2008) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: fix typo on line one with the block comment start
+------------------------------------------------------------------------
+r112 | toadkiller | 2008-03-30 03:35:25 +0000 (Sun, 30 Mar 2008) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- And removing the debug line
+------------------------------------------------------------------------
+r111 | toadkiller | 2008-03-30 03:25:13 +0000 (Sun, 30 Mar 2008) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+-Fix column dropdown for case where items < columns
+------------------------------------------------------------------------
+r110 | helium | 2008-03-28 08:29:48 +0000 (Fri, 28 Mar 2008) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0.toc
+
+Waterfall-1.0: TOC 20400
+------------------------------------------------------------------------
+r108 | nargiddley | 2007-12-14 20:45:53 +0000 (Fri, 14 Dec 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Fix for Waterfall-1.0-56926 (Waterfall-1.0):3959: table index is nil
+------------------------------------------------------------------------
+r107 | nargiddley | 2007-12-13 10:02:14 +0000 (Thu, 13 Dec 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Keybind type supports new modifiers (LCTRL, RCTRL etc)
+- Fix a couple of global leaks
+------------------------------------------------------------------------
+r106 | funkydude | 2007-11-13 17:19:46 +0000 (Tue, 13 Nov 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0.toc
+
+.trunk: Bump toc for various addons and libraries working on the PTR
+------------------------------------------------------------------------
+r105 | toadkiller | 2007-11-07 12:40:40 +0000 (Wed, 07 Nov 2007) | 5 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0 : 
+- DragLink: Change to a table data structure
+- Upgrade to LibBabble-Spell-3.0 for spell icon lookup
+- Save spell name, rank & class for type = "spell"
+- This allows for spell display no matter which class produced it.
+------------------------------------------------------------------------
+r104 | toadkiller | 2007-10-14 10:45:21 +0000 (Sun, 14 Oct 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0:
+Add a finalSetOnly attribute to the range type.  This makes it do only one final setValue on buttonUp.  This makes it more feasible to use a slider to say move things around in AutoBar.
+------------------------------------------------------------------------
+r103 | funkydude | 2007-10-12 22:04:48 +0000 (Fri, 12 Oct 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0.toc
+   A /tmp/trunk/Waterfall-1.0/embeds.xml
+
+Waterfall-1.0: use embeds.xml
+------------------------------------------------------------------------
+r102 | toadkiller | 2007-10-11 01:07:54 +0000 (Thu, 11 Oct 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+AutoBar:
+- Remove bad arg check
+------------------------------------------------------------------------
+r101 | cronan | 2007-09-27 06:46:10 +0000 (Thu, 27 Sep 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0.toc
+
+Waterfall-1.0: TOC to 20200
+------------------------------------------------------------------------
+r100 | toadkiller | 2007-09-21 12:06:19 +0000 (Fri, 21 Sep 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0:
+-Upgrade dragLink to handle spells
+
+------------------------------------------------------------------------
+r99 | nargiddley | 2007-09-19 10:29:35 +0000 (Wed, 19 Sep 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Fix assertion of type(args) == "table"
+------------------------------------------------------------------------
+r98 | nargiddley | 2007-09-19 09:54:27 +0000 (Wed, 19 Sep 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Throw a descriptive error when args isn't a table
+------------------------------------------------------------------------
+r97 | toadkiller | 2007-09-18 08:54:24 +0000 (Tue, 18 Sep 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0:
+- Fix off by 1 error for column parameter of WaterfallDropdown
+------------------------------------------------------------------------
+r96 | toadkiller | 2007-09-10 21:49:13 +0000 (Mon, 10 Sep 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0:
+-Fix minor code necrosis
+------------------------------------------------------------------------
+r95 | toadkiller | 2007-09-10 21:47:47 +0000 (Mon, 10 Sep 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0:
+-Make dragLink work
+------------------------------------------------------------------------
+r94 | toadkiller | 2007-09-09 03:15:44 +0000 (Sun, 09 Sep 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0:
+-Added column argument to text with validate so dropdown can handle much larger list
+-Added first cut of dragLink type that lets itemId be dragged in from inventory or bags
+------------------------------------------------------------------------
+r93 | cwdg | 2007-09-01 09:35:00 +0000 (Sat, 01 Sep 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: update zhCN local
+------------------------------------------------------------------------
+r92 | nargiddley | 2007-08-30 09:53:00 +0000 (Thu, 30 Aug 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: The control limit is now able to be changed for your window by specifying 'controlLimit' as a parameter to :Register
+------------------------------------------------------------------------
+r91 | nargiddley | 2007-08-27 22:24:24 +0000 (Mon, 27 Aug 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Fix Opening to a specific pane when not using aceoptions
+------------------------------------------------------------------------
+r90 | sayclub | 2007-08-23 08:30:26 +0000 (Thu, 23 Aug 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Updated localization koKR
+------------------------------------------------------------------------
+r89 | helium | 2007-08-23 08:05:43 +0000 (Thu, 23 Aug 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: updated zhTW localization
+------------------------------------------------------------------------
+r88 | nargiddley | 2007-08-13 11:29:35 +0000 (Mon, 13 Aug 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Clear focus of visible textboxes when clicking a keybind
+------------------------------------------------------------------------
+r87 | nargiddley | 2007-08-12 11:31:30 +0000 (Sun, 12 Aug 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: nil returned from a keybind get will clear it
+------------------------------------------------------------------------
+r86 | nargiddley | 2007-08-11 12:55:01 +0000 (Sat, 11 Aug 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Calling :Open(id, pane) when the window is already open will change pane
+- Bugfix for confirm on Buttons
+------------------------------------------------------------------------
+r85 | nargiddley | 2007-08-03 11:42:41 +0000 (Fri, 03 Aug 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Control limit raised to 250
+------------------------------------------------------------------------
+r84 | samuelcup | 2007-08-02 12:00:54 +0000 (Thu, 02 Aug 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: added zhCN locale
+------------------------------------------------------------------------
+r83 | nargiddley | 2007-08-02 02:47:32 +0000 (Thu, 02 Aug 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Limit right pane to 200 controls to prevent locking up WoW for long periods when processing
+------------------------------------------------------------------------
+r82 | nargiddley | 2007-08-02 01:55:54 +0000 (Thu, 02 Aug 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Tree view section entries disable properly
+------------------------------------------------------------------------
+r81 | nargiddley | 2007-08-01 23:32:49 +0000 (Wed, 01 Aug 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Clear value properly when a dropdown gets nil from its get function
+------------------------------------------------------------------------
+r80 | nargiddley | 2007-07-27 09:16:42 +0000 (Fri, 27 Jul 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Fix for multitoggle options not getting passed the correct values when not in a pass group
+------------------------------------------------------------------------
+r79 | nargiddley | 2007-07-27 08:25:56 +0000 (Fri, 27 Jul 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Add support for isRadio on toggle options
+------------------------------------------------------------------------
+r78 | nargiddley | 2007-07-22 03:55:55 +0000 (Sun, 22 Jul 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: When an invalid AceOptions path is encountered, fall back to parent options until a valid one is found
+------------------------------------------------------------------------
+r77 | nargiddley | 2007-07-21 02:59:18 +0000 (Sat, 21 Jul 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Pass key and passValue to multitoggle functions in the correct order
+------------------------------------------------------------------------
+r76 | nargiddley | 2007-07-18 08:22:39 +0000 (Wed, 18 Jul 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Bugfix for changedFunc on textboxes
+- Added :SetSize(id, width, height) to resize an open window, also 'width' and 'height' parameters to :Register for initial window size
+------------------------------------------------------------------------
+r75 | nargiddley | 2007-07-13 11:51:54 +0000 (Fri, 13 Jul 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Added changedFunc to Textboxes, called when the text changes. setFunc is still called when enter is pressed
+------------------------------------------------------------------------
+r74 | nargiddley | 2007-07-08 01:06:08 +0000 (Sun, 08 Jul 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Fix for  :2423 attempt to index field 'text' (a nil value)
+------------------------------------------------------------------------
+r73 | nargiddley | 2007-07-07 12:18:58 +0000 (Sat, 07 Jul 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Use Custom confirm messages if supplied
+- Refresh property when Confirm is set
+------------------------------------------------------------------------
+r72 | nargiddley | 2007-07-07 11:22:34 +0000 (Sat, 07 Jul 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Obey specified Tree Type when not using Ace Options tables
+------------------------------------------------------------------------
+r71 | nargiddley | 2007-06-16 12:55:08 +0000 (Sat, 16 Jun 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Don't crash on nil names when inside a disabled group
+------------------------------------------------------------------------
+r70 | kyahx | 2007-06-09 01:08:54 +0000 (Sat, 09 Jun 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Added logic for a wfHidden flag in an AceOptions table.  This can be used to hide a certain option ONLY in the context of a waterfall menu (so that the command will still show up in a slash-command or Tablet based menu)
+------------------------------------------------------------------------
+r69 | nargiddley | 2007-05-28 10:44:18 +0000 (Mon, 28 May 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Cleanup disabled on Colors when recycled
+------------------------------------------------------------------------
+r68 | nargiddley | 2007-05-28 10:27:05 +0000 (Mon, 28 May 2007) | 6 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Disabled color pickers properly disable
+- Dropdowns disable fully
+- Dropdown pullout doesnt overlap the button
+- Tree sections don't toggle expand when disabled
+- Controls Widened slightly
+------------------------------------------------------------------------
+r67 | nargiddley | 2007-05-28 09:54:43 +0000 (Mon, 28 May 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Yay editbox hacks, no more scrolling to the end of current text
+------------------------------------------------------------------------
+r66 | nargiddley | 2007-05-25 23:17:11 +0000 (Fri, 25 May 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Use a dropdown instead of a textbox when validate = table and get = false
+------------------------------------------------------------------------
+r65 | nymbia | 2007-05-23 11:57:28 +0000 (Wed, 23 May 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0.toc
+
+Waterfall-1.0:
+- toc -> 20100
+------------------------------------------------------------------------
+r64 | nargiddley | 2007-05-20 11:49:58 +0000 (Sun, 20 May 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: fix for missing passValue to disabled functions 
+------------------------------------------------------------------------
+r63 | nargiddley | 2007-05-16 09:47:49 +0000 (Wed, 16 May 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: fix for :697: attempt to compare number with nil
+------------------------------------------------------------------------
+r62 | nargiddley | 2007-05-13 11:05:07 +0000 (Sun, 13 May 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Attempted fix for 2645: attempt to perform arithmetic on field 'value' (a nil value)
+
+------------------------------------------------------------------------
+r61 | nargiddley | 2007-05-13 04:33:31 +0000 (Sun, 13 May 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Don't break setOnTextChanged, oops
+------------------------------------------------------------------------
+r60 | nargiddley | 2007-05-13 04:30:59 +0000 (Sun, 13 May 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Drycoded support for bigStep
+------------------------------------------------------------------------
+r59 | damjau | 2007-04-27 05:42:20 +0000 (Fri, 27 Apr 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: add button link tooltip function for WhoDrop
+------------------------------------------------------------------------
+r58 | helium | 2007-04-21 17:20:26 +0000 (Sat, 21 Apr 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: updated zhTW locale
+------------------------------------------------------------------------
+r57 | jjsheets | 2007-04-08 22:09:45 +0000 (Sun, 08 Apr 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Added setOnTextChanged boolean option to textboxes, when set to true calls setFunc on text changed as well as on enter presseed.
+------------------------------------------------------------------------
+r56 | ckknight | 2007-04-07 00:53:20 +0000 (Sat, 07 Apr 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0.toc
+
+.Updated all libraries in !!!StandaloneLibraries to start their title with "Lib:" This should make dealing with Blizzard's addon enabler thingy much easier. At least for me.
+Hopefully nothing breaks. *thumbs up*
+
+------------------------------------------------------------------------
+r55 | nargiddley | 2007-04-02 09:01:16 +0000 (Mon, 02 Apr 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Now handles numerically indexed options tables properly
+------------------------------------------------------------------------
+r54 | nargiddley | 2007-03-30 10:18:27 +0000 (Fri, 30 Mar 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Fix for :3718: attempt to index field '?' (a nil value) and handling of passValue in some cases
+------------------------------------------------------------------------
+r53 | nargiddley | 2007-03-30 09:34:14 +0000 (Fri, 30 Mar 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Implement passValue for AceOptions tables
+------------------------------------------------------------------------
+r52 | sylvanaar | 2007-03-28 18:59:13 +0000 (Wed, 28 Mar 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Fixed two missing calls to checkNegatable for disabled options
+------------------------------------------------------------------------
+r51 | nargiddley | 2007-03-21 19:58:19 +0000 (Wed, 21 Mar 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Attempt to fix isOpen for manually defined trees
+------------------------------------------------------------------------
+r50 | nargiddley | 2007-03-18 01:54:30 +0000 (Sun, 18 Mar 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Slight change to Pass group implementation
+- More control centering tweaks
+------------------------------------------------------------------------
+r49 | nargiddley | 2007-03-17 10:58:20 +0000 (Sat, 17 Mar 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Added multiToggle Support
+- minor tweaks to control centering
+------------------------------------------------------------------------
+r48 | nargiddley | 2007-03-17 10:20:37 +0000 (Sat, 17 Mar 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Tweak layout of controls to prevent labels being truncated
+- Controls will now be centered in the left pane
+------------------------------------------------------------------------
+r47 | nargiddley | 2007-03-17 09:16:41 +0000 (Sat, 17 Mar 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: TreeView will now properly hide hidden groups
+------------------------------------------------------------------------
+r46 | nargiddley | 2007-03-17 06:22:18 +0000 (Sat, 17 Mar 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Only reset the scroll of the left pane when a new pane is selected, prevents scroll resetting when an option is activated
+------------------------------------------------------------------------
+r45 | nargiddley | 2007-03-17 03:59:33 +0000 (Sat, 17 Mar 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Don't call the set function for disabled sliders when shown
+------------------------------------------------------------------------
+r44 | nargiddley | 2007-03-10 20:35:34 +0000 (Sat, 10 Mar 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- New control type, LinkLabel. Labels support r,g,b args for color. thanks markf for the patch
+------------------------------------------------------------------------
+r43 | nargiddley | 2007-03-06 06:05:22 +0000 (Tue, 06 Mar 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: disabled = "~Method" is now handled properly by the treeview
+------------------------------------------------------------------------
+r42 | nargiddley | 2007-03-02 21:29:31 +0000 (Fri, 02 Mar 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Fed options will be disabled if any of their parent groups are disabled
+- Better visual feedback for disabled sliders
+------------------------------------------------------------------------
+r41 | nargiddley | 2007-02-26 19:15:38 +0000 (Mon, 26 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Improved handing when sections have options as well as sub groups
+------------------------------------------------------------------------
+r40 | nargiddley | 2007-02-26 10:34:47 +0000 (Mon, 26 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: When opened to a section, select the first entry of the section instead of the empty group
+------------------------------------------------------------------------
+r39 | nargiddley | 2007-02-26 09:32:38 +0000 (Mon, 26 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Added an arrow to the section titles
+------------------------------------------------------------------------
+r38 | nargiddley | 2007-02-26 09:01:57 +0000 (Mon, 26 Feb 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- :Open(id) is now :Open(id [,paneid]) to optionally open to a specific pane
+- Fixed scrollbars not appearing on first open
+------------------------------------------------------------------------
+r37 | nargiddley | 2007-02-26 06:31:12 +0000 (Mon, 26 Feb 2007) | 6 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Fixed tooltips section entries
+- Added hover effect and tooltips to color controls
+- Scrollbars should now always show when needed
+- Only automatically select an entry after opening a section if nothing is currently selected
+- Don't feed headers from AceOptions tables if they are followed by a 'group' entry, since they are most likely relevant to the group, not other options
+------------------------------------------------------------------------
+r36 | nargiddley | 2007-02-26 05:03:36 +0000 (Mon, 26 Feb 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Improve handing of 'hideRoot' will now include the root options alongside its children if it contains any usable options
+- Section titles behaviour improved.
+------------------------------------------------------------------------
+r35 | nargiddley | 2007-02-24 22:55:16 +0000 (Sat, 24 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Improve the layout of fed controls
+------------------------------------------------------------------------
+r34 | nargiddley | 2007-02-24 21:03:19 +0000 (Sat, 24 Feb 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Tweak Checkbox graphics
+- Scrollbars hide when not needed, and mouse wheel scrolling is more consistent
+------------------------------------------------------------------------
+r33 | nargiddley | 2007-02-24 13:41:11 +0000 (Sat, 24 Feb 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- Added tooltips and a hover effect to section headers
+- Fixed fed color controls not being setup correctly
+------------------------------------------------------------------------
+r32 | nargiddley | 2007-02-24 04:32:25 +0000 (Sat, 24 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Fix for pass groups on options other than type='toggle'
+------------------------------------------------------------------------
+r31 | nargiddley | 2007-02-24 04:27:51 +0000 (Sat, 24 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Now supports AceOptions pass groups, needs more testing
+------------------------------------------------------------------------
+r30 | nargiddley | 2007-02-24 02:52:22 +0000 (Sat, 24 Feb 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- new :Register() option - 'treeType' defaults to 'TREE' same as current
+- 'treeType', 'SECTIONS' will give an explorer side pane style interface.
+------------------------------------------------------------------------
+r29 | nargiddley | 2007-02-23 10:53:21 +0000 (Fri, 23 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Tweaked title gradient
+------------------------------------------------------------------------
+r28 | nargiddley | 2007-02-23 10:18:26 +0000 (Fri, 23 Feb 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- new options for :Register() 'colorR', 'colorG', 'colorB'
+- now with 110% more sexy
+------------------------------------------------------------------------
+r27 | nargiddley | 2007-02-23 08:53:56 +0000 (Fri, 23 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Escape will now clear the binding on a keybind control
+------------------------------------------------------------------------
+r26 | nargiddley | 2007-02-23 08:03:38 +0000 (Fri, 23 Feb 2007) | 3 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: 
+- added 'fullRefresh' option to controls
+- fed AceOptions will now cause a full refresh of the tree and pane when activated
+------------------------------------------------------------------------
+r25 | darkimakuni | 2007-02-20 14:24:50 +0000 (Tue, 20 Feb 2007) | 2 lines
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0
+- Fix documentation and SVN links.
+------------------------------------------------------------------------
+r24 | nargiddley | 2007-02-19 06:51:19 +0000 (Mon, 19 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Will now correctly use handlers defined in AceOptions tables
+------------------------------------------------------------------------
+r23 | nargiddley | 2007-02-18 01:13:25 +0000 (Sun, 18 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: opacity will now show for color controls properly
+------------------------------------------------------------------------
+r22 | nargiddley | 2007-02-18 01:04:30 +0000 (Sun, 18 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: The tree will now update properly with dynamic AceOptions tables
+------------------------------------------------------------------------
+r21 | nargiddley | 2007-02-17 21:35:20 +0000 (Sat, 17 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Fix crumbs when root aceoptions node is hidden
+------------------------------------------------------------------------
+r20 | nargiddley | 2007-02-17 21:02:40 +0000 (Sat, 17 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Now hides the root tree node if it has no options in it when fed from an ace options tree
+------------------------------------------------------------------------
+r19 | nargiddley | 2007-02-17 06:51:27 +0000 (Sat, 17 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Added :IsRegistered(id) and :IsOpen(id)
+------------------------------------------------------------------------
+r18 | nargiddley | 2007-02-16 10:47:14 +0000 (Fri, 16 Feb 2007) | 1 line
+Changed paths:
+   M /tmp/trunk/Waterfall-1.0
+   M /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+
+Waterfall-1.0: Setting Properties
+------------------------------------------------------------------------
+r17 | nargiddley | 2007-02-16 10:38:47 +0000 (Fri, 16 Feb 2007) | 2 lines
+Changed paths:
+   A /tmp/trunk/Waterfall-1.0
+   A /tmp/trunk/Waterfall-1.0/Waterfall-1.0
+   A /tmp/trunk/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+   A /tmp/trunk/Waterfall-1.0/Waterfall-1.0.toc
+
+Waterfall-1.0: Version 1.0 Initial Import
+GUI configuration library with support for AceOptions tables
+------------------------------------------------------------------------

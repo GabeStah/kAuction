@@ -1,0 +1,409 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Texture name="kAuctionButtonBackground" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset x="2" y="-2"/>
+			</Anchor>
+			<Anchor point="BOTTOMRIGHT">
+				<Offset x="-2" y="2"/>
+			</Anchor>
+		</Anchors>
+		<Color r="0.7" g="0" b="0"/>
+	</Texture>
+	<Frame name="kAuctionTabButtonTemplate" virtual="true" enableMouse="true">
+		<Size>
+			<AbsDimension y="22" />
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentTitleText" font="Fonts\FRIZQT__.TTF" text="Lorem ipsum" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+							<Offset x="2"/>
+						</Anchor>
+						<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT"/>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="12" />
+					</FontHeight>
+					<Color r="0.9" g="0.82" b="0" />
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<!--
+				<Texture alphaMode="ADD" virtual="true">
+					<Color r="0.9" g="0.4" b="0.3" a="0.3"/>
+				</Texture>
+				-->
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture name="$parentHighlightTexture" alphaMode="ADD" virtual="true">
+					<Color r="0.05" g="0" b="0.85" a="0.15"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Anchors>
+			<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP" />
+		</Anchors>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" />
+		</Anchors>
+	</Frame>
+	<Frame name="kAuctionMainFrame" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="UIParent" resizable="true">
+		<Size>
+			<AbsDimension x="400" y="152"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="250" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+			<BorderColor>
+				<Color r=".3" g=".3" b=".3"/>
+			</BorderColor>
+		</Backdrop>
+		<Frames>
+			<Frame name="$parentTitle" toplevel="true" movable="true" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"></AbsDimension>
+						</Offset>
+					</Anchor>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						if IsAltKeyDown() then
+							self:GetParent():StartMoving();
+							self:GetParent().isMoving = true;
+						end
+					</OnDragStart>
+					<OnDragStop>
+						self:GetParent():StopMovingOrSizing();
+						self:GetParent().isMoving = false;
+					</OnDragStop>
+				</Scripts>
+				<Size>
+					<AbsDimension y="25"/>
+				</Size>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<!-- a dividing line between the title bar and the options -->
+						<Texture name="$parentLine" file="Interface\TradeSkillFrame\UI-TradeSkill-SkillBorder">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+									<Offset>
+										<AbsDimension x="5" y="3"/>
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-5" y="-4"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<TexCoords left="0.1" right="1.0" top="0" bottom="0.25"/>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="kAuction" outline="NORMAL">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="7" y="-7"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="14"/>
+							</FontHeight>
+							<Color r="0.0" g="0.6" b="0.6"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentTabContainer" frameStrata="HIGH" toplevel="true">
+						<Size>
+							<AbsDimension y="22"/>
+						</Size>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentText" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="2" y="0"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+								<Offset>
+									<AbsDimension x="-26" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentTab1" inherits="kAuctionTabButtonTemplate" id="1">
+								<Size>
+									<AbsDimension x="67" />
+								</Size>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							<!--
+							<Frame name="$parentTab2" inherits="kAuctionTabButtonTemplate" id="2">
+								<Size>
+									<AbsDimension x="75" />
+								</Size>
+								<Anchors>
+									<Anchor point="LEFT" relativeTo="$parentTab1" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+									<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+										<Offset>
+											<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Frame>
+							-->
+						</Frames>
+					</Frame>
+					<Button name="$parentClose" inherits="kAuctionButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-5" y="-5"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								kAuction.db.profile.gui.frames.main.visible = false;
+								--kAuction.db.profile.gui.frames.bids.visible = false;
+								kAuctionMainFrame:Hide();
+								--kAuctionBidsFrame:Hide();
+								for i = 1,5 do
+								row = "auction" .. i;
+								if kAuction.candyBar:IsRegistered(row) then
+								kAuction.candyBar:Unregister(row)
+								end
+								if kAuction.candyBar:IsRegistered("SelectedAuction"..row) then
+								kAuction.candyBar:Unregister("SelectedAuction"..row)
+								end
+								end
+							</OnClick>
+							<OnEnter> </OnEnter>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up">
+							<TexCoords left="0.175" top="0.175" right="0.825" bottom="0.825"/>
+						</NormalTexture>
+						<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down">
+							<TexCoords left="0.175" top="0.175" right="0.825" bottom="0.825"/>
+						</PushedTexture>
+					</Button>
+				</Frames>
+			</Frame>
+			<Frame name="$parentBidScrollContainer" toplevel="true" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="5" y="-2"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-27" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(self, offset, 16, kAuction:BidsFrameScrollUpdate());
+							</OnVerticalScroll>
+							<OnShow>
+								kAuction:BidsFrameScrollUpdate()
+							</OnShow>
+						</Scripts>
+					</ScrollFrame>
+					<Frame name="$parentBid1" inherits="kAuctionBidWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+								<Offset>
+									<AbsDimension y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentBid2" inherits="kAuctionBidWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentBid1" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentBid3" inherits="kAuctionBidWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentBid2" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentBid4" inherits="kAuctionBidWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentBid3" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentBid5" inherits="kAuctionBidWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentBid4" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="$parentMainScrollContainer" toplevel="true" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="5" y="-2"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-27" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(self, offset, 16, kAuction:MainFrameScrollUpdate());
+							</OnVerticalScroll>
+							<OnShow>
+								kAuction:MainFrameScrollUpdate()
+							</OnShow>
+						</Scripts>
+					</ScrollFrame>
+					<Frame name="$parentAuctionItem1" inherits="kAuctionAuctionItemWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+								<Offset>
+									<AbsDimension y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentAuctionItem2" inherits="kAuctionAuctionItemWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentAuctionItem1" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentAuctionItem3" inherits="kAuctionAuctionItemWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentAuctionItem2" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentAuctionItem4" inherits="kAuctionAuctionItemWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentAuctionItem3" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentAuctionItem5" inherits="kAuctionAuctionItemWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentAuctionItem4" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Button name="$parentResizeLeft" enableMouse="true">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\kAuction\Images\ResizeGripLeft" />
+				<HighlightTexture file="Interface\AddOns\kAuction\Images\ResizeGripLeft" />
+				<Scripts>
+					<OnMouseDown>
+						kAuction:Gui_ResizeFrame(self,button,"start")
+					</OnMouseDown>
+					<OnMouseUp>
+						kAuction:Gui_ResizeFrame(self,button,"stop")
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+			<Button name="$parentResizeRight" enableMouse="true">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" />
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\kAuction\Images\ResizeGripRight" />
+				<HighlightTexture file="Interface\AddOns\kAuction\Images\ResizeGripRight" />
+				<Scripts>
+					<OnMouseDown>
+						kAuction:Gui_ResizeFrame(self,button,"start")
+					</OnMouseDown>
+					<OnMouseUp>
+						kAuction:Gui_ResizeFrame(self,button,"stop")
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+	<GameTooltip name="kAuctionTooltip" inherits="GameTooltipTemplate">
+		<Scripts>
+			<Onload>
+				self:SetOwner(WorldFrame, "ANCHOR_NONE");
+			</Onload>
+		</Scripts>
+	</GameTooltip>
+</Ui>

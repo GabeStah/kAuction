@@ -1,0 +1,215 @@
+------------------------------------------------------------------------
+r852 | nevcairiel | 2009-09-25 13:46:00 +0000 (Fri, 25 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/tests/AceDB-3.0-callbacks.lua
+
+Add an additional test case
+
+------------------------------------------------------------------------
+r851 | nevcairiel | 2009-09-25 12:46:37 +0000 (Fri, 25 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-TreeGroup.lua
+
+Fix more errors caused by specific function call orders.
+
+------------------------------------------------------------------------
+r850 | nevcairiel | 2009-09-25 12:29:01 +0000 (Fri, 25 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-CheckBox.lua
+
+AceGUI-3.0: CheckBox: shorten the inline description a bit, so it doesnt fall off the world.
+
+------------------------------------------------------------------------
+r849 | nevcairiel | 2009-09-25 12:27:35 +0000 (Fri, 25 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-TreeGroup.lua
+
+Fix a bug with loading order weirdness.
+
+------------------------------------------------------------------------
+r848 | nevcairiel | 2009-09-25 12:21:26 +0000 (Fri, 25 Sep 2009) | 3 lines
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-TreeGroup.lua
+
+AceGUI-3.0: TreeGroup: Refresh the layout of the TreeGroup Content Frame after changing the width of the tree-frame using the 
+drag-handle (Ticket #61)
+
+------------------------------------------------------------------------
+r847 | nevcairiel | 2009-09-25 11:51:36 +0000 (Fri, 25 Sep 2009) | 3 lines
+Changed paths:
+   M /trunk/AceGUI-3.0/AceGUI-3.0.lua
+
+AceGUI-3.0: Fix aligning of widgets in the Flow-Layout if one widget is set to full height, but there is still space on the same row 
+for more widgets (Ticket #73)
+
+------------------------------------------------------------------------
+r846 | ammo | 2009-09-17 10:51:12 +0000 (Thu, 17 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/CallbackHandler-1.0/CallbackHandler-1.0.lua
+
+update to 1.0.5 
+------------------------------------------------------------------------
+r845 | nevcairiel | 2009-09-16 11:19:31 +0000 (Wed, 16 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/CallbackHandler-1.0/CallbackHandler-1.0.lua
+
+Update to CBH-1.0 r4
+
+------------------------------------------------------------------------
+r844 | nevcairiel | 2009-09-14 08:54:40 +0000 (Mon, 14 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/AceGUI-3.0/AceGUI-3.0.lua
+
+AceGUI-3.0: More fixes to anchoring and offsetting.
+
+------------------------------------------------------------------------
+r843 | nevcairiel | 2009-09-14 08:37:05 +0000 (Mon, 14 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/AceGUI-3.0/AceGUI-3.0.lua
+
+AceGUI-3.0: Don't forget to bump versions, doh!
+
+------------------------------------------------------------------------
+r842 | nevcairiel | 2009-09-14 08:35:16 +0000 (Mon, 14 Sep 2009) | 3 lines
+Changed paths:
+   M /trunk/AceGUI-3.0/AceGUI-3.0.lua
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-TabGroup.lua
+
+AceGUI-3.0: Change anchoring and offset behavior to potentially fix mis-aligned options when using two groups next to each other. 
+This change *may* introduce regressions in the layout, please report any mis-aligned widgets in the Flow layout.
+
+------------------------------------------------------------------------
+r841 | nevcairiel | 2009-09-14 08:01:41 +0000 (Mon, 14 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-TabGroup.lua
+
+AceGUI-3.0: Fix the positioning of the TabGroup widget with a visible title (Ticket #71)
+
+------------------------------------------------------------------------
+r840 | nevcairiel | 2009-09-10 10:24:32 +0000 (Thu, 10 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/AceDB-3.0/AceDB-3.0.lua
+
+AceDB-3.0: Ensure a namespace is set to the correct profile on load.
+
+------------------------------------------------------------------------
+r839 | nevcairiel | 2009-09-08 08:27:15 +0000 (Tue, 08 Sep 2009) | 4 lines
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-DropDown.lua
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-InteractiveLabel.lua
+
+AceGUI-3.0:
+	- DropDown: Added a GetValue() API to the Widget (Ticket #69)
+	- InteractiveLabel: Properly align the label and the icon (Ticket #60)
+
+------------------------------------------------------------------------
+r838 | nevcairiel | 2009-09-08 08:14:12 +0000 (Tue, 08 Sep 2009) | 4 lines
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-Button.lua
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-CheckBox.lua
+
+AceGUI-3.0:
+	- Button: Pass the arguments of the OnClick handler to the OnClick callback (Ticket #57)
+	- Checkbox: Improve the visual display of the hover texture.
+
+------------------------------------------------------------------------
+r837 | mikk | 2009-09-07 13:19:37 +0000 (Mon, 07 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-Slider.lua
+
+Fix for blizzard slider bug: If you SetMinMax after SetValue, it wouldn't move the draghandle like it should. So now, if someone calls SetMinMax, we re-call SetValue.
+------------------------------------------------------------------------
+r836 | ammo | 2009-09-07 07:59:58 +0000 (Mon, 07 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/AceConfig-3.0/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
+
+set the title for custom containers if available. fixes ticket 62
+------------------------------------------------------------------------
+r835 | ammo | 2009-09-06 08:13:13 +0000 (Sun, 06 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/AceGUI-3.0/AceGUI-3.0.xml
+   A /trunk/AceGUI-3.0/widgets/AceGUIWidget-Window.lua
+
+add a Window container basically a plain window with close button
+------------------------------------------------------------------------
+r834 | nevcairiel | 2009-09-01 11:23:08 +0000 (Tue, 01 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/AceConfig-3.0/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
+
+AceConfigDialog-3.0: Disable the tooltip of widgets if descStyle ~= "tooltip"
+------------------------------------------------------------------------
+r833 | nevcairiel | 2009-09-01 11:07:37 +0000 (Tue, 01 Sep 2009) | 1 line
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-CheckBox.lua
+
+AceGUI-3.0: Disable some left-over debug stuff.
+------------------------------------------------------------------------
+r832 | nevcairiel | 2009-09-01 11:03:04 +0000 (Tue, 01 Sep 2009) | 2 lines
+Changed paths:
+   M /trunk/AceConfig-3.0/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
+   M /trunk/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-CheckBox.lua
+
+AceConfig-3.0: Added an experimental "descStyle" member to all option table nodes that allows you to control the way the description is presented. Supported values are "tooltip" for the old behaviour, and "inline" for a inline display of the description, pending support in AceGUI-3.0 widgets.
+AceGUI-3.0: Add support for inline descriptions to the checkbox widget.
+------------------------------------------------------------------------
+r831 | nevcairiel | 2009-08-30 14:52:04 +0000 (Sun, 30 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/AceGUI-3.0/AceGUI-3.0.lua
+
+AceGUI-3.0: Fixed an old comment
+------------------------------------------------------------------------
+r830 | nevcairiel | 2009-08-30 14:51:48 +0000 (Sun, 30 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/AceDB-3.0/AceDB-3.0.lua
+   M /trunk/tests/AceDB-3.0-defaults.lua
+
+AceDB-3.0: Remove the metatable from the DB before removing defaults, so we don't accidentally invoke it in the process. (Fixes Ticket #66)
+------------------------------------------------------------------------
+r829 | ammo | 2009-08-30 11:09:19 +0000 (Sun, 30 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-Label.lua
+
+add a small space between the image and the text of a label
+------------------------------------------------------------------------
+r828 | ammo | 2009-08-28 08:47:06 +0000 (Fri, 28 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-DropDown.lua
+
+make dropdown background solid, so when used in select groups the texts are readable when dropdown is shown over other texts
+------------------------------------------------------------------------
+r827 | mikk | 2009-08-27 13:17:26 +0000 (Thu, 27 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
+
+Doc work...
+------------------------------------------------------------------------
+r826 | mikk | 2009-08-27 13:15:32 +0000 (Thu, 27 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
+
+Doc work...
+------------------------------------------------------------------------
+r825 | mikk | 2009-08-27 13:08:27 +0000 (Thu, 27 Aug 2009) | 2 lines
+Changed paths:
+   M /trunk/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
+
+- Remember to bump MINOR, too.
+- Documentation work
+------------------------------------------------------------------------
+r824 | mikk | 2009-08-27 11:45:40 +0000 (Thu, 27 Aug 2009) | 1 line
+Changed paths:
+   M /trunk/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
+
+- For options "tables" that are functions, also pass in the registered appName after uiType,uiName - hi vhaarr
+------------------------------------------------------------------------
+r823 | mikk | 2009-08-11 12:29:21 +0000 (Tue, 11 Aug 2009) | 3 lines
+Changed paths:
+   M /trunk/AceComm-3.0/AceComm-3.0.lua
+   A /trunk/tests/AceComm-3.0-callbacks.lua
+   M /trunk/tests/AceComm-3.0.lua
+
+- Add AceComm callbacks for message chunks going out the wire (via CTL). Useful for displaying progress for very large messages.
+- Add test cases for both delayed and immediate delivery
+
+------------------------------------------------------------------------

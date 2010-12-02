@@ -1,0 +1,18 @@
+## Interface: 30000
+## LoadOnDemand: 1
+## Title: Lib: Waterfall-1.0
+## Notes: GUI Configuration Library
+## Author: Nargiddley
+## eMail: nargiddley@gmail.com
+## X-Category: Library
+## OptionalDeps: Ace2
+## X-AceLibrary-Waterfall-1.0: true
+## X-License: LGPL v2.1
+## X-Curse-Packaged-Version: 3.0-release
+## X-Curse-Project-Name: Waterfall-1.0
+## X-Curse-Project-ID: waterfall-1-0
+## X-Curse-Repository-ID: wow/waterfall-1-0/mainline
+
+embeds.xml
+
+Waterfall-1.0\Waterfall-1.0.lua

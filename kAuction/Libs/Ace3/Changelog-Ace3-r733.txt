@@ -1,0 +1,122 @@
+------------------------------------------------------------------------
+r733 | nevcairiel | 2009-02-03 22:24:44 +0000 (Tue, 03 Feb 2009) | 1 line
+Changed paths:
+   M /trunk/AceConfig-3.0/AceConfigCmd-3.0/AceConfigCmd-3.0.lua
+
+AceConfigCmd-3.0: Do not show `description` or `header` elements in the help listing
+------------------------------------------------------------------------
+r732 | nevcairiel | 2009-02-03 15:07:43 +0000 (Tue, 03 Feb 2009) | 1 line
+Changed paths:
+   M /trunk/AceAddon-3.0/AceAddon-3.0.lua
+
+AceAddon-3.0: even more doc formatting
+------------------------------------------------------------------------
+r731 | nevcairiel | 2009-02-03 15:02:42 +0000 (Tue, 03 Feb 2009) | 1 line
+Changed paths:
+   M /trunk/AceAddon-3.0/AceAddon-3.0.lua
+
+AceAddon-3.0: Some comment formatting
+------------------------------------------------------------------------
+r730 | nevcairiel | 2009-02-03 13:20:10 +0000 (Tue, 03 Feb 2009) | 1 line
+Changed paths:
+   M /trunk/AceAddon-3.0/AceAddon-3.0.lua
+
+Fix usage tags
+------------------------------------------------------------------------
+r729 | nevcairiel | 2009-02-03 13:15:10 +0000 (Tue, 03 Feb 2009) | 1 line
+Changed paths:
+   M /trunk/AceAddon-3.0/AceAddon-3.0.lua
+
+AceAddon-3.0: Add file-level header
+------------------------------------------------------------------------
+r728 | nevcairiel | 2009-02-03 13:10:22 +0000 (Tue, 03 Feb 2009) | 1 line
+Changed paths:
+   A /trunk/.docmeta
+   M /trunk/AceAddon-3.0/AceAddon-3.0.lua
+
+AceAddon-3.0 documentation
+------------------------------------------------------------------------
+r727 | nevcairiel | 2009-01-06 20:32:46 +0000 (Tue, 06 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-TabGroup.lua
+
+AceGUI-3.0: TabGroup: Only stretch the tabs to the full width if they would use 75% of the available space already, otherwise just leave them be.
+------------------------------------------------------------------------
+r726 | nevcairiel | 2009-01-06 14:41:57 +0000 (Tue, 06 Jan 2009) | 3 lines
+Changed paths:
+   M /trunk/AceDBOptions-3.0/AceDBOptions-3.0.lua
+
+AceDBOptions-3.0: Disable the "Copy From" and "Delete" dropdowns if there are no profiles to choose from.
+
+Closes Ticket #19
+------------------------------------------------------------------------
+r725 | nevcairiel | 2009-01-04 18:53:40 +0000 (Sun, 04 Jan 2009) | 1 line
+Changed paths:
+   D /trunk/.docmeta
+   M /trunk/AceAddon-3.0/AceAddon-3.0.lua
+
+Clean up docs
+------------------------------------------------------------------------
+r724 | nevcairiel | 2009-01-04 18:28:40 +0000 (Sun, 04 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/AceAddon-3.0/AceAddon-3.0.lua
+
+AceAddon-3.0: First pass of converting function headers to luadoc
+------------------------------------------------------------------------
+r722 | nevcairiel | 2009-01-04 13:13:26 +0000 (Sun, 04 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/changelog.txt
+
+Update changelog.txt
+------------------------------------------------------------------------
+r721 | nevcairiel | 2009-01-04 12:39:04 +0000 (Sun, 04 Jan 2009) | 4 lines
+Changed paths:
+   M /trunk/AceHook-3.0/AceHook-3.0.lua
+
+AceHook-3.0: 
+Fix :SecureHookScript to not fail on previously empty scripts since frame:HookScript does nothing at all in that case.
+
+Closes Ticket #16
+------------------------------------------------------------------------
+r720 | nevcairiel | 2009-01-04 12:19:10 +0000 (Sun, 04 Jan 2009) | 4 lines
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-EditBox.lua
+
+AceGUI-3.0: 
+Fix EditBox alignment if the label is disabled.
+
+Closes Ticket #13
+------------------------------------------------------------------------
+r719 | nevcairiel | 2009-01-04 12:01:23 +0000 (Sun, 04 Jan 2009) | 5 lines
+Changed paths:
+   M /trunk/AceLocale-3.0/AceLocale-3.0.lua
+
+AceLocale-3.0:
+Implement 'silent' option for :NewLocale
+The new fourth parameter to :NewLocale, 'silent',  allows you to disable the warnings on missing locale entrys in the base locale while developing, for example.
+
+Closes Ticket #18
+------------------------------------------------------------------------
+r718 | nevcairiel | 2009-01-04 10:45:16 +0000 (Sun, 04 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/AceTimer-3.0/AceTimer-3.0.lua
+
+AceTimer-3.0: Implement :TimeLeft(handle) as of Ticket #10
+------------------------------------------------------------------------
+r717 | nevcairiel | 2009-01-04 10:29:29 +0000 (Sun, 04 Jan 2009) | 6 lines
+Changed paths:
+   M /trunk/AceDB-3.0/AceDB-3.0.lua
+
+AceDB-3.0: 
+Implement OnProfileShutdown callback
+The OPS callback will fire right before the active profile is changed and before the defaults are stripped. Its meant to be used to store data in the DB that is usually kept in internal data structures but needs to be exported into the SV.
+This is the profile-equivalent to OnDatabaseShutdown, however on logout, only OnDatabaseShutdown will fire, not both.
+
+Closes Ticket #7.
+------------------------------------------------------------------------
+r716 | nevcairiel | 2009-01-02 20:55:03 +0000 (Fri, 02 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/AceGUI-3.0/widgets/AceGUIWidget-TabGroup.lua
+
+AceGUI-3.0: TabGroup: Don't resize the Tabs in their OnShow for a more consistent behavior
+------------------------------------------------------------------------

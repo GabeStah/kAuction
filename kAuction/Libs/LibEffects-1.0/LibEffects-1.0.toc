@@ -1,0 +1,14 @@
+## Interface: 30000
+## Title: Lib: Effects-1.0
+## Notes: Library to easily add effects to your addons.
+## Author: Clorell
+## Version: 1.0
+## Created by Clorell/Keruni of Argent Dawn [US]
+## X-Curse-Packaged-Version: beta1
+## X-Curse-Project-Name: LibEffects-1.0
+## X-Curse-Project-ID: libeffects-1-0
+## X-Curse-Repository-ID: @repository-id@
+
+LibStub\LibStub.lua
+
+LibEffects-1.0\lib.xml

@@ -1,0 +1,362 @@
+------------------------------------------------------------------------
+r55 | torhal | 2009-02-13 01:46:10 +0000 (Fri, 13 Feb 2009) | 1 line
+Changed paths:
+   A /tags/r55-beta (from /trunk:54)
+
+Tagging as r55-beta
+------------------------------------------------------------------------
+r54 | torhal | 2009-02-13 01:03:28 +0000 (Fri, 13 Feb 2009) | 1 line
+Changed paths:
+   M /trunk/LibQTip-1.0/LibQTip-1.0.lua
+
+Added lineHeap[key] and columnHeap[key] to make each heap unique to the specified tooltip. This fixes the issue of setting a column/line's background to a different color which would propagate to another tooltip upon re-use.
+------------------------------------------------------------------------
+r53 | adirelle | 2009-01-11 09:17:28 +0000 (Sun, 11 Jan 2009) | 1 line
+Changed paths:
+   A /trunk/.docmeta
+   M /trunk/LibQTip-1.0/LibQTip-1.0.lua
+
+First try at adding luadoc using .docmeta
+------------------------------------------------------------------------
+r51 | torhal | 2009-01-05 05:03:31 +0000 (Mon, 05 Jan 2009) | 2 lines
+Changed paths:
+   M /trunk/LibQTip-1.0/LibQTip-1.0.lua
+
+Removed bgFrame, as InitializeTooltip() now "inherits" the backdrop/border and initial scale from GameTooltip.
+
+------------------------------------------------------------------------
+r49 | torhal | 2008-12-23 19:26:19 +0000 (Tue, 23 Dec 2008) | 3 lines
+Changed paths:
+   M /trunk/LibQTip-1.0/LibQTip-1.0.lua
+
+Removed frameHeap, as it has been deprecated by the tooltip's lineHeap and columnHeap.
+Removed needless whitespace (mostly Tabs) at the ends of some lines.
+
+------------------------------------------------------------------------
+r48 | adirelle | 2008-12-23 11:13:19 +0000 (Tue, 23 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/LibQTip-1.0/LibQTip-1.0.lua
+
+Fixed tickets #6 and #7.
+------------------------------------------------------------------------
+r46 | torhal | 2008-12-19 19:57:52 +0000 (Fri, 19 Dec 2008) | 3 lines
+Changed paths:
+   A /trunk/LICENSE.txt
+   M /trunk/LibQTip-1.0/LibQTip-1.0.lua
+
+Moved license text from main Lua file to LICENSE.txt
+Cleaned up some comments and removed irrelevant ones.
+Added tipPrototype methods :SetDefaultProvider() and :GetDefaultProvider()
+------------------------------------------------------------------------
+r45 | torhal | 2008-12-10 02:33:08 +0000 (Wed, 10 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/LibQTip-1.0/LibQTip-1.0.lua
+
+Upped MINOR to 5.
+
+------------------------------------------------------------------------
+r44 | torhal | 2008-12-10 01:54:03 +0000 (Wed, 10 Dec 2008) | 2 lines
+Changed paths:
+   M /trunk/LibQTip-1.0/LibQTip-1.0.lua
+
+In _SetCell(): Replaced non-existent "tooltip" argument with "self" in call to cell:SetupCell()
+
+------------------------------------------------------------------------
+r43 | adirelle | 2008-11-24 07:01:57 +0000 (Mon, 24 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/LibQTip-1.0/LibQTip-1.0.lua
+
+Fixed colspan width handling with column numbers greater than 9.
+------------------------------------------------------------------------
+r42 | adirelle | 2008-11-23 13:30:28 +0000 (Sun, 23 Nov 2008) | 3 lines
+Changed paths:
+   M /trunk/LibQTip-1.0/LibQTip-1.0.lua
+
+Fixed ticket #1.
+Ensure that nobody could add a line before setting the column layout.
+Clear values stored in cell on release.
+------------------------------------------------------------------------
+r40 | torhal | 2008-11-07 23:50:07 +0000 (Fri, 07 Nov 2008) | 1 line
+Changed paths:
+   M /trunk/.pkgmeta
+   A /trunk/LibQTip-1.0 (from /trunk/LibTooltip-1.0:39)
+   A /trunk/LibQTip-1.0/LibQTip-1.0.lua (from /trunk/LibTooltip-1.0/LibTooltip-1.0.lua:39)
+   D /trunk/LibQTip-1.0/LibTooltip-1.0.lua
+   A /trunk/LibQTip-1.0.toc (from /trunk/LibTooltip-1.0.toc:39)
+   D /trunk/LibTooltip-1.0
+   D /trunk/LibTooltip-1.0.toc
+
+Made file name/content changes due to renaming from LibTooltip to LibQTip.
+------------------------------------------------------------------------
+r38 | adirelle | 2008-10-26 19:19:38 +0000 (Sun, 26 Oct 2008) | 2 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Stop ignoring column default justification.
+Properly reanchor cell RIGHT point when changing the colspan of an existing cell.
+------------------------------------------------------------------------
+r37 | adirelle | 2008-10-26 12:17:11 +0000 (Sun, 26 Oct 2008) | 3 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+:SetCell, :AddLine and :AddHeader returns line and column number of the next empty cell unless the line is full, in which case they return only the line number.
+Null and negative colspan number extends the cell so to keep -colspan free columns at its right. 
+Got rid of the .states table, now store the state directly in cells (faster and avoid table leaks).
+------------------------------------------------------------------------
+r36 | adirelle | 2008-10-26 09:46:20 +0000 (Sun, 26 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Removed value count check for :AddLine and :AddHeader, surplus values are just ignored.
+------------------------------------------------------------------------
+r35 | adirelle | 2008-10-26 09:40:01 +0000 (Sun, 26 Oct 2008) | 3 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+_SetCell: 
+- use keys instead of numerical indexes in internal cell states,
+- use same provider if no new provider has been passed.
+------------------------------------------------------------------------
+r34 | adirelle | 2008-10-26 08:18:42 +0000 (Sun, 26 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Fixed r31 _SetCell fix: nil value unsets cell again and existing cell is reused provided it was acquired from the same CellProvider.
+------------------------------------------------------------------------
+r33 | adirelle | 2008-10-26 08:06:27 +0000 (Sun, 26 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Typo in the license.
+------------------------------------------------------------------------
+r32 | adirelle | 2008-10-26 08:05:02 +0000 (Sun, 26 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+   M /trunk/LibTooltip-1.0.toc
+
+Increased minor version and added the Ace3 BAS-like license.
+------------------------------------------------------------------------
+r31 | torhal | 2008-10-26 01:05:29 +0000 (Sun, 26 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+In _SetCell(): Removed check for nil value and cleanup/return if so. Now we cleanup no matter what. Yes, this is more expensive, but otherwise we're overlapping fontstrings and leaking memory.
+------------------------------------------------------------------------
+r30 | torhal | 2008-10-26 00:11:29 +0000 (Sun, 26 Oct 2008) | 2 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+In _SetCell(): Moved local leftColumn up a few lines so its value is seen where needed.
+
+------------------------------------------------------------------------
+r29 | adirelle | 2008-10-25 23:25:04 +0000 (Sat, 25 Oct 2008) | 4 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Optional arguments to tooltip:SetCell can be skipped.
+Attempt to keep settings when updating an existing cell with tooltip:SetCell.
+Reuse cells from the same provider instead of releasing/acquiring each time.
+DRYCODE, EVERYONE PANICS !
+------------------------------------------------------------------------
+r27 | adirelle | 2008-10-24 21:32:09 +0000 (Fri, 24 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Fixed :Clear(). Oops.
+------------------------------------------------------------------------
+r26 | adirelle | 2008-10-24 13:57:33 +0000 (Fri, 24 Oct 2008) | 5 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Moved cell visibilty, parent and framelevel management from CellProvider to tooltip (so CellProviders do not have to care).
+cell:InitializeCell() is optional.
+cell:ReleaseCell() is not an alias of self.cellProvider:ReleaseCell(self) anymore. It is now a optional methods like InitializeCell.
+Removed cell:GetCellProvider() and cell.cellProvider as the tooltip now remember which provider provided which cell.
+
+------------------------------------------------------------------------
+r25 | adirelle | 2008-10-23 06:14:35 +0000 (Thu, 23 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Have tooltip:AddColumn returns the new column number for consitency with tooltip:AddLine.
+------------------------------------------------------------------------
+r24 | Tristanian | 2008-10-22 22:31:38 +0000 (Wed, 22 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Reset ClampToScreen on tip initialization.
+------------------------------------------------------------------------
+r23 | Tristanian | 2008-10-22 22:27:24 +0000 (Wed, 22 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Dumped offscreen detection, force clamptoscreen for tip.
+------------------------------------------------------------------------
+r22 | Tristanian | 2008-10-22 22:17:08 +0000 (Wed, 22 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Added lib:SmartAnchorTo(frame) - work in progress
+------------------------------------------------------------------------
+r21 | adirelle | 2008-10-22 21:34:02 +0000 (Wed, 22 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Fixed colspan width issue.
+------------------------------------------------------------------------
+r20 | adirelle | 2008-10-22 09:01:35 +0000 (Wed, 22 Oct 2008) | 3 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Normalized metatable and prototype variable names. 
+Normalized error messages.
+
+------------------------------------------------------------------------
+r19 | adirelle | 2008-10-22 00:07:45 +0000 (Wed, 22 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Fixed tooltip width and missing font.
+------------------------------------------------------------------------
+r18 | adirelle | 2008-10-21 23:46:56 +0000 (Tue, 21 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Added CellProvider API and column-spanning cells.
+------------------------------------------------------------------------
+r17 | torhal | 2008-10-21 22:40:06 +0000 (Tue, 21 Oct 2008) | 3 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+In InitializeTooltip() - Changed GameTooltipHeader to GameTooltipHeaderText
+Inlib:SetCell() - Removed assert on fontobject or nil, as SetFontObject() handles this.
+
+------------------------------------------------------------------------
+r16 | adirelle | 2008-10-20 23:14:27 +0000 (Mon, 20 Oct 2008) | 2 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+lib:Acquire accepts any keyable value as tooltip key. 
+Acquring an active tooltip doesn't reset it but the number of columns should match.
+------------------------------------------------------------------------
+r15 | Tristanian | 2008-10-20 16:36:13 +0000 (Mon, 20 Oct 2008) | 2 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Added lib:GetTooltip(name) method.
+Tweaked default library tooltip settings to resemble the GameTooltip.
+------------------------------------------------------------------------
+r14 | adirelle | 2008-10-20 06:34:12 +0000 (Mon, 20 Oct 2008) | 8 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+lib:Acquire(): assert that the name is a string.
+lib:Release(): ignore invalid tooltip silently.
+CreateCell(): use tooltip.regularFont instead of GameTooltipText.
+tooltip:SetCell():
+- grouped the font check together with other assertions,
+- do no create cell frames for empty strings but on first column,
+Added tooltip:GetLineCount() and tooltip:GetColumnCount().
+
+------------------------------------------------------------------------
+r13 | torhal | 2008-10-20 05:32:31 +0000 (Mon, 20 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Bah. Same as previous revision without the bullshit - one line in CreateCell() rather than five in tipProto:SetCell()
+------------------------------------------------------------------------
+r12 | torhal | 2008-10-20 04:59:19 +0000 (Mon, 20 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+In tipProto:SetCell() - If it's a new cell and no font has been supplied, default its FontObject to GameTooltipText.
+------------------------------------------------------------------------
+r11 | torhal | 2008-10-20 03:05:42 +0000 (Mon, 20 Oct 2008) | 4 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Changed all occurrences of Tooltip to LibTooltip.
+Removed unnecessary tabs at ends of lines and at newlines.
+Added tipProto:GetFont() and tipProto:GetHeaderFont()
+ 
+------------------------------------------------------------------------
+r10 | Tristanian | 2008-10-19 23:10:23 +0000 (Sun, 19 Oct 2008) | 3 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Added :IsAcquired("name") method.
+Suppress errors for invalid tooltip frames passed.
+Refined :Acquire a bit.
+------------------------------------------------------------------------
+r9 | adirelle | 2008-10-19 22:02:34 +0000 (Sun, 19 Oct 2008) | 2 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Added a justification parameter to :SetCell.
+AddLine now returns the number of the created line.
+------------------------------------------------------------------------
+r8 | adirelle | 2008-10-19 20:19:42 +0000 (Sun, 19 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Tooltips should live in the TOOLTIP strata.
+------------------------------------------------------------------------
+r7 | adirelle | 2008-10-19 14:05:37 +0000 (Sun, 19 Oct 2008) | 1 line
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Fixed fonts.
+------------------------------------------------------------------------
+r6 | adirelle | 2008-10-19 13:49:32 +0000 (Sun, 19 Oct 2008) | 2 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Fixed layout, sizing and a typo.
+Now working.
+------------------------------------------------------------------------
+r5 | adirelle | 2008-10-19 13:02:52 +0000 (Sun, 19 Oct 2008) | 4 lines
+Changed paths:
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Added the default fonts.
+Added a separated FinalizeTooltip method, so that the tooltip could be reused after tooltip:Clear()
+Made tooltip:Initialize() private, it is now InitializeTooltip.
+
+------------------------------------------------------------------------
+r4 | adirelle | 2008-10-19 11:34:24 +0000 (Sun, 19 Oct 2008) | 3 lines
+Changed paths:
+   A /trunk/.pkgmeta
+   M /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+
+Updated to the basic API, all dry-coded.
+Added .pkgmeta.
+
+------------------------------------------------------------------------
+r3 | adirelle | 2008-10-19 00:26:01 +0000 (Sun, 19 Oct 2008) | 3 lines
+Changed paths:
+   A /trunk/LibStub
+   A /trunk/LibStub/LibStub.lua
+   D /trunk/LibTooltip-0.1.lua
+   A /trunk/LibTooltip-1.0
+   A /trunk/LibTooltip-1.0/LibTooltip-1.0.lua
+   A /trunk/LibTooltip-1.0.toc
+
+Setup library layout.
+Working proof of concept.
+
+------------------------------------------------------------------------
+r2 | torhal | 2008-10-17 02:16:41 +0000 (Fri, 17 Oct 2008) | 2 lines
+Changed paths:
+   A /trunk/LibTooltip-0.1.lua
+
+Initial commit.
+
+------------------------------------------------------------------------
+r1 | root | 2008-10-16 04:23:49 +0000 (Thu, 16 Oct 2008) | 1 line
+Changed paths:
+   A /branches
+   A /tags
+   A /trunk
+
+"libtooltip/mainline: Initial Import"
+------------------------------------------------------------------------

@@ -1,0 +1,44 @@
+------------------------------------------------------------------------
+r109 | whitetooth | 2010-10-09 11:03:00 +0000 (Sat, 09 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/LibStatLogic-1.1/LibStatLogic-1.1.lua
+
+- enUS: Added Mastery pattern
+------------------------------------------------------------------------
+r108 | whitetooth | 2010-10-06 05:11:07 +0000 (Wed, 06 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/LibStatLogic-1.1/LibStatLogic-1.1.lua
+
+- 4.0: DodgePerAgiStatic data
+------------------------------------------------------------------------
+r107 | whitetooth | 2010-10-03 17:10:42 +0000 (Sun, 03 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/LibStatLogic-1.1/LibStatLogic-1.1.lua
+
+- 4.0: Updated Avoidance DR caps
+------------------------------------------------------------------------
+r106 | whitetooth | 2010-10-03 16:53:53 +0000 (Sun, 03 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/LibStatLogic-1.1/LibStatLogic-1.1.lua
+
+- 4.0.1: Fixed a loading error for some classes
+------------------------------------------------------------------------
+r105 | whitetooth | 2010-10-03 11:32:46 +0000 (Sun, 03 Oct 2010) | 2 lines
+Changed paths:
+   M /trunk/LibStatLogic-1.1/LibStatLogic-1.1.lua
+
+- 4.0.1: GetDodgePerAgi partial fix
+- 4.0.1: GetReductionFromArmor updated for levels 81 and up
+------------------------------------------------------------------------
+r104 | whitetooth | 2010-10-02 09:05:58 +0000 (Sat, 02 Oct 2010) | 1 line
+Changed paths:
+   M /trunk/LibStatLogic-1.1/LibStatLogic-1.1.lua
+
+- 4.0.1.13117: Updated Base Dodge values, 80-85 Combat Rating conversion values
+------------------------------------------------------------------------
+r103 | whitetooth | 2010-09-05 19:01:22 +0000 (Sun, 05 Sep 2010) | 1 line
+Changed paths:
+   M /trunk/LibStatLogic-1.1/LibStatLogic-1.1.lua
+
+- Disable talent/buff detection for 4.0.1 until we get it implemented
+------------------------------------------------------------------------

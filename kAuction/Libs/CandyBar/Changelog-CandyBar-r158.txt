@@ -1,0 +1,16 @@
+------------------------------------------------------------------------
+r158 | oscarucb | 2010-10-14 16:04:45 +0000 (Thu, 14 Oct 2010) | 2 lines
+Changed paths:
+   M /trunk/CandyBar-2.0/CandyBar-2.0.lua
+   M /trunk/CandyBar.toc
+
+fixes for 4.x compatibility
+
+------------------------------------------------------------------------
+r157 | stanzilla | 2009-02-17 00:39:53 +0000 (Tue, 17 Feb 2009) | 1 line
+Changed paths:
+   M /trunk/CandyBar.toc
+   D /trunk/embeds.xml
+
+Load libs from toc and use no-lib-strip
+------------------------------------------------------------------------

@@ -1,0 +1,175 @@
+﻿<Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\UI.xsd" xmlns="http://www.blizzard.com/wow/ui/">
+	<Texture name="kAuctionHighlightTextureTemplate" alphaMode="ADD" virtual="true">
+		<Color r="0" g="0.4" b="0.3" a="0.1"/>
+	</Texture>
+	<Button name="kAuctionIconTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" file="Interface\Icons\INV_Misc_QuestionMark">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</Button>
+	<Button name="kAuctionButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" text="But">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Size>
+			<AbsDimension x="18" y="18"></AbsDimension>
+		</Size>
+		<HighlightTexture>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset x="2" y="-2"/>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset x="-2" y="2"/>
+				</Anchor>
+			</Anchors>
+			<Color r="1.0" g="1.0" b="0" a="0.1"/>
+		</HighlightTexture>
+	</Button>
+	<Frame name="kAuctionAuctionItemWidget" virtual="true" enableMouse="true">
+		<Size>
+			<AbsDimension y="24" />
+		</Size>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentItemNameText" font="Fonts\FRIZQT__.TTF" text="Lorem ipsum dolor sit">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="9" />
+					</FontHeight>
+					<Color r="0.9" g="0.82" b="0" />
+				</FontString>
+				<FontString name="$parentStatusText" font="Fonts\FRIZQT__.TTF" text="Winner" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentItemNameText" relativePoint="RIGHT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="RIGHT" relativeTo="$parentClose" relativePoint="LEFT">
+							<Offset>
+								<AbsDimension x="0" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="9" />
+					</FontHeight>
+					<Color r="0.9" g="0.82" b="0" />
+				</FontString>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture inherits="kAuctionHighlightTextureTemplate"/>
+			</Layer>
+		</Layers>
+		<Anchors>
+			<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+				<Offset>
+					<AbsDimension x="5" y="0" />
+				</Offset>
+			</Anchor>
+			<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
+				<Offset>
+					<AbsDimension x="-22" y="0" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Frames>
+			<Button name="$parentCurrentItem" inherits="kAuctionIconTemplate" id="1">
+				<Anchors>
+					<Anchor point="LEFT" />
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						kAuction:OnCurrentItemEnter(self);
+					</OnEnter>
+					<OnLeave>
+						<!--kAuction:OnCurrentItemLeave(self);-->
+					</OnLeave>
+				</Scripts>
+				<Frames>
+					<Frame name="$parentSelectFrame" hidden="true">
+						<Size>
+							<AbsDimension x="40" y="35"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
+								<Offset x="-2" />
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4" />
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="16" />
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="16" />
+							</EdgeSize>
+							<BorderColor>
+								<Color r=".3" g=".3" b=".3"/>
+							</BorderColor>
+						</Backdrop>
+					</Frame>
+				</Frames>
+			</Button>
+			<Button name="$parentClose" inherits="kAuctionButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+
+					</OnClick>
+				</Scripts>
+				<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up">
+					<TexCoords left="0.175" right="0.825" top="0.175" bottom="0.825" />
+				</NormalTexture>
+				<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down">
+					<TexCoords left="0.175" right="0.825" top="0.175" bottom="0.825" />
+				</PushedTexture>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				kAuction:Gui_AuctionItemOnClick(self, button)
+			</OnMouseDown>
+			<OnEnter>
+				kAuction:Gui_AuctionItemOnEnter(self)
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide()
+			</OnLeave>
+		</Scripts>
+	</Frame>
+</Ui>

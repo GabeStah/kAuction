@@ -1,0 +1,578 @@
+﻿FIXED: Replaced deprecated setglobal/getglobal with _G
+FIXED: kAuction_WishlistGui.lua:1451 - Fixed bug disallowing Wishlist Item removal.
+ADDED: Wishlist > Search Expansion & Search Memory Usage
+-------
+FIXED: CandyLib updated to fix countdown bar issue.
+FIXED: LibStatLogic updated to fix tooltip error.
+FIXED: kAuction_Server.lua:343 - GetInventorySlotInfo removed for 4.0 compatibility fix.
+FIXED: kAuction_Server.lua:665 - Nil self reference.
+-------
+FIXED: ChatFrameEditBox error no longer appears when shift-clicking auction items to generate item link in chat.
+-------
+FIXED: kAuction_Options.lua:2521 -- Using command /kauction show when no valid Auction data exists on client should no longer produce an error.
+FIXED: kAuction_Gui.lua:525 -- Hovering over Auction should no longer produce error when item does not produce a zero-sum score for existing Weight Scores.
+
+FIXED: Items Won icon popups should no longer freeze to screen when no user interaction has prompted them to open.  This bug took far too long to sort out, but the icon/tooltip additions were sometimes appearing when user was viewing different tabs/the main Auction tab just as a new item was won for that particular user.  Item Won Icons were failing to properly sanity check their existence status, but now however, they should properly check if their parent frame is visible before displaying.
+
+-------
+ADDED: Wishlist > Weight Scales -- A new feature that allows users to assign weighted value to item stats, creating an aggregate "Score" to classify the worth of an item for a particular class/spec.  kAuction contains default Weights already installed for every class/spec combination and those that apply to your class will auto-activate upon your first login.  
+UPDATED: Wishlist > Search > Sorting via clicking the column header titles is no longer limited to the result set (default of 50 items), and instead sorts the entire list of results (default of ~3000 items).  This greatly increases the functionality of sorting larger lists when a query string returns more than the result set limit (default 50).
+UPDATED: Wishlist > Search > Entering a partial query is no longer required to view the result set.  By default, once Item data is refreshed, the entire list will display.  Queries can then be specified in the search box as normal.
+UPDATED: Wishlist > Search > Full Item Results must pass a few more checks before being returned as valid, searchable items.  1. The item must be equippable (e.g. Two-Handed Axes will not show up for Mages).  2. The item must not be class-specific for a class other than player (e.g. "Classes: Rogue, Druid" will not return for a Warrior searching).  The only exception is Required Level, which can be higher than the player's current level and thus make the item unequippable, but the item will still return in the results (primarily for debugging but also for future expansions).
+REMOVED: Spell Search functionality.  Was primarily a proof-of-concept function and adds a severe memory drain for a feature most people will not utilize in the current form.
+
+FIXED: Wishlist > Search > Item Name right-click menu not displaying if no items existed on any list.
+UPDATED: Wishlist > Search > Right-lick menu displaying when right-clicking anywhere on the item row, not just item name.
+ADDED: Wishlist > List > Add Item Manually > New seperator character (colon).
+ADDED: Wishlist > List/Search > Column width now relative to frame size; should allow simpler resizing of overall window to prevent column clipping.
+UPDATED: High Priority Item Filter -- Determines how kAuction prioritizes wishlist items when auto-bidding, alerting, and auto-removing.  Full priority set found below.
+	{autoBid = true, bidType = 'normal', bestInSlot = true, setBonus = true},
+	{alert = true, bidType = 'normal', bestInSlot = true, setBonus = true},
+	{autoBid = true, bidType = 'normal', bestInSlot = true},
+	{alert = true, bidType = 'normal', bestInSlot = true},
+	{autoBid = true, bidType = 'normal', setBonus = true},
+	{alert = true, bidType = 'normal', setBonus = true},
+	{autoBid = true, bidType = 'normal'},
+	{alert = true, bidType = 'normal'},
+	{bidType = 'normal'},
+	{autoBid = true, bidType = 'offspec', bestInSlot = true, setBonus = true},
+	{alert = true, bidType = 'offspec', bestInSlot = true, setBonus = true},
+	{autoBid = true, bidType = 'offspec', bestInSlot = true},
+	{alert = true, bidType = 'offspec', bestInSlot = true},
+	{autoBid = true, bidType = 'offspec', setBonus = true},
+	{alert = true, bidType = 'offspec', setBonus = true},
+	{autoBid = true, bidType = 'offspec'},
+	{alert = true, bidType = 'offspec'},
+	{bidType = 'offspec'},
+	{autoBid = true, bidType = 'rot', bestInSlot = true, setBonus = true},
+	{alert = true, bidType = 'rot', bestInSlot = true, setBonus = true},
+	{autoBid = true, bidType = 'rot', bestInSlot = true},
+	{alert = true, bidType = 'rot', bestInSlot = true},
+	{autoBid = true, bidType = 'rot', setBonus = true},
+	{alert = true, bidType = 'rot', setBonus = true},
+	{autoBid = true, bidType = 'rot'},
+	{alert = true, bidType = 'rot'},
+	{bidType = 'rot'},
+	CON'T: This is primarily for having the same item in multiple wishlists.  For example, if user has [Betrayer of Humanity] in the "Normal" wishlist with everything unchecked 
+	except "Best in Slot" and "Auto-bid", and the user also has [Betrayer of Humanity] in their "Offspec" wishlist with everything checked, kAuction will drill down this priority list
+	from top to bottom until it finds a match (in this case, the first match would be line 3 ({autoBid = true, bidType = 'normal', bestInSlot = true},) which matches the 
+	Normal + Best in Slot + Auto Bid settings.  If the user wins the item and is removed from the Normal wishlist, the next time it drops it will be detected via line 
+	10 ({autoBid = true, bidType = 'offspec', bestInSlot = true, setBonus = true},), and so on.
+ADDED: Auto-Remove Auction (/ka ui > Interface > Main Frame > Auto-Remove Auctions -- If enabled, will automatically remove an auction from your kAuction list after the auction closes +
+	the delay specified in the Auto-Remove Auctions Delay option.
+UPDATED: Alert popups now auto-expire after auction is closed (and thus popup is no longer valid).
+FIXED: Alert popups for bidding are now uniquely identified and therefore multiple popups can be shown at once.
+FIXED: Properly display Item Quality color for items lower than epic quality.
+ADDED: Wishlist > Serach > Refresh button to force a new item indexing without requiring close/re-open of Search window.
+
+ADDED: CouncilMember, Voters, CurrentItemLink, and AuctionType to Xml export data.
+UPDATED: .toc for 3.1.2 Patch compatibility.
+
+ADDED: BidType to Xml export data.
+FIXED: kAuction.lua:187 - Issue of raid close dialog appearing twice when leaving a raid after manually ending raid tracking while still grouped.
+------------------------------------------------------------------------
+r22 | gabestah | 2009-04-17 00:08:34 +0000 (Fri, 17 Apr 2009) | 1 line
+Changed paths:
+   M /trunk/kAuction.toc
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Options.lua
+
+ADDED: Tier 8 Tokens to Default Whitelist data.
+------------------------------------------------------------------------
+r21 | gabestah | 2009-04-15 06:34:52 +0000 (Wed, 15 Apr 2009) | 2 lines
+Changed paths:
+   M /trunk/kAuction.toc
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Gui.lua
+   M /trunk/kAuction_Options.lua
+
+UPDATED: .toc for 3.1 Patch compatibility.
+FIXED: kAuction_Gui.lua:96 nil value error.
+------------------------------------------------------------------------
+r20 | gabestah | 2009-03-23 16:42:14 +0000 (Mon, 23 Mar 2009) | 1 line
+Changed paths:
+   M /trunk/kAuction_Options.lua
+   A /trunk/kAuction_Ring.lua
+
+FIXED: Close Raid popup when leaving battleground.
+------------------------------------------------------------------------
+r19 | gabestah | 2009-03-23 16:39:44 +0000 (Mon, 23 Mar 2009) | 1 line
+Changed paths:
+   M /trunk/kAuction.toc
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Gui.lua
+
+FIXED: Auction occasional nil error when client closes auctions with open Tabs. [kAuction_Gui.lua:98]
+------------------------------------------------------------------------
+r18 | gabestah | 2009-03-19 01:54:16 +0000 (Thu, 19 Mar 2009) | 1 line
+Changed paths:
+   M /trunk/kAuction_Options.lua
+
+FIXED: Version update.
+------------------------------------------------------------------------
+r17 | gabestah | 2009-03-19 01:53:26 +0000 (Thu, 19 Mar 2009) | 1 line
+Changed paths:
+   M /trunk/kAuction.lua
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Gui.lua
+
+FIXED: kAuction_Gui:66 nil error.
+------------------------------------------------------------------------
+r16 | gabestah | 2009-03-18 22:26:27 +0000 (Wed, 18 Mar 2009) | 1 line
+Changed paths:
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Gui.lua
+   M /trunk/kAuction_Item.lua
+   M /trunk/kAuction_Options.lua
+
+ADDED: Configuration > Overall Scale -- Allows user to scale the kAuction window for various UI sizes and needs.
+------------------------------------------------------------------------
+r15 | gabestah | 2009-03-18 21:18:14 +0000 (Wed, 18 Mar 2009) | 1 line
+Changed paths:
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Gui.lua
+   M /trunk/kAuction_Options.lua
+
+FIXED: Bug when frame refreshed during UpdateBidTabs() with no valid auctions (i.e. removing all auctions manually) [kAuction_Gui.lua:65]
+------------------------------------------------------------------------
+r14 | gabestah | 2009-03-18 19:26:21 +0000 (Wed, 18 Mar 2009) | 5 lines
+Changed paths:
+   M /trunk/kAuction.lua
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Client.lua
+   M /trunk/kAuction_Gui.lua
+   M /trunk/kAuction_Item.lua
+   M /trunk/kAuction_Options.lua
+   M /trunk/kAuction_Server.lua
+
+ADDED: Item Whitelist System -- Allows Admin to set predetermined Auction Types and Equipment Slot data for particular filter type flags or specific items.  Good for bags, quest items, tokens, etc.
+ADDED: Zone Verification -- Admin Config option for valid Raid Zone list determines what zones will be tracked.  kAuction will detect zoning and prompt user for tracking if valid zones are entered.  This should prevent kAuction from running when leading a raid in a non-raid zone (battleground, etc.).
+FIXED: Issue preventing non-equippable bags from producing Current Item selection popout.  Now properly allows Bag selection for container drops.
+FIXED: Tabs now properly disappear when all bids for given Tab are retracted, thus showing a blank window.
+FIXED: Issue with empty CurrentItem texture when Bid window displays unequippable item.  Now properly displays QuestionMark texture.
+------------------------------------------------------------------------
+r13 | gabestah | 2009-03-18 00:23:36 +0000 (Wed, 18 Mar 2009) | 1 line
+Changed paths:
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Gui.lua
+   M /trunk/kAuction_Options.lua
+
+FIXED: Width bug with consolidated Bids frame.
+------------------------------------------------------------------------
+r12 | gabestah | 2009-03-18 00:08:13 +0000 (Wed, 18 Mar 2009) | 5 lines
+Changed paths:
+   M /trunk/Frames/Core.xml
+   A /trunk/Sounds/wangryscotscomeonthen.wav
+   A /trunk/Sounds/wangryscotscoward.wav
+   A /trunk/Sounds/wangryscotsillgetyou.wav
+   A /trunk/Sounds/wdrillsargeantfire.wav
+   A /trunk/Sounds/wdrillsargeantstupid.wav
+   A /trunk/Sounds/wdrillsargeantwatchthis.wav
+   A /trunk/Sounds/wgrandpacoward.wav
+   A /trunk/Sounds/wgrandpauhoh.wav
+   A /trunk/Sounds/willgetyou.wav
+   A /trunk/Sounds/wuhoh.wav
+   M /trunk/kAuction.lua
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Client.lua
+   M /trunk/kAuction_Gui.lua
+   M /trunk/kAuction_Options.lua
+   M /trunk/kAuction_Server.lua
+
+ADDED: Self-version checking system -- from now all, joining a raid with a valid kAuction Server installation will auto-verify all Client versions of kAuction and inform the user if they are out of date.
+ADDED: Half dozen additional sounds to Events menus.
+ADDED: Bids Tabs Coloration options (Interface > Main Frame > Tabs)
+FIXED: Cleaned up some active raid code by limiting transactions between three flags: .isInRaid, .isActiveRaid, and .enabled.  Should prevent further issues with raids not activing for Server installation without manual /reloadui.
+FIXED: Added .auctionType check before displaying Vote symbol option for Council Members so Random auctions would not display Vote indicator.
+------------------------------------------------------------------------
+r11 | gabestah | 2009-03-16 19:35:16 +0000 (Mon, 16 Mar 2009) | 5 lines
+Changed paths:
+   M /trunk/Frames/Core.xml
+   M /trunk/kAuction.lua
+   M /trunk/kAuction.wowproj
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Client.lua
+   M /trunk/kAuction_Gui.lua
+   M /trunk/kAuction_Options.lua
+   M /trunk/kAuction_Server.lua
+   M /trunk/kAuction_Threading.lua
+
+ADDED: Bids Tab System -- Eliminates the need for a second window which was an annoyance and took up far too much screen space when a tabbed solution would provide the same functionality in a single kAuction window.
+ADDED: Additional Bid Count and Vote Status display to main Auction entry -- allows users to easily see if they have a valid vote submitted for an auction.
+FIXED: Selecting an Auction will only display the Bid window if valid Bids exist.
+FIXED: Threading issue for some early-fired events by failchecking timer pool.
+REMOVED: Bids Window (second main frame).  Replaced by Tab System.
+------------------------------------------------------------------------
+r10 | gabestah | 2009-03-16 12:53:39 +0000 (Mon, 16 Mar 2009) | 5 lines
+Changed paths:
+   M /trunk/Frames/Widgets/AuctionItemWidget.xml
+   A /trunk/Sounds/snare1.mp3
+   M /trunk/embeds.xml
+   M /trunk/kAuction.lua
+   M /trunk/kAuction.wowproj
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Gui.lua
+   M /trunk/kAuction_Options.lua
+   M /trunk/kAuction_Server.lua
+   M /trunk/kAuction_Threading.lua
+
+ADDED: Drop-down Auction Bid system.  Right-click an Auction to perform bidding functionality.  This produces a cleaner interface and removes the need for multiple clicks on Bid button to place proper Bid.
+ADDED: Admin > Council Member list sorting and failchecking to include and require Current Player within list.
+ADDED: Admin > Disenchanters list sorting.
+ADDED: Admin > Item Blacklist list sorting.
+REMOVED: Auction Bid button (replaced by drop-down system).
+------------------------------------------------------------------------
+r9 | gabestah | 2009-02-25 23:22:04 +0000 (Wed, 25 Feb 2009) | 2 lines
+Changed paths:
+   M /trunk/Frames/Core.xml
+   M /trunk/kAuction.lua
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Client.lua
+   M /trunk/kAuction_Gui.lua
+   M /trunk/kAuction_Item.lua
+   M /trunk/kAuction_Options.lua
+   M /trunk/kAuction_Server.lua
+
+ADDED: User Config Options > Events > Auction Winner Received Events -- Sound/Text/Effect options to inform user when an auction winner is declared *other than* the user.
+FIXED: Main and Bids window visibility bugs after manually closing window.  Frames should stay hidden until a new auction is received.
+------------------------------------------------------------------------
+r8 | gabestah | 2009-02-24 18:00:33 +0000 (Tue, 24 Feb 2009) | 1 line
+Changed paths:
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Server.lua
+
+FIXED: Issue with auto-auctioning for .enabled Server users.
+------------------------------------------------------------------------
+r7 | gabestah | 2009-02-24 00:04:01 +0000 (Tue, 24 Feb 2009) | 2 lines
+Changed paths:
+   M /trunk/kAuction.lua
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Gui.lua
+   M /trunk/kAuction_Options.lua
+   M /trunk/kAuction_Server.lua
+
+ADDED: Admin Auction Config. options -- Bid Details visibility; toggle if Clients can view Auction Bids Details, Bid Rolls, Bid Current Item, and Bid Voters. (See Ticket ID#8 - Invisible Auction Vote Flag [Server])
+
+------------------------------------------------------------------------
+r6 | gabestah | 2009-02-23 19:41:46 +0000 (Mon, 23 Feb 2009) | 2 lines
+Changed paths:
+   M /trunk/kAuction.lua
+   M /trunk/kAuction.wowproj
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Client.lua
+   M /trunk/kAuction_Gui.lua
+   M /trunk/kAuction_Item.lua
+   M /trunk/kAuction_Options.lua
+   M /trunk/kAuction_Server.lua
+   M /trunk/kAuction_Threading.lua
+
+ADDED: Raid Start/Stop tracking functions.
+FIXED: Auction Loot Council Member list now properly filters members only found in present raid.
+------------------------------------------------------------------------
+r5 | gabestah | 2009-02-20 21:04:05 +0000 (Fri, 20 Feb 2009) | 5 lines
+Changed paths:
+   M /trunk/Frames/Core.xml
+   M /trunk/Frames/Widgets/BidWidget.xml
+   M /trunk/kAuction.lua
+   M /trunk/kAuction_Gui.lua
+   M /trunk/kAuction_Item.lua
+   M /trunk/kAuction_Server.lua
+
+ADDED: Dynamic column widths for Auction and Bid frame listings that adjust based on overall frame width.
+ADDED: Auction.looted and Auction.awarded flags to prevent auto-master loot assignment of duplicate items with identical names when Auto Assign via Master Loot config option = true.
+
+FIXED: Ticket [ID 7] Current Item Popout not filtering unusable items.
+FIXED: Ticket [ID 6] Bid Columns Do Not Expand for non-Council Users.
+------------------------------------------------------------------------
+r4 | gabestah | 2009-02-20 17:22:39 +0000 (Fri, 20 Feb 2009) | 4 lines
+Changed paths:
+   M /trunk/Frames/Core.xml
+   M /trunk/Frames/Widgets/AuctionItemWidget.xml
+   D /trunk/Widget_CurrentItem.lua
+   M /trunk/kAuction.lua
+   M /trunk/kAuction.toc
+   M /trunk/kAuction.wowsuo
+   M /trunk/kAuction_Gui.lua
+   M /trunk/kAuction_Item.lua
+   M /trunk/kAuction_Options.lua
+   M /trunk/kAuction_Threading.lua
+
+ADDED: /ka show command to display main frame without waiting for new auction data received.
+FIXED: Display error on main frame when when no auction data exists for local client.
+UPDATED: Threading frames now created dynamically.
+UPDATED: Overall memory footprint dropped dramatically to around 700k sustained with bursts of 1-2mb during high activity time (5+ auctions with multiple bidders each) but performance not hindered.
+------------------------------------------------------------------------
+r3 | gabestah | 2009-02-20 04:09:43 +0000 (Fri, 20 Feb 2009) | 1 line
+Changed paths:
+   R /trunk/kAuction.wowproj (from /trunk/kAuction.wowproj:2
+   R /trunk/kAuction.wowsln (from /trunk/kAuction.wowsln:2
+   R /trunk/kAuction.wowsuo (from /trunk/kAuction.wowsuo:2
+
+.proj file update
+------------------------------------------------------------------------
+r2 | gabestah | 2009-02-20 04:06:57 +0000 (Fri, 20 Feb 2009) | 1 line
+Changed paths:
+   A /trunk/Fonts
+   A /trunk/Fonts/Adventure.ttf
+   A /trunk/Fonts/CAS_ANTI.TTF
+   A /trunk/Fonts/CAS_ANTN.TTF
+   A /trunk/Fonts/Cella.ttf
+   A /trunk/Fonts/Corleone.ttf
+   A /trunk/Fonts/CorleoneDue.ttf
+   A /trunk/Fonts/Forte.ttf
+   A /trunk/Fonts/Mobsters.ttf
+   A /trunk/Fonts/WildRide.ttf
+   A /trunk/Fonts/albas.ttf
+   A /trunk/Fonts/chick.ttf
+   A /trunk/Fonts/freshbot.ttf
+   A /trunk/Fonts/jokewood.ttf
+   A /trunk/Fonts/weltu.ttf
+   A /trunk/Frames
+   A /trunk/Frames/Core.xml
+   A /trunk/Frames/Widgets
+   A /trunk/Frames/Widgets/AuctionItemWidget.xml
+   A /trunk/Frames/Widgets/BidWidget.xml
+   A /trunk/Images
+   A /trunk/Images/Brackets.tga
+   A /trunk/Images/ItemRackButtons.blp
+   A /trunk/Images/ItemRackGear.blp
+   A /trunk/Images/ItemRackIcon.blp
+   A /trunk/Images/ItemRackOptTabs.tga
+   A /trunk/Images/ResizeGripLeft.tga
+   A /trunk/Images/ResizeGripRight.tga
+   A /trunk/Images/Textures
+   A /trunk/Images/Textures/Scrollbar
+   A /trunk/Images/Textures/Scrollbar/UI-ScrollBar-Knob.tga
+   A /trunk/Images/Textures/Scrollbar/UI-ScrollBar-ScrollDownButton-Disabled.tga
+   A /trunk/Images/Textures/Scrollbar/UI-ScrollBar-ScrollDownButton-Highlight.tga
+   A /trunk/Images/Textures/Scrollbar/UI-ScrollBar-ScrollDownButton-Overlay.tga
+   A /trunk/Images/Textures/Scrollbar/UI-ScrollBar-ScrollDownButton-Up.tga
+   A /trunk/Images/Textures/Scrollbar/UI-ScrollBar-ScrollUpButton-Disabled.tga
+   A /trunk/Images/Textures/Scrollbar/UI-ScrollBar-ScrollUpButton-Highlight.tga
+   A /trunk/Images/Textures/Scrollbar/UI-ScrollBar-ScrollUpButton-Overlay.tga
+   A /trunk/Images/Textures/Scrollbar/UI-ScrollBar-ScrollUpButton-Up.tga
+   A /trunk/Images/Textures/Statusbar
+   A /trunk/Images/Textures/Statusbar/Aluminium.tga
+   A /trunk/Images/Textures/Statusbar/Armory.tga
+   A /trunk/Images/Textures/Statusbar/BantoBar.tga
+   A /trunk/Images/Textures/Statusbar/Empty.tga
+   A /trunk/Images/Textures/Statusbar/Flat.tga
+   A /trunk/Images/Textures/Statusbar/Minimalist.tga
+   A /trunk/Images/Textures/Statusbar/Otravi.tga
+   A /trunk/Images/Textures/arrow.tga
+   A /trunk/Images/Textures/icon-config.tga
+   A /trunk/Images/Textures/icon-reset.tga
+   A /trunk/Images/Textures/icon-summary.tga
+   A /trunk/Images/Textures/otravi-semi-full-border.tga
+   A /trunk/Libs
+   A /trunk/Libs/Ace3
+   A /trunk/Libs/Ace3/Ace3.lua
+   A /trunk/Libs/Ace3/Ace3.toc
+   A /trunk/Libs/Ace3/AceAddon-3.0
+   A /trunk/Libs/Ace3/AceAddon-3.0/AceAddon-3.0.lua
+   A /trunk/Libs/Ace3/AceAddon-3.0/AceAddon-3.0.xml
+   A /trunk/Libs/Ace3/AceBucket-3.0
+   A /trunk/Libs/Ace3/AceBucket-3.0/AceBucket-3.0.lua
+   A /trunk/Libs/Ace3/AceBucket-3.0/AceBucket-3.0.xml
+   A /trunk/Libs/Ace3/AceComm-3.0
+   A /trunk/Libs/Ace3/AceComm-3.0/AceComm-3.0.lua
+   A /trunk/Libs/Ace3/AceComm-3.0/AceComm-3.0.xml
+   A /trunk/Libs/Ace3/AceComm-3.0/ChatThrottleLib.lua
+   A /trunk/Libs/Ace3/AceConfig-3.0
+   A /trunk/Libs/Ace3/AceConfig-3.0/AceConfig-3.0.lua
+   A /trunk/Libs/Ace3/AceConfig-3.0/AceConfig-3.0.xml
+   A /trunk/Libs/Ace3/AceConfig-3.0/AceConfigCmd-3.0
+   A /trunk/Libs/Ace3/AceConfig-3.0/AceConfigCmd-3.0/AceConfigCmd-3.0.lua
+   A /trunk/Libs/Ace3/AceConfig-3.0/AceConfigCmd-3.0/AceConfigCmd-3.0.xml
+   A /trunk/Libs/Ace3/AceConfig-3.0/AceConfigDialog-3.0
+   A /trunk/Libs/Ace3/AceConfig-3.0/AceConfigDialog-3.0/AceConfigDialog-3.0.lua
+   A /trunk/Libs/Ace3/AceConfig-3.0/AceConfigDialog-3.0/AceConfigDialog-3.0.xml
+   A /trunk/Libs/Ace3/AceConfig-3.0/AceConfigRegistry-3.0
+   A /trunk/Libs/Ace3/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua
+   A /trunk/Libs/Ace3/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.xml
+   A /trunk/Libs/Ace3/AceConsole-3.0
+   A /trunk/Libs/Ace3/AceConsole-3.0/AceConsole-3.0.lua
+   A /trunk/Libs/Ace3/AceConsole-3.0/AceConsole-3.0.xml
+   A /trunk/Libs/Ace3/AceDB-3.0
+   A /trunk/Libs/Ace3/AceDB-3.0/AceDB-3.0.lua
+   A /trunk/Libs/Ace3/AceDB-3.0/AceDB-3.0.xml
+   A /trunk/Libs/Ace3/AceDBOptions-3.0
+   A /trunk/Libs/Ace3/AceDBOptions-3.0/AceDBOptions-3.0.lua
+   A /trunk/Libs/Ace3/AceDBOptions-3.0/AceDBOptions-3.0.xml
+   A /trunk/Libs/Ace3/AceEvent-3.0
+   A /trunk/Libs/Ace3/AceEvent-3.0/AceEvent-3.0.lua
+   A /trunk/Libs/Ace3/AceEvent-3.0/AceEvent-3.0.xml
+   A /trunk/Libs/Ace3/AceGUI-3.0
+   A /trunk/Libs/Ace3/AceGUI-3.0/AceGUI-3.0.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/AceGUI-3.0.xml
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-BlizOptionsGroup.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-Button.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-CheckBox.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-ColorPicker.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-DropDown-Items.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-DropDown.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-DropDownGroup.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-EditBox.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-Frame.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-Heading.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-Icon.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-InlineGroup.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-Keybinding.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-Label.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-MultiLineEditBox.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-ScrollFrame.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-SimpleGroup.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-Slider.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-TabGroup.lua
+   A /trunk/Libs/Ace3/AceGUI-3.0/widgets/AceGUIWidget-TreeGroup.lua
+   A /trunk/Libs/Ace3/AceHook-3.0
+   A /trunk/Libs/Ace3/AceHook-3.0/AceHook-3.0.lua
+   A /trunk/Libs/Ace3/AceHook-3.0/AceHook-3.0.xml
+   A /trunk/Libs/Ace3/AceLocale-3.0
+   A /trunk/Libs/Ace3/AceLocale-3.0/AceLocale-3.0.lua
+   A /trunk/Libs/Ace3/AceLocale-3.0/AceLocale-3.0.xml
+   A /trunk/Libs/Ace3/AceSerializer-3.0
+   A /trunk/Libs/Ace3/AceSerializer-3.0/AceSerializer-3.0.lua
+   A /trunk/Libs/Ace3/AceSerializer-3.0/AceSerializer-3.0.xml
+   A /trunk/Libs/Ace3/AceTab-3.0
+   A /trunk/Libs/Ace3/AceTab-3.0/AceConfigTab-3.0.lua
+   A /trunk/Libs/Ace3/AceTab-3.0/AceTab-3.0.lua
+   A /trunk/Libs/Ace3/AceTab-3.0/AceTab-3.0.xml
+   A /trunk/Libs/Ace3/AceTimer-3.0
+   A /trunk/Libs/Ace3/AceTimer-3.0/AceTimer-3.0.lua
+   A /trunk/Libs/Ace3/AceTimer-3.0/AceTimer-3.0.xml
+   A /trunk/Libs/Ace3/CallbackHandler-1.0
+   A /trunk/Libs/Ace3/CallbackHandler-1.0/CallbackHandler-1.0.lua
+   A /trunk/Libs/Ace3/CallbackHandler-1.0/CallbackHandler-1.0.xml
+   A /trunk/Libs/Ace3/Changelog-Ace3-r733.txt
+   A /trunk/Libs/Ace3/LICENSE.txt
+   A /trunk/Libs/Ace3/LibStub
+   A /trunk/Libs/Ace3/LibStub/LibStub.lua
+   A /trunk/Libs/Ace3/changelog.txt
+   A /trunk/Libs/AceGUI-3.0-SharedMediaWidgets
+   A /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets
+   A /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/BackgroundWidget.lua
+   A /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/BorderWidget.lua
+   A /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/FontWidget.lua
+   A /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/SharedFunctions.lua
+   A /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/SoundWidget.lua
+   A /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/StatusbarWidget.lua
+   A /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets/widget.xml
+   A /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/AceGUI-3.0-SharedMediaWidgets.toc
+   A /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/Changelog-AceGUI-3.0-SharedMediaWidgets-v3.2.txt
+   A /trunk/Libs/AceGUI-3.0-SharedMediaWidgets/widget.xml
+   A /trunk/Libs/CandyBar
+   A /trunk/Libs/CandyBar/CandyBar-2.0
+   A /trunk/Libs/CandyBar/CandyBar-2.0/CandyBar-2.0.lua
+   A /trunk/Libs/CandyBar/CandyBar.toc
+   A /trunk/Libs/CandyBar/Changelog-CandyBar-r155-release.txt
+   A /trunk/Libs/CandyBar/Libs
+   A /trunk/Libs/CandyBar/Libs/AceLibrary
+   A /trunk/Libs/CandyBar/Libs/AceLibrary/AceLibrary.lua
+   A /trunk/Libs/CandyBar/Libs/AceLibrary/AceLibrary.toc
+   A /trunk/Libs/CandyBar/Libs/AceOO-2.0
+   A /trunk/Libs/CandyBar/Libs/AceOO-2.0/AceOO-2.0.lua
+   A /trunk/Libs/CandyBar/Libs/AceOO-2.0/AceOO-2.0.toc
+   A /trunk/Libs/CandyBar/Libs/PaintChips-2.0
+   A /trunk/Libs/CandyBar/Libs/PaintChips-2.0/PaintChips-2.0.lua
+   A /trunk/Libs/CandyBar/embeds.xml
+   A /trunk/Libs/LibEffects-1.0
+   A /trunk/Libs/LibEffects-1.0/Changelog-LibEffects-1.0-beta1.txt
+   A /trunk/Libs/LibEffects-1.0/LibEffects-1.0
+   A /trunk/Libs/LibEffects-1.0/LibEffects-1.0/LibEffects-1.0.lua
+   A /trunk/Libs/LibEffects-1.0/LibEffects-1.0/lib.xml
+   A /trunk/Libs/LibEffects-1.0/LibEffects-1.0.toc
+   A /trunk/Libs/LibEffects-1.0/LibStub
+   A /trunk/Libs/LibEffects-1.0/LibStub/LibStub.lua
+   A /trunk/Libs/LibEffects-1.0/LibStub/LibStub.toc
+   A /trunk/Libs/LibQTip-1.0
+   A /trunk/Libs/LibQTip-1.0/Changelog-LibQTip-1.0-r55-beta.txt
+   A /trunk/Libs/LibQTip-1.0/LICENSE.txt
+   A /trunk/Libs/LibQTip-1.0/LibQTip-1.0
+   A /trunk/Libs/LibQTip-1.0/LibQTip-1.0/LibQTip-1.0.lua
+   A /trunk/Libs/LibQTip-1.0/LibQTip-1.0.toc
+   A /trunk/Libs/LibQTip-1.0/LibStub
+   A /trunk/Libs/LibQTip-1.0/LibStub/LibStub.lua
+   A /trunk/Libs/LibSharedMedia-3.0
+   A /trunk/Libs/LibSharedMedia-3.0/CallbackHandler-1.0
+   A /trunk/Libs/LibSharedMedia-3.0/CallbackHandler-1.0/CallbackHandler-1.0.lua
+   A /trunk/Libs/LibSharedMedia-3.0/LibSharedMedia-3.0
+   A /trunk/Libs/LibSharedMedia-3.0/LibSharedMedia-3.0/LibSharedMedia-3.0.lua
+   A /trunk/Libs/LibSharedMedia-3.0/LibSharedMedia-3.0/lib.xml
+   A /trunk/Libs/LibSharedMedia-3.0/LibSharedMedia-3.0.lua
+   A /trunk/Libs/LibSharedMedia-3.0/LibSharedMedia-3.0.toc
+   A /trunk/Libs/LibSharedMedia-3.0/LibStub
+   A /trunk/Libs/LibSharedMedia-3.0/LibStub/LibStub.lua
+   A /trunk/Libs/LibSharedMedia-3.0/lib.xml
+   A /trunk/Libs/RosterLib
+   A /trunk/Libs/RosterLib/AceEvent-2.0
+   A /trunk/Libs/RosterLib/AceEvent-2.0/AceEvent-2.0.lua
+   A /trunk/Libs/RosterLib/AceEvent-2.0/AceEvent-2.0.toc
+   A /trunk/Libs/RosterLib/AceOO-2.0
+   A /trunk/Libs/RosterLib/AceOO-2.0/AceOO-2.0.lua
+   A /trunk/Libs/RosterLib/AceOO-2.0/AceOO-2.0.toc
+   A /trunk/Libs/RosterLib/Roster-2.1
+   A /trunk/Libs/RosterLib/Roster-2.1/Roster-2.1.lua
+   A /trunk/Libs/TabletLib
+   A /trunk/Libs/TabletLib/AceLibrary
+   A /trunk/Libs/TabletLib/AceLibrary/AceLibrary.lua
+   A /trunk/Libs/TabletLib/AceLibrary/AceLibrary.toc
+   A /trunk/Libs/TabletLib/Changelog-TabletLib-3.0-release.txt
+   A /trunk/Libs/TabletLib/Dewdrop-2.0
+   A /trunk/Libs/TabletLib/Dewdrop-2.0/AceLibrary
+   A /trunk/Libs/TabletLib/Dewdrop-2.0/AceLibrary/AceLibrary.lua
+   A /trunk/Libs/TabletLib/Dewdrop-2.0/AceLibrary/AceLibrary.toc
+   A /trunk/Libs/TabletLib/Dewdrop-2.0/Dewdrop-2.0.lua
+   A /trunk/Libs/TabletLib/LICENSE.txt
+   A /trunk/Libs/TabletLib/Tablet-2.0
+   A /trunk/Libs/TabletLib/Tablet-2.0/Tablet-2.0.lua
+   A /trunk/Libs/TabletLib/TabletLib.toc
+   A /trunk/Libs/TabletLib/embeds.xml
+   A /trunk/Libs/Waterfall-1.0
+   A /trunk/Libs/Waterfall-1.0/AceLibrary
+   A /trunk/Libs/Waterfall-1.0/AceLibrary/AceLibrary.lua
+   A /trunk/Libs/Waterfall-1.0/AceLibrary/AceLibrary.toc
+   A /trunk/Libs/Waterfall-1.0/AceOO-2.0
+   A /trunk/Libs/Waterfall-1.0/AceOO-2.0/AceOO-2.0.lua
+   A /trunk/Libs/Waterfall-1.0/AceOO-2.0/AceOO-2.0.toc
+   A /trunk/Libs/Waterfall-1.0/Changelog-Waterfall-1.0-3.0-release.txt
+   A /trunk/Libs/Waterfall-1.0/Waterfall-1.0
+   A /trunk/Libs/Waterfall-1.0/Waterfall-1.0/Waterfall-1.0.lua
+   A /trunk/Libs/Waterfall-1.0/Waterfall-1.0.toc
+   A /trunk/Libs/Waterfall-1.0/embeds.xml
+   A /trunk/Sounds
+   A /trunk/Sounds/alarm.mp3
+   A /trunk/Sounds/alert.mp3
+   A /trunk/Sounds/info.mp3
+   A /trunk/Sounds/long.mp3
+   A /trunk/Sounds/shot.mp3
+   A /trunk/Sounds/sonar.mp3
+   A /trunk/Sounds/victory.mp3
+   A /trunk/Sounds/victoryClassic.mp3
+   A /trunk/Sounds/victoryLong.mp3
+   A /trunk/Sounds/wilhelm.mp3
+   A /trunk/Widget_CurrentItem.lua
+   A /trunk/embeds.xml
+   A /trunk/kAuction.lua
+   A /trunk/kAuction.toc
+   A /trunk/kAuction.wowproj
+   A /trunk/kAuction.wowsln
+   A /trunk/kAuction.wowsuo
+   A /trunk/kAuction_Client.lua
+   A /trunk/kAuction_Gui.lua
+   A /trunk/kAuction_Item.lua
+   A /trunk/kAuction_Options.lua
+   A /trunk/kAuction_Server.lua
+   A /trunk/kAuction_Threading.lua
+
+Initial commit #2
+------------------------------------------------------------------------
+r1 | root | 2009-02-20 03:54:34 +0000 (Fri, 20 Feb 2009) | 1 line
+Changed paths:
+   A /branches
+   A /tags
+   A /trunk
+
+"kauction/mainline: Initial Import"
+------------------------------------------------------------------------

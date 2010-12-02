@@ -1,0 +1,20 @@
+## Title: kAuction |cffb5a5d5[9251]|r |cff7fff7fAce3|r 
+## Version: 0.9251
+## Author: Kulldam
+## Notes: Simple item auctioning system.
+## Interface: 40000
+## SavedVariables: kAuctionDB, kAuctionRaidDB
+
+embeds.xml
+kAuction.lua
+kAuction_Client.lua
+kAuction_Gui.lua
+kAuction_Item.lua
+kAuction_ItemData.lua
+kAuction_Options.lua
+kAuction_Server.lua
+kAuction_Threading.lua
+kAuction_Weight.lua
+kAuction_Wishlist.lua
+kAuction_WishlistGui.lua
+Module_Aura.lua
