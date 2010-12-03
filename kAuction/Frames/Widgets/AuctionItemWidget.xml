@@ -100,7 +100,7 @@
 			</Anchor>
 		</Anchors>
 		<Frames>
-			<Button name="$parentCurrentItem" inherits="kAuctionIconTemplate" id="1">
+			<Button name="$parentCurrentItem" inherits="kAuctionIconTemplate" id="1">	
 				<Anchors>
 					<Anchor point="LEFT" />
 				</Anchors>
@@ -139,6 +139,74 @@
 					</Frame>
 				</Frames>
 			</Button>
+			<Button name="$parentBidIcon" id="1">
+				<Size>
+					<AbsDimension x="24" y="24"/>
+				</Size>						
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentCurrentItem" relativePoint="RIGHT" />
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						<!--kAuction:OnCurrentItemEnter(self);-->
+					</OnEnter>
+					<OnLeave>
+						<!--kAuction:OnCurrentItemLeave(self);-->
+					</OnLeave>
+				</Scripts>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture name="$parentIcon" file="Interface\Addons\kAuction\Images\Textures\clockgreen.tga">
+							<Size>
+								<AbsDimension x="24" y="24"/>
+							</Size>
+							<Anchors>
+								<Anchor point="LEFT" />
+							</Anchors>
+						</Texture>
+					</Layer>					
+					<Layer level="TOOLTIP">
+						<FontString name="$parentFontString" font="Fonts\FRIZQT__.TTF" text="15" justifyH="CENTER" justifyV="MIDDLE" toplevel="true">
+  							<Color r="1" g="0.8" b="1" a="1"/>
+  							<FontHeight val="16"/>
+  							<Anchors>
+   								<Anchor point="TOP" relativeTo="$parent" x="0" y="0" />
+   								<Anchor point="BOTTOM" relativeTo="$parent" x="0" y="0" />
+  							</Anchors>
+  							<Shadow>
+							    <Offset x="1" y="1" />
+							    <Color r="0" g="0" b="0"/>
+						 	</Shadow>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentHoverFrame" hidden="true">
+						<Size>
+							<AbsDimension x="40" y="35"/>
+						</Size>
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
+								<Offset x="-2" />
+							</Anchor>
+						</Anchors>
+						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+							<BackgroundInsets>
+								<AbsInset left="4" right="4" top="4" bottom="4" />
+							</BackgroundInsets>
+							<TileSize>
+								<AbsValue val="16" />
+							</TileSize>
+							<EdgeSize>
+								<AbsValue val="16" />
+							</EdgeSize>
+							<BorderColor>
+								<Color r=".3" g=".3" b=".3"/>
+							</BorderColor>
+						</Backdrop>
+					</Frame>
+				</Frames>
+			</Button>		
 			<Button name="$parentClose" inherits="kAuctionButtonTemplate">
 				<Anchors>
 					<Anchor point="RIGHT">

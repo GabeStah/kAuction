@@ -1,41 +1,9 @@
 -- Author      : Gabe
 -- Create Date : 9/3/2009 3:25:32 PM
 kAuction.gui.frames.list = {};
-kAuction.gui.frames.weight = {};
 kAuction.gui.frames.list.selectedWishlist = nil;
-kAuction.gui.frames.weight.selectedWeight = nil;
 kAuction.gui.stats = {};
 kAuction.gui.gems = {};
-kAuction.gui.stats.ids = {
-	"AGI",
-	"AP",
-	"ARCANE_RES",
-	"ARMOR",
-	"ARMOR_PENETRATION_RATING",
-	"BLOCK_RATING",
-	"BLOCK_VALUE",
-	"SPELL_CRIT_RATING",
-	"DEFENSE_RATING",
-	"DODGE_RATING",
-	"DPS",
-	"EXPERTISE_RATING",
-	"FERAL_AP",
-	"FIRE_RES",
-	"FROST_RES",
-	"SPELL_HASTE_RATING",
-	"SPELL_HIT_RATING",	
-	"INT",
-	"MANA_REG",
-	"NATURE_RES",
-	"PARRY_RATING",
-	"RESILIENCE_RATING",
-	"SHADOW_RES",
-	"SPELLPEN",
-	"SPELL_DMG",
-	"SPI",
-	"STA",
-	"STR",
-};
 kAuction.gui.searchEquipmentLevels = {
 	[1] = {min=1,max=90000}, -- All
 	[2] = {min=1,max=25000}, -- Classic
@@ -72,7 +40,6 @@ function kAuction:WishlistGui_LoadItems()
 	if self.db.profile.wishlist.config.selectedSection == 'search' then
 		self.gui.frames.list.main.searchBox:SetDisabled(true);
 		self.gui.frames.list.main.searchSummary:SetText('Generating Item Database');
-		self.gui.weightValueChanged = false;
 	end
 	if self.gui.frames.list.main.refreshButton then
 		self.gui.frames.list.main.refreshButton:SetDisabled(true);
@@ -207,10 +174,6 @@ function kAuction:WishlistGui_RefreshMainFrame(initialLoad)
 		kAuction:WishlistGui_CreateWidget_ListTree(fSectionDropdown);
 	elseif self.db.profile.wishlist.config.selectedSection == 'search' then -- Search
 		kAuction:WishlistGui_CreateWidget_Search(fSectionDropdown, initialLoad);
-	elseif self.db.profile.wishlist.config.selectedSection == 'spellsearch' then -- Search
-		kAuction:WishlistGui_CreateWidget_SpellSearch(fSectionDropdown, initialLoad);		
-	elseif self.db.profile.wishlist.config.selectedSection == 'weight' then -- Weight Scale
-		kAuction:WishlistGui_CreateWidget_Weight(fSectionDropdown, initialLoad);
 	end
 	self.gui.frames.list.main:Show()
 end
@@ -435,64 +398,17 @@ function kAuction:WishlistGui_SearchQuery(query, parent, initialLoad)
 		fHeader:AddChild(fhZone);
 		fHeader:AddChild(fhInList);
 		
-		-- Get Active Weights
-		local oWeights = kAuction:Weight_GetActiveWeightList();
-		local iWeightCount = 0;
-		if oWeights and #oWeights > 0 then
-			iWeightCount = #oWeights;
-		end
-		if oWeights then
-			for iWeight,vWeight in pairs(oWeights) do
-				-- Add header
-				local fhWeight = self.AceGUI:Create("InteractiveLabel");
-				if self.gui.weightValueChanged then
-					fhWeight:SetText("|cFF"..kAuction:RGBToHex(255,0,0)..vWeight.name.."|r");
-				else
-					fhWeight:SetText(vWeight.name);
-				end
-				fhWeight.frame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",});
-				kAuction:Gui_SetFrameBackdropColor(fhWeight.frame,0,0,0,0);
-				fhWeight:SetCallback("OnEnter", function(widget,event,val)
-					GameTooltip:ClearLines();
-					GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
-					GameTooltip:SetPoint("BOTTOMLEFT", widget.frame, "TOPLEFT");
-					if self.db.profile.wishlist.config.searchSortKey == vWeight.id and self.db.profile.wishlist.config.searchSortOrderNormal then
-						GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255).."Left-Click to Reverse Sort by " .. vWeight.name .. " Score|r");
-					else
-						GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255).."Left-Click to Sort by " .. vWeight.name .. " Score|r");
-					end
-					if self.gui.weightValueChanged then
-						GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,0,0).."Weight Score requires 'Forced Refresh' to properly update.|r");
-					end
-					GameTooltip:Show();
-					kAuction:Gui_SetFrameBackdropColor(fhWeight.frame,0.9,0.9,0.9,0.1);		
-				end);
-				fhWeight:SetCallback("OnLeave", function(widget,event,val)
-					GameTooltip:Hide();
-					kAuction:Gui_SetFrameBackdropColor(fhWeight.frame,0,0,0,0);		
-				end);
-				fhWeight:SetCallback('OnClick', function(a,b,c,d)
-					if c == 'LeftButton' then
-						kAuction:WishlistGui_UpdateSearchSortKey(vWeight.id);
-						kAuction:WishlistGui_RefreshMainFrame();				
-					end
-				end);
-				fHeader:AddChild(fhWeight);
-				fhWeight:SetRelativeWidth(0.07);
-				fhWeight:SetFont(sharedMedia:Fetch("font", "Arial Narrow"), 12, "");
-			end
-		end	 
 		fhName:SetFont(sharedMedia:Fetch("font", "Arial Narrow"), 12, "");
 		fhSlot:SetFont(sharedMedia:Fetch("font", "Arial Narrow"), 12, "");
 		fhMob:SetFont(sharedMedia:Fetch("font", "Arial Narrow"), 12, "");
 		fhZone:SetFont(sharedMedia:Fetch("font", "Arial Narrow"), 12, "");
 		fhInList:SetFont(sharedMedia:Fetch("font", "Arial Narrow"), 12, "");
 		-- Set Widths
-		fhName:SetRelativeWidth((1 - (0.07 * iWeightCount)) * 0.366);		
-		fhSlot:SetRelativeWidth((1 - (0.07 * iWeightCount)) * 0.1);		
-		fhMob:SetRelativeWidth((1 - (0.07 * iWeightCount)) * 0.166);		
-		fhZone:SetRelativeWidth((1 - (0.07 * iWeightCount)) * 0.266);		
-		fhInList:SetRelativeWidth((1 - (0.07 * iWeightCount)) * 0.095);		
+		fhName:SetRelativeWidth((1 - (0.07)) * 0.366);		
+		fhSlot:SetRelativeWidth((1 - (0.07)) * 0.1);		
+		fhMob:SetRelativeWidth((1 - (0.07)) * 0.166);		
+		fhZone:SetRelativeWidth((1 - (0.07)) * 0.266);		
+		fhInList:SetRelativeWidth((1 - (0.07)) * 0.095);		
 		local objItems = kAuction:WishlistGui_GetSearchQueryResultSet(query, initialLoad);
 		if objItems and #objItems > 0 then
 			self.gui.frames.list.main.searchSummary:SetText('Showing ' .. #objItems .. ' results of ' .. #self.itemLoader.items .. ' total');
@@ -612,38 +528,7 @@ function kAuction:WishlistGui_SearchQuery(query, parent, initialLoad)
 					end
 				end);
 				fItem:AddChild(lInList);
-				
-				local oWeightData = kAuction:Weight_GetActiveWeightList();
-				if oWeights then
-					for iWeight,vWeight in pairs(oWeights) do
-						local lWeight = self.AceGUI:Create("InteractiveLabel");
-						if v[vWeight.id] then
-							lWeight:SetText(v[vWeight.id]);
-							if tonumber(v[vWeight.id]) >= 0 then
-								lWeight:SetColor(0,1,0);
-							else
-								lWeight:SetColor(1,0,0);
-							end
-						end
-						lWeight:SetCallback("OnEnter", function(widget,event,val)
-							kAuction:Weight_ShowSummaryTooltip(vWeight.id, v.id, widget.frame, vWeight.comparison);
-							kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0.9,0.9,0.9,0.1);
-						end);
-						lWeight:SetCallback("OnLeave", function(widget,event,val)
-							GameTooltip:Hide();
-							kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0,0,0,0);
-						end);
-						lWeight:SetCallback('OnClick', function(a,b,c,d)
-							if c == 'RightButton' then
-								kAuction:WishlistGui_CreateSearchItemDropdown(v.id, a.frame);
-							end
-						end);
-						lWeight:SetRelativeWidth(0.07);
-						lWeight:SetFont(sharedMedia:Fetch("font", self.db.profile.wishlist.config.font), self.db.profile.wishlist.config.fontSize, "");
-						fItem:AddChild(lWeight);
-					end
-				end
-				
+								
 				name:SetFont(sharedMedia:Fetch("font", self.db.profile.wishlist.config.font), self.db.profile.wishlist.config.fontSize, "");
 				slot:SetFont(sharedMedia:Fetch("font", self.db.profile.wishlist.config.font), self.db.profile.wishlist.config.fontSize, "");
 				lMob:SetFont(sharedMedia:Fetch("font", self.db.profile.wishlist.config.font), self.db.profile.wishlist.config.fontSize, "");
@@ -651,11 +536,11 @@ function kAuction:WishlistGui_SearchQuery(query, parent, initialLoad)
 				lInList:SetFont(sharedMedia:Fetch("font", self.db.profile.wishlist.config.font), self.db.profile.wishlist.config.fontSize, "");
 				
 				-- Set Widths
-				name:SetRelativeWidth((1 - (0.07 * iWeightCount)) * 0.366);
-				slot:SetRelativeWidth((1 - (0.07 * iWeightCount)) * 0.1);
-				lMob:SetRelativeWidth((1 - (0.07 * iWeightCount)) * 0.166);
-				lZone:SetRelativeWidth((1 - (0.07 * iWeightCount)) * 0.266);
-				lInList:SetRelativeWidth((1 - (0.07 * iWeightCount)) * 0.095);				
+				name:SetRelativeWidth((1 - (0.07)) * 0.366);
+				slot:SetRelativeWidth((1 - (0.07)) * 0.1);
+				lMob:SetRelativeWidth((1 - (0.07)) * 0.166);
+				lZone:SetRelativeWidth((1 - (0.07)) * 0.266);
+				lInList:SetRelativeWidth((1 - (0.07)) * 0.095);				
 			end
 		end
 	--else
@@ -1504,7 +1389,7 @@ end
 function kAuction:WishlistGui_CreateWidget_SectionDropdown(parent)
 	local f = self.AceGUI:Create("DropdownGroup")
 	f:SetLayout("Fill")
-	f:SetGroupList({list = "Wishlists", search = "Search", weight = "Weight Scales"})
+	f:SetGroupList({list = "Wishlists", search = "Search"})
 	f:SetGroup(self.db.profile.wishlist.config.selectedSection);
 	f:SetDropdownWidth(150);
 	--f:SetTitle("Select Section")
@@ -1547,40 +1432,6 @@ function kAuction:WishlistGui_CreateWidget_SectionDropdown(parent)
 			end
 		end);
 		parent:AddChild(self.gui.frames.list.main.addNewListBox);			
-	elseif self.db.profile.wishlist.config.selectedSection == 'spellsearch' then
-		self.gui.frames.list.main.spellSearchBox = self.AceGUI:Create('EditBox');
-		self.gui.frames.list.main.spellSearchBox:SetWidth(190);
-		self.gui.frames.list.main.spellSearchBox:SetLabel('Search');
-		self.gui.frames.list.main.spellSearchBox:SetPoint("TOPRIGHT", f.frame, "TOPRIGHT", 0, 15);
-		parent:AddChild(self.gui.frames.list.main.spellSearchBox);	
-			
-		self.gui.frames.list.main.spellRefreshButton = self.AceGUI:Create('Button');
-		self.gui.frames.list.main.spellRefreshButton:SetWidth(85);
-		self.gui.frames.list.main.spellRefreshButton:SetText('Refresh');
-		self.gui.frames.list.main.spellRefreshButton:SetPoint("RIGHT", self.gui.frames.list.main.spellSearchBox.frame, "LEFT", 0, -7);
-		self.gui.frames.list.main.spellRefreshButton:SetCallback("OnClick", function(widget,event,val)
-			kAuction:WishlistGui_LoadSpells();
-		end);
-		parent:AddChild(self.gui.frames.list.main.spellRefreshButton);	
-		
-		self.gui.frames.list.main.spellSearchSummary = self.AceGUI:Create('InteractiveLabel');
-		self.gui.frames.list.main.spellSearchSummary:SetWidth(210);
-		self.gui.frames.list.main.spellSearchSummary:SetText('');
-		self.gui.frames.list.main.spellSearchSummary:SetPoint("TOP", self.gui.frames.list.main.frame, "TOP", 0, -35);
-		parent:AddChild(self.gui.frames.list.main.spellSearchSummary);	
-	elseif self.db.profile.wishlist.config.selectedSection == 'weight' then
-		self.gui.frames.list.main.addNewWeightBox = self.AceGUI:Create('EditBox');
-		self.gui.frames.list.main.addNewWeightBox:SetWidth(210);
-		self.gui.frames.list.main.addNewWeightBox:SetLabel('Add a New Weight Scale');
-		self.gui.frames.list.main.addNewWeightBox:SetPoint("TOPRIGHT", f.frame, "TOPRIGHT", 0, 15);
-		self.gui.frames.list.main.addNewWeightBox:SetCallback('OnEnterPressed', function(widget,event,val)
-			if val ~= '' then
-				kAuction:Weight_Create(val, true);
-				self.gui.frames.list.main.addNewWeightBox:SetText('');
-				kAuction:WishlistGui_RefreshMainFrame();
-			end
-		end);
-		parent:AddChild(self.gui.frames.list.main.addNewWeightBox);	
 	end
 	
 	return f;
@@ -1784,88 +1635,6 @@ function kAuction:WishlistGui_GetWidget_ListHeader(listId, parent)
 	hBestInSlot:SetRelativeWidth(0.06); -- 6
 	hSetBonus:SetRelativeWidth(0.07); -- 7
 	hBidType:SetRelativeWidth(0.095); -- 10
-	
-	return f;
-end
-function kAuction:WishlistGui_GetWidget_WeightHeader(weightId, parent)
-	local f = self.AceGUI:Create("SimpleGroup");
-	f:SetFullWidth(true);
-	f:SetLayout("Flow");
-	
-	local hName = self.AceGUI:Create("InteractiveLabel");
-	hName:SetText("Statistic");
-	hName:SetCallback("OnClick", function(widget,event,val)
-		kAuction:Weight_SortWeight(weightId, 'stat');
-		kAuction:WishlistGui_ShowWeight(parent.parent, weightId);
-	end);
-	hName:SetCallback("OnEnter", function(widget,event,val)
-		GameTooltip:ClearLines();
-		GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
-		GameTooltip:SetPoint("BOTTOMLEFT", widget.frame, "TOPLEFT");
-		if self.db.profile.wishlist.config.weightSortKey == 'name' and self.db.profile.wishlist.config.weightSortOrderNormal then
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255).."Click to Reverse Sort by Statistic|r");
-		else
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255).."Click to Sort by Statistic|r");
-		end
-		GameTooltip:Show();
-		kAuction:Gui_SetFrameBackdropColor(hName.frame,0.9,0.9,0.9,0.1);		
-	end);
-	hName:SetCallback("OnLeave", function(widget,event,val)
-		GameTooltip:Hide();
-		kAuction:Gui_SetFrameBackdropColor(hName.frame,0,0,0,0);		
-	end);
-	hName.frame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",});
-	kAuction:Gui_SetFrameBackdropColor(hName.frame,0,0,0,0);	
-	f:AddChild(hName);
-	
-	local hLevel = self.AceGUI:Create("InteractiveLabel");
-	hLevel:SetText("Weight Value");
-	hLevel:SetCallback("OnClick", function(widget,event,val)
-		kAuction:Weight_SortWeight(weightId, 'value');
-		kAuction:WishlistGui_ShowWeight(parent.parent, weightId);
-	end);
-	hLevel:SetCallback("OnEnter", function(widget,event,val)
-		GameTooltip:ClearLines();
-		GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
-		GameTooltip:SetPoint("BOTTOMLEFT", widget.frame, "TOPLEFT");
-		if self.db.profile.wishlist.config.weightSortKey == 'value' and self.db.profile.wishlist.config.weightSortOrderNormal then
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255).."Click to Reverse Sort by Weight Value|r");
-		else
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255).."Click to Sort by Weight Value|r");
-		end
-		GameTooltip:Show();
-		kAuction:Gui_SetFrameBackdropColor(hLevel.frame,0.9,0.9,0.9,0.1);		
-	end);
-	hLevel:SetCallback("OnLeave", function(widget,event,val)
-		GameTooltip:Hide();
-		kAuction:Gui_SetFrameBackdropColor(hLevel.frame,0,0,0,0);		
-	end);
-	hLevel.frame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",});
-	kAuction:Gui_SetFrameBackdropColor(hLevel.frame,0,0,0,0);	
-	f:AddChild(hLevel);
-	
-	local hDelete = self.AceGUI:Create('InteractiveLabel');
-	hDelete:SetText('Delete');
-	hDelete.frame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",});
-	kAuction:Gui_SetFrameBackdropColor(hDelete.frame,0,0,0,0);	
-	f:AddChild(hDelete);
-	
-	local hAdd = self.AceGUI:Create('InteractiveLabel');
-	hAdd:SetText('Add Stat');
-	hAdd.frame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",});
-	kAuction:Gui_SetFrameBackdropColor(hAdd.frame,0,0,0,0);	
-	f:AddChild(hAdd);
-
-	hName:SetFont(sharedMedia:Fetch("font", "Arial Narrow"), 12, "");
-	hLevel:SetFont(sharedMedia:Fetch("font", "Arial Narrow"), 12, "");
-	hDelete:SetFont(sharedMedia:Fetch("font", "Arial Narrow"), 12, "");
-	hAdd:SetFont(sharedMedia:Fetch("font", "Arial Narrow"), 12, "");
-		
-	-- Set Widths
-	hName:SetRelativeWidth(0.33); -- 35
-	hLevel:SetRelativeWidth(0.38); -- 40
-	hDelete:SetRelativeWidth(0.15);-- 15
-	hAdd:SetRelativeWidth(0.1); -- 10
 	
 	return f;
 end
@@ -2217,385 +1986,6 @@ function kAuction:WishlistGui_ShowList(parent, id)
 		end
 	end
 end
-function kAuction:WishlistGui_ShowWeight(parent, id)
-	local weightId = nil;
-	if id then
-		weightId = id;
-	elseif self.gui.frames.weight.selectedWeight then
-		weightId = self.gui.frames.weight.selectedWeight;
-	end	
-	local weight = kAuction:Weight_GetWeightById(weightId);
-	-- Check if valid weight returned
-	if weight then
-		if self.gui.frames.weight.tree then
-			self.gui.frames.weight.tree:ReleaseChildren();
-		end
-		local fScroll = self.AceGUI:Create("ScrollFrame")
-		fScroll:SetFullWidth(true);
-		fScroll:SetLayout("Flow")
-		
-		-- Settings Header
-		local fSettingsHeader = self.AceGUI:Create("Heading");
-		fSettingsHeader:SetFullWidth(true);
-		fSettingsHeader:SetText(weight.name .. " Settings");
-		fScroll:AddChild(fSettingsHeader);
-		
-		local fInlineSettings = self.AceGUI:Create("SimpleGroup");
-		fInlineSettings:SetFullWidth(true);
-		fInlineSettings:SetLayout("Flow");
-		fInlineSettings.frame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",});
-		kAuction:Gui_SetFrameBackdropColor(fInlineSettings.frame,0,0,0,0);
-		fScroll:AddChild(fInlineSettings);	
-		
-		local cEnabled = self.AceGUI:Create("CheckBox");
-		cEnabled:SetType('checkbox');
-		cEnabled:SetValue(weight.enabled);
-		cEnabled:SetLabel('Enabled');
-		--TODO: Disable ability to add duplicate of the same stat type to Weight (via unique ID perhaps)
-		cEnabled:SetCallback("OnEnter", function(widget,event,val)
-			GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
-			GameTooltip:ClearLines();
-			GameTooltip:SetPoint("TOPRIGHT", widget.frame, "TOPLEFT");
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,150,0).."Enabled|r");
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255,1)..
-				"Determines if this Weight Scale will be displayed|n"..
-				"in the Wishlist Search results.|r");
-			GameTooltip:Show();
-			kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0.9,0.9,0.9,0.1);
-		end);
-		cEnabled:SetCallback("OnLeave", function(widget,event,val)
-			GameTooltip:Hide();
-			kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0,0,0,0);
-		end);
-		cEnabled:SetCallback("OnValueChanged", function(widget,event,val)
-			self.gui.weightValueChanged = true;
-			kAuction:Weight_SetWeightFlag(weight.id, 'enabled', val);
-		end);
-		fInlineSettings:AddChild(cEnabled);
-		
-		local cComparison = self.AceGUI:Create("CheckBox");
-		cComparison:SetType('checkbox');
-		cComparison:SetValue(weight.comparison);
-		cComparison:SetLabel('Score as Item Difference');
-		cComparison:SetCallback("OnEnter", function(widget,event,val)
-			GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
-			GameTooltip:ClearLines();
-			GameTooltip:SetPoint("TOPRIGHT", widget.frame, "TOPLEFT");
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,150,0).."Show Score as Item Difference|r");
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255,1)..
-				"Determines if the Aggregate Weight Score for this|n"..
-				"Weight Scale will be displayed as the difference|n"..
-				"between the searched item and the current item in|n"..
-				"the matching equipment slot.|n|n"..
-				"If unchecked, Aggregate Weight Scores displayed|n"..
-				"will be the total Score for the searched item.|r");
-			GameTooltip:Show();
-			kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0.9,0.9,0.9,0.1);
-		end);
-		cComparison:SetCallback("OnLeave", function(widget,event,val)
-			GameTooltip:Hide();
-			kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0,0,0,0);
-		end);
-		cComparison:SetCallback("OnValueChanged", function(widget,event,val)
-			self.gui.weightValueChanged = true;
-			kAuction:Weight_SetWeightFlag(weight.id, 'comparison', val);
-		end);
-		fInlineSettings:AddChild(cComparison);
-		
-		-- Gem Settings
-		local fGemHeader = self.AceGUI:Create("Heading");
-		fGemHeader:SetFullWidth(true);
-		fGemHeader:SetText("Default Gems");
-		fScroll:AddChild(fGemHeader);
-		
-		-- Gem Inline
-		local fInlineGem = self.AceGUI:Create("SimpleGroup");
-		fInlineGem:SetFullWidth(true);
-		fInlineGem:SetLayout("Flow");
-		fInlineGem.frame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",});
-		kAuction:Gui_SetFrameBackdropColor(fInlineGem.frame,0,0,0,0);
-		fScroll:AddChild(fInlineGem);	
-		
-		-- Red Gem
-		fGemRed = self.AceGUI:Create("Dropdown");
-		fGemRed:SetList(kAuction:Weight_GetGemDropdownTable());
-		if weight.gems and weight.gems.red then
-			fGemRed:SetValue(weight.gems.red.name);
-		end
-		fGemRed:SetLabel("Red Gem");
-		fGemRed:SetCallback("OnValueChanged", function(widget,event,val)
-			self.gui.weightValueChanged = true;
-			weight.gems.red.name = val;
-			weight.gems.red.id = kAuction:Weight_GetGemItemIdByName(val);
-			weight.gems.red.itemLinkId = self.StatLogic:GetGemID(weight.gems.red.id);
-		end);
-		fGemRed:SetCallback("OnEnter", function(widget,event,val)
-			kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0.9,0.9,0.9,0.1);
-			GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
-			GameTooltip:ClearLines();
-			GameTooltip:SetPoint("TOPRIGHT", widget.frame, "TOPLEFT");
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,150,0).."Red Gem Selection|r");
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255,1)..
-			"Select the default gem to use for Red Sockets|n"..
-			"when calculating Weight Score.|r");
-			GameTooltip:Show();
-		end);
-		fGemRed:SetCallback("OnLeave", function(widget,event,val)
-			GameTooltip:Hide();
-			kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0,0,0,0);
-		end);
-		fGemRed:SetRelativeWidth(0.47);
-		fInlineGem:AddChild(fGemRed);
-		
-		-- Yellow Gem
-		fGemYellow = self.AceGUI:Create("Dropdown");
-		fGemYellow:SetList(kAuction:Weight_GetGemDropdownTable());
-		if weight.gems and weight.gems.yellow then
-			fGemYellow:SetValue(weight.gems.yellow.name);
-		end
-		fGemYellow:SetLabel("Yellow Gem");
-		fGemYellow:SetCallback("OnValueChanged", function(widget,event,val)
-			self.gui.weightValueChanged = true;
-			weight.gems.yellow.name = val;
-			weight.gems.yellow.id = kAuction:Weight_GetGemItemIdByName(val);
-			weight.gems.yellow.itemLinkId = self.StatLogic:GetGemID(weight.gems.yellow.id);
-		end);
-		fGemYellow:SetCallback("OnEnter", function(widget,event,val)
-			kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0.9,0.9,0.9,0.1);
-			GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
-			GameTooltip:ClearLines();
-			GameTooltip:SetPoint("TOPRIGHT", widget.frame, "TOPLEFT");
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,150,0).."Yellow Gem Selection|r");
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255,1)..
-			"Select the default gem to use for Yellow Sockets|n"..
-			"when calculating Weight Score.|r");
-			GameTooltip:Show();
-		end);
-		fGemYellow:SetCallback("OnLeave", function(widget,event,val)
-			GameTooltip:Hide();
-			kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0,0,0,0);
-		end);
-		fGemYellow:SetRelativeWidth(0.47);
-		fInlineGem:AddChild(fGemYellow);
-		
-		-- Blue Gem
-		fGemBlue = self.AceGUI:Create("Dropdown");
-		fGemBlue:SetList(kAuction:Weight_GetGemDropdownTable());
-		if weight.gems and weight.gems.blue then
-			fGemBlue:SetValue(weight.gems.blue.name);
-		end
-		fGemBlue:SetLabel("Blue Gem");
-		fGemBlue:SetCallback("OnValueChanged", function(widget,event,val)
-			self.gui.weightValueChanged = true;
-			weight.gems.blue.name = val;
-			weight.gems.blue.id = kAuction:Weight_GetGemItemIdByName(val);
-			weight.gems.blue.itemLinkId = self.StatLogic:GetGemID(weight.gems.blue.id);
-		end);
-		fGemBlue:SetCallback("OnEnter", function(widget,event,val)
-			kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0.9,0.9,0.9,0.1);
-			GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
-			GameTooltip:ClearLines();
-			GameTooltip:SetPoint("TOPRIGHT", widget.frame, "TOPLEFT");
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,150,0).."Blue Gem Selection|r");
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255,1)..
-			"Select the default gem to use for Blue Sockets|n"..
-			"when calculating Weight Score.|r");
-			GameTooltip:Show();
-		end);
-		fGemBlue:SetCallback("OnLeave", function(widget,event,val)
-			GameTooltip:Hide();
-			kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0,0,0,0);
-		end);
-		fGemBlue:SetRelativeWidth(0.47);
-		fInlineGem:AddChild(fGemBlue);
-		
-		-- Meta Gem
-		fGemMeta = self.AceGUI:Create("Dropdown");
-		fGemMeta:SetList(kAuction:Weight_GetGemDropdownTable(true));
-		if weight.gems and weight.gems.meta then
-			fGemMeta:SetValue(weight.gems.meta.name);
-		end
-		fGemMeta:SetLabel("Meta Gem");
-		fGemMeta:SetCallback("OnValueChanged", function(widget,event,val)
-			self.gui.weightValueChanged = true;
-			weight.gems.meta.name = val;
-			weight.gems.meta.id = kAuction:Weight_GetGemItemIdByName(val);
-			weight.gems.meta.itemLinkId = self.StatLogic:GetGemID(weight.gems.meta.id);
-		end);
-		fGemMeta:SetCallback("OnEnter", function(widget,event,val)
-			kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0.9,0.9,0.9,0.1);
-			GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
-			GameTooltip:ClearLines();
-			GameTooltip:SetPoint("TOPRIGHT", widget.frame, "TOPLEFT");
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,150,0).."Meta Gem Selection|r");
-			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255,1)..
-			"Select the default gem to use for Meta Sockets|n"..
-			"when calculating Weight Score.|r");
-			GameTooltip:Show();
-		end);
-		fGemMeta:SetCallback("OnLeave", function(widget,event,val)
-			GameTooltip:Hide();
-			kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0,0,0,0);
-		end);
-		fGemMeta:SetRelativeWidth(0.47);
-		fInlineGem:AddChild(fGemMeta);
-		
-		-- Add Header
-		local fStatHeader = self.AceGUI:Create("Heading");
-		fStatHeader:SetFullWidth(true);
-		fStatHeader:SetText("Statistic Weight Values");
-		fScroll:AddChild(fStatHeader);
-		if weight.stats and #weight.stats > 0 then
-			for i,v in pairs(weight.stats) do
-				local fInline = self.AceGUI:Create("SimpleGroup");
-				fInline:SetFullWidth(true);
-				fInline:SetLayout("Flow");
-				fInline.frame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background",});
-				kAuction:Gui_SetFrameBackdropColor(fInline.frame,0,0,0,0);
-				fScroll:AddChild(fInline);		
-								
-				-- Create Weight > Type Dropdown
-				fWeightType = self.AceGUI:Create("Dropdown");
-				fWeightType:SetList(kAuction:Weight_GetStatDropdownTable());
-				fWeightType:SetValue(v.id);
-				fWeightType:SetLabel("Statistic");
-				fWeightType:SetCallback("OnValueChanged", function(widget,event,val)
-					if kAuction:Weight_IsStatInWeight(weight.id, val) then
-						kAuction:Print("The '"..weight.name.."' Weight Scale already contains an entry for the '"..kAuction:Weight_GetStatNameFromId(val).."' Statistic -- statistic change was cancelled.");
-						kAuction:WishlistGui_ShowWeight(parent, weight.id);
-					else
-						self.gui.weightValueChanged = true;
-						v.id = val;
-					end
-				end);
-				fWeightType:SetCallback("OnEnter", function(widget,event,val)
-					kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0.9,0.9,0.9,0.1);
-					GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
-					GameTooltip:ClearLines();
-					GameTooltip:SetPoint("TOPRIGHT", widget.frame, "TOPLEFT");
-					GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,150,0).."Statistic Selection|r");
-					GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255,1)..
-					"Select a statistic to add a weight value to.|r");
-					GameTooltip:Show();
-				end);
-				fWeightType:SetCallback("OnLeave", function(widget,event,val)
-					GameTooltip:Hide();
-					kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0,0,0,0);
-				end);
-				fInline:AddChild(fWeightType);
-				
-				-- Create Weight > Value Box
-				fWeightValue = self.AceGUI:Create("EditBox");
-				fWeightValue:SetLabel("Value");
-				fWeightValue:SetText(v.value);
-				fWeightValue:SetCallback("OnTextChanged", function(widget,event,val)
-					if type(tonumber(val)) == "number" then
-						v.value = val;
-						self.gui.weightValueChanged = true;
-					elseif type(val) == "string" and (val == "-" or string.find(val, ".")) then
-						
-					else
-						kAuction:Print("Weight Value must be an integer value.");
-						kAuction:WishlistGui_ShowWeight(parent, weight.id);
-					end
-				end);
-				fWeightValue:SetCallback("OnEnterPressed", function(widget,event,val)
-					if type(tonumber(val)) == "number" then
-						v.value = val;
-						self.gui.weightValueChanged = true;
-					else
-						kAuction:Print("Weight Value must be an integer value.");
-						kAuction:WishlistGui_ShowWeight(parent, weight.id);
-					end
-				end);
-				fWeightValue:SetCallback("OnEnter", function(widget,event,val)
-					local iRand = math.random(1,10);
-					kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0.9,0.9,0.9,0.1);
-					GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
-					GameTooltip:ClearLines();
-					GameTooltip:SetPoint("TOPRIGHT", widget.frame, "TOPLEFT");
-					GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,150,0).."Weight Value|r");
-					GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255,1)..
-					"Enter the weight value to assign to this statistic.|n"..
-					"This value is multiplied by each point of the |n"..
-					"'" .. kAuction:Weight_GetStatNameFromId(v.id) .. "' statistic on |n"..
-					"an item and added to the aggregate Weight Score.|r|n|n"..
-					"|cFF"..kAuction:RGBToHex(0,210,0).."Example:|n"..
-					"+" .. iRand .. " [" .. kAuction:Weight_GetStatNameFromId(v.id) .. "] * " .. v.value .. " [Value] = " .. (iRand * v.value) .. " [Weight Value]");
-					GameTooltip:Show();
-				end);
-				fWeightValue:SetCallback("OnLeave", function(widget,event,val)
-					GameTooltip:Hide();
-					kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0,0,0,0);
-				end);
-				fInline:AddChild(fWeightValue);
-				
-				-- Create Weight > Add New Button
-				fWeightAdd = self.AceGUI:Create("Button");
-				fWeightAdd:SetText("+");
-				fWeightAdd:SetWidth(45); -- 45	
-				fWeightAdd:SetCallback("OnClick", function(widget,event,val)
-					if kAuction:Weight_AddNextValidStat(weight.id) then
-						kAuction:WishlistGui_ShowWeight(parent, weight.id);
-						self.gui.weightValueChanged = true;
-					end
-				end);
-				fWeightAdd:SetCallback("OnEnter", function(widget,event,val)
-					kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0.9,0.9,0.9,0.1);
-					GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
-					GameTooltip:ClearLines();
-					GameTooltip:SetPoint("TOPRIGHT", widget.frame, "TOPLEFT");
-					GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,150,0).."Add Statistic|r");
-					GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255,1)..
-					"Click to add a new statistic to this weight scale.|r");
-					GameTooltip:Show();
-				end);
-				fWeightAdd:SetCallback("OnLeave", function(widget,event,val)
-					GameTooltip:Hide();
-					kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0,0,0,0);
-				end);
-				fInline:AddChild(fWeightAdd);
-				
-				-- Check if more than one exists, if so add delete
-				if #weight.stats > 1 then
-					-- Create Weight > Delete Button
-					fWeightDelete = self.AceGUI:Create("Button");
-					fWeightDelete:SetText("-");
-					fWeightDelete:SetWidth(45);-- 45
-					fWeightDelete:SetCallback("OnClick", function(widget,event,val)
-						tremove(weight.stats, i);
-						kAuction:WishlistGui_ShowWeight(parent, weight.id);
-						self.gui.weightValueChanged = true;
-					end);
-					fWeightDelete:SetCallback("OnEnter", function(widget,event,val)
-						kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0.9,0.9,0.9,0.1);
-						GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
-						GameTooltip:ClearLines();
-						GameTooltip:SetPoint("TOPRIGHT", widget.frame, "TOPLEFT");
-						GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,150,0).."Delete Statistic|r");
-						GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255,1)..
-						"Click to remove this statistic from the weight scale.|r");
-						GameTooltip:Show();
-					end);
-					fWeightDelete:SetCallback("OnLeave", function(widget,event,val)
-						GameTooltip:Hide();
-						kAuction:Gui_SetFrameBackdropColor(widget.parent.frame,0,0,0,0);
-					end);
-					fInline:AddChild(fWeightDelete);
-				end
-				
-				-- Set Widths
-				fWeightType:SetRelativeWidth(0.28); -- 33
-				fWeightValue:SetRelativeWidth(0.52); -- 38
-			end  
-		end  
-		if parent then
-			parent:AddChild(fScroll);
-		else
-			self.gui.frames.weight.tree:AddChild(fScroll);
-		end
-	end
-end
 function kAuction:WishlistGui_CreateWidget_ListTree(parent)
 	local list = kAuction:Wishlist_GetLists();
 	local tree = {};
@@ -2714,78 +2104,6 @@ function kAuction:WishlistGui_CreateWidget_ListTree(parent)
 	self.gui.frames.list.tree:SetTree(tree)
 	parent:AddChild(self.gui.frames.list.tree);	
 end
-function kAuction:WishlistGui_CreateWidget_Weight(parent)
-	local list = kAuction:Weight_GetWeights();
-	if not list then return end;
-	local tree = {};
-	for i,v in pairs(list) do
-		tinsert(tree, {icon = v.icon, text = v.name, value = v.id,
-			children = {
-				{
-					text = 'Delete',
-					value = '_delete_' .. v.id,
-				},
-				{
-					text = 'Rename',
-					value = '_rename_' .. v.id,
-				},
-			},});
-	end
-	self.gui.frames.weight.tree = self.AceGUI:Create("TreeGroup")
-	self.gui.frames.weight.tree:SetCallback('OnGroupSelected', function(widget,event,value,d,e)
-		local s1, s2, s3 = strsplit('_', value);
-		if s2 == 'delete' then
-			StaticPopupDialogs["kAuctionPopup_PromptWeightDelete"] = {
-				text = "|cFF"..kAuction:RGBToHex(0,255,0).."kAuction|r|nDo you really wish to delete the |cFF"..kAuction:RGBToHex(0,255,0).. kAuction:Weight_GetNameById(tonumber(s3)) .."|r weight scale?",
-				OnAccept = function()
-					kAuction:Weight_RemoveWeight(tonumber(s3));
-					kAuction:WishlistGui_RefreshMainFrame();					
-				end,
-				button1 = "Delete",
-				button2 = "Cancel",
-				OnCancel = function()
-					return;
-				end,
-				timeout = 0,
-				whileDead = 1,
-				hideOnEscape = 1,
-				hasEditBox = false,
-				showAlert = true,
-			};	
-			StaticPopup_Show("kAuctionPopup_PromptWeightDelete");
-		elseif s2 == 'rename' then
-			StaticPopupDialogs["kAuctionPopup_PromptWeightRename"] = {
-				text = "Enter the new name for the |cFF"..kAuction:RGBToHex(0,255,0).. kAuction:Weight_GetNameById(tonumber(s3)) .."|r weight scale below.",
-				OnAccept = function(self)
-					kAuction:Weight_SetWeightFlag(tonumber(s3), 'name',  self.editBox:GetText());
-					kAuction:WishlistGui_RefreshMainFrame();
-				end,
-				button1 = "Done",
-				button2 = "Cancel",
-				OnCancel = function()
-					return;
-				end,
-				OnShow = function(self)
-					self.editBox:SetText(kAuction:Weight_GetNameById(tonumber(s3)))
-				end,
-				timeout = 0,
-				whileDead = 1,
-				hideOnEscape = 1,
-				hasEditBox = 1,
-			};	
-			StaticPopup_Show("kAuctionPopup_PromptWeightRename");
-		end
-		if s3 then
-			kAuction:WishlistGui_ShowWeight(self.gui.frames.weight.tree, tonumber(s3));
-		else
-			kAuction:WishlistGui_ShowWeight(self.gui.frames.weight.tree, value);
-		end
-	end);
-	self.gui.frames.weight.tree:SetLayout("Fill")
-	self.gui.frames.weight.tree:SetTree(tree)
-	parent:AddChild(self.gui.frames.weight.tree);	
-end
-
 
 
 

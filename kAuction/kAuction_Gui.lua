@@ -654,29 +654,6 @@ function kAuction:Gui_AuctionItemOnEnter(frame)
 	if localAuctionData.currentItemLink	then
 		itemIdCurrent = kAuction:Item_GetItemIdFromItemLink(localAuctionData.currentItemLink);
 	end
-	-- Get Weight Scores
-	local oWeight = kAuction:Weight_GetActiveWeightList();
-	if oWeight then
-		GameTooltip:AddDoubleLine(" ", " ");
-		GameTooltip:AddDoubleLine("|cFF"..kAuction:RGBToHex(255,150,0).."kAuction|r", "|cFF"..kAuction:RGBToHex(255,150,0).."Upgrade Weight Scores|r");
-		for i,v in pairs(oWeight) do
-			local iScore;
-			if itemIdCurrent then
-				iScore = kAuction:Weight_GetItemScore(v.id, itemId, true, itemIdCurrent);
-			else
-				iScore = kAuction:Weight_GetItemScore(v.id, itemId);
-			end
-			local strScore;
-			if iScore and iScore > 0 then
-				strScore = "|cFF"..kAuction:RGBToHex(0,255,0).."+"..iScore.."|r";
-			elseif iScore then
-				strScore = "|cFF"..kAuction:RGBToHex(255,0,0)..iScore.."|r";
-			else
-				strScore = "|cFF"..kAuction:RGBToHex(255,0,0).."0|r";
-			end
-			GameTooltip:AddDoubleLine("|cFF"..kAuction:RGBToHex(255,255,0)..v.name .. "|r", strScore);
-		end
-	end
 	GameTooltip:SetPoint("BOTTOMLEFT", kAuctionMainFrame, "TOPLEFT");
 	GameTooltip:Show();
 end

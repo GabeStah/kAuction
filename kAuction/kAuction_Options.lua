@@ -330,8 +330,6 @@ kAuction.defaults = {
 			visiblePublicBidVoters = true,
 			visiblePublicDetails = true,
 		},
-		weights = {
-		},
 		wishlist = {
 			enabled = true,
 			autoUpdate = true,
@@ -349,8 +347,6 @@ kAuction.defaults = {
 				spellSearchSortOrderNormal = true,
 				listSortKey = 'name',
 				listSortOrderNormal = true,
-				weightSortKey = 'stat',
-				weightSortOrderNormal = true,
 				gemMinRarity = 4,
 				gemMinItemLevel = 80,
 				font = "Arial Narrow",
@@ -1696,47 +1692,6 @@ kAuction.options = {
 								kAuction.db.profile.wishlist.config.searchThrottleEquipmentLevel = value
 							end,
 							get = function(info) return kAuction.db.profile.wishlist.config.searchThrottleEquipmentLevel end,
-							width = 'full',
-						},
-					},
-				},
-				framesInlineWeightScale = {
-					name = 'Weight Scale Settings',
-					type = 'group',
-					guiInline = true,
-					order = 2,
-					args = {
-						gemMinRarity = {
-							name = 'Gem Minimum Rarity',
-							desc = 'Determine what rarity gems must be equal to or above to be visible in the gem selection dropdowns for Weight Scales.',
-							type = 'select',
-							values = {
-								[0] = 'Poor',
-								[1] = 'Common',
-								[2] = 'Uncommon',
-								[3] = 'Rare',
-								[4] = 'Epic',
-								[5] = 'Legendary',
-								[6] = 'Heirloom',
-							},
-							style = 'dropdown',
-							set = function(info,value)
-								kAuction.db.profile.wishlist.config.gemMinRarity = value;
-							end,
-							get = function(info) return kAuction.db.profile.wishlist.config.gemMinRarity end,
-							width = 'full',
-						},
-						gemMinItemLevel = {
-							name = 'Gem Minimum Item Level',
-							desc = 'Determines the minumum item level gems must be to be visible in the gem selection dropdowns for Weight Scales.',
-							type = 'range',
-							min = 0,
-							max = 400,
-							step = 1,
-							set = function(info,value)
-								kAuction.db.profile.wishlist.config.gemMinItemLevel = value;
-							end,
-							get = function(info) return kAuction.db.profile.wishlist.config.gemMinItemLevel end,
 							width = 'full',
 						},
 					},

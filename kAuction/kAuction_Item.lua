@@ -557,38 +557,6 @@ function kAuction:Item_PopulateItemData(dataSet)
 			else
 				kAuction:Wishlist_AddValidSearchFilter('equipSlot', nil, 'match', 'Empty');
 			end
-			-- Loop through Enabled Weight Scales
-			for iWeight,vWeight in pairs(self.db.profile.weights) do
-				if vWeight.enabled then -- Enabled
-					if vWeight.defaultClass then
-						if UnitClass("player") == vWeight.defaultClass then
-							if vWeight.comparison then -- Compare to current slot item
-								local iScore = kAuction:Weight_GetItemScore(vWeight.id, v.id, true);
-								if iScore then
-									dataSet[i][vWeight.id] = iScore;
-								end
-							else -- Aggregate value					
-								local iScore = kAuction:Weight_GetItemScore(vWeight.id, v.id);
-								if iScore then
-									dataSet[i][vWeight.id] = iScore;
-								end
-							end
-						end
-					else
-						if vWeight.comparison then -- Compare to current slot item
-							local iScore = kAuction:Weight_GetItemScore(vWeight.id, v.id, true);
-							if iScore then
-								dataSet[i][vWeight.id] = iScore;
-							end
-						else -- Aggregate value					
-							local iScore = kAuction:Weight_GetItemScore(vWeight.id, v.id);
-							if iScore then
-								dataSet[i][vWeight.id] = iScore;
-							end
-						end
-					end
-				end
-			end
 		end
 	end
 end

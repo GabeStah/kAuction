@@ -137,6 +137,14 @@ function kAuction:RegisterLibSharedMediaObjects()
 	sharedMedia:Register("sound", "Worms - Uh Oh", [[Interface\AddOns\kAuction\Sounds\wuhoh.wav]]);
 	-- Drum
 	sharedMedia:Register("sound", "Snare1", [[Interface\AddOns\kAuction\Sounds\snare1.mp3]]);
+	-- Icons
+	sharedMedia:Register("texture", "Clock Green", [[Interface\AddOns\kAuction\Images\Textures\clockgreen.tga]]);
+	sharedMedia:Register("texture", "Clock Red", [[Interface\AddOns\kAuction\Images\Textures\clockred.tga]]);
+	sharedMedia:Register("texture", "Clock Yellow", [[Interface\AddOns\kAuction\Images\Textures\clockyellow.tga]]);
+	sharedMedia:Register("texture", "Check Green", [[Interface\AddOns\kAuction\Images\Textures\checkgreen.tga]]);
+	sharedMedia:Register("texture", "Cross Red", [[Interface\AddOns\kAuction\Images\Textures\crossred.tga]]);
+	sharedMedia:Register("texture", "Person Green", [[Interface\AddOns\kAuction\Images\Textures\persongreen.tga]]);
+	sharedMedia:Register("texture", "Person Red", [[Interface\AddOns\kAuction\Images\Textures\personred.tga]]);
 end
 
 function kAuction:OnEnable()
@@ -430,6 +438,7 @@ function kAuction:MainFrameScrollUpdate()
 		for line=1,5 do
 			lineplusoffset = line + FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
 			if lineplusoffset <= #(self.auctions) then
+				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."BidIcon"]:SetNormalTexture([[Interface\AddOns\kAuction\Images\Textures\clockgreen.tga]]);
 				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."ItemNameText"]:SetText(self.auctions[lineplusoffset].itemLink);
 				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."ItemNameText"]:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.main.font), self.db.profile.gui.frames.main.fontSize);
 				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."StatusText"]:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.main.font), self.db.profile.gui.frames.main.fontSize);
