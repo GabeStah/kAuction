@@ -854,37 +854,6 @@ function kAuction:Gui_UpdateAuctionBidButton(index, objAuction)
 		bidButton:Hide();
 	end
 end
-function kAuction:Gui_UpdateAuctionCandyBar(index, objAuction)
-	row = "auction" .. index;
-	local timeleft = kAuction:GetAuctionTimeleft(objAuction);
-	if not kAuction:Gui_GetSelectedTab() then
-		local iAuction = kAuction:Client_GetAuctionIndexByAuctionId(objAuction.id);
-		if timeleft and self.auctions[iAuction] then
-			-- Check if bar exists
-			if not self.bars[index] then
-				self.bars[index] = self.candyBar:New(sharedMedia:Fetch("statusbar", self.db.profile.gui.frames.main.barTexture), 250, 300)
-				--self.bars[index] = self.candyBar:New(sharedMedia:Fetch("statusbar", self.db.profile.gui.frames.main.barTexture), self.db.profile.gui.frames.main.width*self.db.profile.gui.frames.main.scale - 51*self.db.profile.gui.frames.main.scale, 24*self.db.profile.gui.frames.main.scale)
-			end
-			self.bars[index]:SetDuration(objAuction.duration)
-			self.bars[index]:SetColor(self.db.profile.gui.frames.main.barColor.r, self.db.profile.gui.frames.main.barColor.g, self.db.profile.gui.frames.main.barColor.b, self.db.profile.gui.frames.main.barColor.a)
-			--self.bars[index]:SetPoint(row, "LEFT", _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."CurrentItemIcon"], "RIGHT", -24*self.db.profile.gui.frames.main.scale, 0);
-			--[[
-			self.candyBar:RegisterCandyBar(row, objAuction.duration, "", nil);
-			self.candyBar:SetBackgroundColor(row, self.db.profile.gui.frames.main.barBackgroundColor.r, self.db.profile.gui.frames.main.barBackgroundColor.g, self.db.profile.gui.frames.main.barBackgroundColor.b, self.db.profile.gui.frames.main.barBackgroundColor.a);
-			self.candyBar:SetColor(row, self.db.profile.gui.frames.main.barColor.r, self.db.profile.gui.frames.main.barColor.g, self.db.profile.gui.frames.main.barColor.b, self.db.profile.gui.frames.main.barColor.a);
-			self.candyBar:SetCompletion(row, kAuction:MainFrameScrollUpdate());
-			self.candyBar:SetHeight(row, 24*self.db.profile.gui.frames.main.scale);
-			self.candyBar:SetPoint(row, "LEFT", _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."CurrentItemIcon"], "RIGHT", -24*self.db.profile.gui.frames.main.scale, 0);
-			self.candyBar:SetTexture(row, sharedMedia:Fetch("statusbar", self.db.profile.gui.frames.main.barTexture));
-			self.candyBar:SetTimeFormat(row, function() return "" end);
-			self.candyBar:SetTimeLeft(row, timeleft);
-			self.candyBar:SetWidth(row, self.db.profile.gui.frames.main.width*self.db.profile.gui.frames.main.scale - 51*self.db.profile.gui.frames.main.scale);
-			]]
-			-- Run Bar
-			self.bars[index]:Start();
-		end
-	end
-end
 function kAuction:Gui_UpdateAuctionCurrentItemButtons(index, objAuction)
 	local frameCurrentItem = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."CurrentItem"];
 	local frameCurrentItemIcon = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."CurrentItemIcon"];
@@ -913,62 +882,95 @@ function kAuction:Gui_UpdateAuctionCloseButton(index, objAuction)
 	local button = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."Close"];
 	button:SetScript("OnClick", function() kAuction:Gui_AuctionCloseButtonOnClick(objAuction) end);
 end
-function kAuction:Gui_UpdateAuctionStatusText(index, objAuction)
-	local statusText = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."StatusText"];
+function kAuction:Gui_UpdateAuctionIcons(index, objAuction)
+	local timerText = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."StatusIconText"];
+	local statusIcon = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."StatusIcon"];
+	local bidIcon = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."BidIcon"];
+	local voteIcon = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."VoteIcon"];
 	local auctionItem = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index];
-	local localAuctionData = kAuction:Client_GetLocalAuctionDataById(objAuction.id);
-	local bidText = "";
-	local voteText = "";
-	if objAuction.bids then
-		if #objAuction.bids > 0 then
-			bidText = "|cFF"..kAuction:RGBToHex(0,255,0).."B:"..#objAuction.bids.."|r ";	
-		else
-			bidText = "|cFF"..kAuction:RGBToHex(255,255,0).."B:"..#objAuction.bids.."|r ";	
+	local localAuctionData = self:Client_GetLocalAuctionDataById(objAuction.id);
+	local time = kAuction:GetAuctionTimeleft(objAuction);
+	-- TODO: Finish tooltip data for all icon states
+	--[[
+	auction open status > clock w/ text
+	auction closed status > clock w/o text
+	DE status > empty star
+	winner self status > full star
+	winner other status > half star
+	no bid bidicon > user-mystery
+	bid bidicon > user-check
+	council no vote voteicon > exclaim
+	council vote voteicon > check	
+	]]
+	statusIcon:SetScript("OnEnter", function(widget,event,val)
+			kAuction:Gui_SetFrameBackdropColor(widget:GetParent(),0.9,0.9,0.9,0.1);
+			GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
+			GameTooltip:ClearLines();
+			GameTooltip:SetPoint("TOPRIGHT", widget, "TOPLEFT");
+			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,150,0).."Status|r");
+			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(255,255,255,1)..
+			"Status text info.|r");
+			GameTooltip:AddLine(" ");
+			GameTooltip:AddLine("|cFF"..kAuction:RGBToHex(175,150,0).."Left-click to toggle.|r");
+			GameTooltip:Show();
+		end);
+	statusIcon:SetScript("OnLeave", function(widget,event,val)
+		GameTooltip:Hide();
+		kAuction:Gui_SetFrameBackdropColor(widget:GetParent(),0,0,0,0);
+	end);
+	statusIcon:SetScript('OnClick', function(a,b,c,d)
+		if c == 'LeftButton' then
+			kAuction:Wishlist_SetItemFlag(listId, v.id, 'autoBid', not v.autoBid);
+			kAuction:WishlistGui_ShowList(nil, listId);
 		end
+	end);
+	
+	if time and time > 0 then
+		timerText:SetText(math.floor(time))
+	else
+		timerText:SetText("")		
+	end	
+	if objAuction.bids then
 		-- Check if auctionType is Loot Council
-		if objAuction.auctionType == 2 and kAuction:IsLootCouncilMember(objAuction, self.playerName) then
+		if objAuction.auctionType == 2 and self:IsLootCouncilMember(objAuction, self.playerName) then
 			local booBidFound = false;
 			for i,bid in pairs(objAuction.bids) do
-				if kAuction:BidHasCouncilMemberVote(bid, self.playerName) then
+				if self:BidHasCouncilMemberVote(bid, self.playerName) then
 					booBidFound = true;
 				end
 			end
+			-- Check if council vote
 			if booBidFound then
-				voteText = "|cFF"..kAuction:RGBToHex(0,255,0).."V|r ";					
+				voteIcon:SetNormalTexture(sharedMedia:Fetch('texture','check'))
 			else
-				voteText = "|cFF"..kAuction:RGBToHex(255,0,0).."V|r ";					
+				voteIcon:SetNormalTexture(sharedMedia:Fetch('texture','exclaim'))		
 			end
+			voteIcon:Show();
+		else
+			voteIcon:Hide();
 		end
 	end	
 	if objAuction.winner then
 		if objAuction.winner == self.playerName then
-			statusText:SetText("WINNER!");
+			statusIcon:SetNormalTexture(sharedMedia:Fetch('texture','star'))
 		else
-			statusText:SetText("["..objAuction.winner.."]");
+			statusIcon:SetNormalTexture(sharedMedia:Fetch('texture','star-half'))
 		end
 	elseif objAuction.disenchant then
-		statusText:SetText("Disenchanted");
+		statusIcon:SetNormalTexture(sharedMedia:Fetch('texture','star-none'))
 	elseif objAuction.closed then -- Closed, cannot bid or cancel bid, remove button
-		if kAuction:GetAuctionTimeleft(objAuction, objAuction.auctionCloseVoteDuration) then
-			statusText:SetText(bidText..voteText.."Closed");
-		else
-			statusText:SetText("Closed");
-		end
+		statusIcon:SetNormalTexture(sharedMedia:Fetch('texture','clockdark'))
 	elseif localAuctionData.bid and kAuction:GetAuctionTimeleft(objAuction) then -- Bid, not closed, show Cancel button
-		if localAuctionData.bidType == "normal" then
-			statusText:SetText(bidText..voteText.."Normal Bid");
-		elseif localAuctionData.bidType == "offspec" then
-			statusText:SetText(bidText..voteText.."Offspec Bid");
-		elseif localAuctionData.bidType == "rot" then
-			statusText:SetText(bidText..voteText.."Rot Bid");
+		-- Bid by player
+		if kAuction:Client_DoesAuctionHaveBidFromName(objAuction, self.playerName) then
+			bidIcon:SetNormalTexture(sharedMedia:Fetch('texture', 'user-check'))
+		else
+			bidIcon:SetNormalTexture(sharedMedia:Fetch('texture', 'user-mystery'))
 		end
 	elseif kAuction:GetAuctionTimeleft(objAuction) then
-		statusText:SetText(bidText..voteText.."Auction Open");
+		statusIcon:SetNormalTexture(sharedMedia:Fetch('texture','clock'))
 	else -- Expired, remove button
-		statusText:SetText("Expired");
 	end	
-	statusText:SetPoint("RIGHT", auctionItem, -30,0);
-	statusText:Show();
 end
 function kAuction:Gui_UpdateBidCurrentItemButtons(index, auction, bid)
 	local frameCurrentItem = _G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..index.."CurrentItem"];
@@ -983,7 +985,7 @@ function kAuction:Gui_UpdateBidCurrentItemButtons(index, auction, bid)
 		end
 		frameCurrentItem:SetScript("OnLeave",function() GameTooltip:Hide() end)
 	else
-		frameCurrentItem:SetScript("OnEnter", function() end);
+		frameCurrentItem:SetScript("OnEnter", nil);
 		frameCurrentItemIcon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark");
 	end
 end

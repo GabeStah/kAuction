@@ -4,6 +4,8 @@ local _G = _G
 local kAuction = LibStub("AceAddon-3.0"):NewAddon("kAuction", "AceComm-3.0", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0", "AceSerializer-3.0", "AceTimer-3.0")
 _G.kAuction = kAuction
 kAuction.menu = {};
+kAuction.updates = {};
+kAuction.updates[1] = 0;
 kAuction.currentZone = false;
 local sharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 kAuction.sharedMedia = sharedMedia
@@ -52,6 +54,9 @@ function kAuction:InitializeEvents()
 	kAuction:RegisterEvent("RAID_ROSTER_UPDATE");
 	kAuction:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	--kAuction:RegisterEvent("CHAT_MSG_WHISPER");
+	
+	-- Update
+	_G[self.db.profile.gui.frames.main.name]:SetScript("OnUpdate", function(frame,elapsed) kAuction:OnUpdate(1, elapsed) end)
 end
 --[[
 do
@@ -138,13 +143,19 @@ function kAuction:RegisterLibSharedMediaObjects()
 	-- Drum
 	sharedMedia:Register("sound", "Snare1", [[Interface\AddOns\kAuction\Sounds\snare1.mp3]]);
 	-- Icons
-	sharedMedia:Register("texture", "Clock Green", [[Interface\AddOns\kAuction\Images\Textures\clockgreen.tga]]);
-	sharedMedia:Register("texture", "Clock Red", [[Interface\AddOns\kAuction\Images\Textures\clockred.tga]]);
-	sharedMedia:Register("texture", "Clock Yellow", [[Interface\AddOns\kAuction\Images\Textures\clockyellow.tga]]);
-	sharedMedia:Register("texture", "Check Green", [[Interface\AddOns\kAuction\Images\Textures\checkgreen.tga]]);
-	sharedMedia:Register("texture", "Cross Red", [[Interface\AddOns\kAuction\Images\Textures\crossred.tga]]);
-	sharedMedia:Register("texture", "Person Green", [[Interface\AddOns\kAuction\Images\Textures\persongreen.tga]]);
-	sharedMedia:Register("texture", "Person Red", [[Interface\AddOns\kAuction\Images\Textures\personred.tga]]);
+	sharedMedia:Register("texture", "user-mystery", [[Interface\AddOns\kAuction\Images\Textures\user-mystery.tga]]);
+	sharedMedia:Register("texture", "user-add", [[Interface\AddOns\kAuction\Images\Textures\user-add.tga]]);
+	sharedMedia:Register("texture", "user-check", [[Interface\AddOns\kAuction\Images\Textures\user-check.tga]]);
+	sharedMedia:Register("texture", "user-delete", [[Interface\AddOns\kAuction\Images\Textures\user-delete.tga]]);
+	sharedMedia:Register("texture", "star", [[Interface\AddOns\kAuction\Images\Textures\star.tga]]);
+	sharedMedia:Register("texture", "star-half", [[Interface\AddOns\kAuction\Images\Textures\star-half.tga]]);
+	sharedMedia:Register("texture", "star-none", [[Interface\AddOns\kAuction\Images\Textures\star-none.tga]]);
+	sharedMedia:Register("texture", "clock", [[Interface\AddOns\kAuction\Images\Textures\clock.tga]]);
+	sharedMedia:Register("texture", "clockdark", [[Interface\AddOns\kAuction\Images\Textures\clockdark.tga]]);
+	sharedMedia:Register("texture", "x", [[Interface\AddOns\kAuction\Images\Textures\x.tga]]);
+	sharedMedia:Register("texture", "check", [[Interface\AddOns\kAuction\Images\Textures\check.tga]]);
+	sharedMedia:Register("texture", "exclaim", [[Interface\AddOns\kAuction\Images\Textures\exclaim.tga]]);
+	sharedMedia:Register("texture", "xdark", [[Interface\AddOns\kAuction\Images\Textures\xdark.tga]]);
 end
 
 function kAuction:OnEnable()
@@ -429,6 +440,28 @@ function kAuction:GetFirstOpenAuctionIndex()
 	end
 	return 1;
 end
+function kAuction:OnUpdate(index, elapsed)
+	kAuction.updates[index] = kAuction.updates[index] + elapsed;
+	if (kAuction.updates[index] > 0.1) then
+		kAuction.updates[index] = 0;
+		kAuction:MainFrameScrollUpdate()
+	end
+	--[[
+	_G[self.db.profile.gui.frames.main.name]:SetScript("OnUpdate", function(frame,elapsed,index)
+		kAuction.iconUpdates[index] = kAuction.iconUpdates[index] + elapsed;
+		if (kAuction.iconUpdates[index] > 0.2) then
+			local time = kAuction:GetAuctionTimeleft(objAuction);
+			kAuction.iconUpdates[index] = 0			
+			if time and time > 0 then
+				timerText:SetText(math.floor(time))
+			else
+				timerText:SetText("")
+				statusIcon:SetScript("OnUpdate", nil)
+			end	
+		end
+	end)		
+	]]
+end
 function kAuction:MainFrameScrollUpdate()
 	if self.auctions and #(self.auctions) > 0 and self.db.profile.gui.frames.main.visible then
 		local line; -- 1 through 5 of our window to scroll
@@ -438,10 +471,8 @@ function kAuction:MainFrameScrollUpdate()
 		for line=1,5 do
 			lineplusoffset = line + FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
 			if lineplusoffset <= #(self.auctions) then
-				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."BidIcon"]:SetNormalTexture([[Interface\AddOns\kAuction\Images\Textures\clockgreen.tga]]);
 				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."ItemNameText"]:SetText(self.auctions[lineplusoffset].itemLink);
 				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."ItemNameText"]:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.main.font), self.db.profile.gui.frames.main.fontSize);
-				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."StatusText"]:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.main.font), self.db.profile.gui.frames.main.fontSize);
 				-- Removed r8702, replaced by dropdown system -- Update Bid Button --kAuction:Gui_UpdateAuctionBidButton(line, self.auctions[lineplusoffset]);
 				-- Update Close Button
 				kAuction:Gui_UpdateAuctionCloseButton(line, self.auctions[lineplusoffset]);
@@ -449,8 +480,8 @@ function kAuction:MainFrameScrollUpdate()
 				kAuction:Gui_UpdateAuctionCurrentItemButtons(line, self.auctions[lineplusoffset]);
 				-- Update Candy Bars
 				--kAuction:Gui_UpdateAuctionCandyBar(line, self.auctions[lineplusoffset]);
-				-- Update Status
-				kAuction:Gui_UpdateAuctionStatusText(line, self.auctions[lineplusoffset]);
+				-- Update Icons
+				kAuction:Gui_UpdateAuctionIcons(line, self.auctions[lineplusoffset]);
 				-- Update Pullout menu
 				kAuction:Gui_UpdateItemMatchMenu(line, self.auctions[lineplusoffset]);
 				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line]:Show();
@@ -826,7 +857,6 @@ function kAuction:OnCurrentItemEnter(frame)
 			kAuction:Gui_CurrentItemMenuOnEnter(frame,localAuctionData.currentItemLink);
 		end
 		--kAuction:Threading_StartTimer("kAuctionThreadingFrameMain"..row);
-		_G["kAuctionThreadingFrameMain"..row]:Show();
 	else
 		if _G["kAuctionThreadingFrameMain"..row] then
 			_G["kAuctionThreadingFrameMain"..row]:Hide();

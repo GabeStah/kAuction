@@ -443,12 +443,6 @@ function kAuction:Server_GetRaidRoster()
 	for i = 1, GetNumRaidMembers() do
 		name, _, _, _, class, _, _, online = GetRaidRosterInfo(i)
 		if online then
-			local class;
-			local s1, s2 = strsplit(" ", class);
-			class = strupper(strsub(s1, 1, 1)) .. strlower(strsub(s1, 2));
-			if s2 then
-				class = class .. " " .. strupper(strsub(s2, 1, 1)) .. strlower(strsub(s2, 2));
-			end
 			tinsert(roster, {name = name, class = class});
 		end
 	end
@@ -533,21 +527,21 @@ function Server_OnAuctionExpire(iAuction)
 	if not kAuction:Client_IsServer() then
 		return;
 	end
-	if self.auctions[iAuction] then
-		kAuction:ScheduleTimer(kAuction:MainFrameScrollUpdate(), 0.5);
-		kAuction:ScheduleTimer(kAuction:BidsFrameScrollUpdate(), 0.5);
-		self.auctions[iAuction].closed = true;
+	if kAuction.auctions[iAuction] then
+		kAuction:ScheduleTimer(function() kAuction:MainFrameScrollUpdate() end, 0.5);
+		kAuction:ScheduleTimer(function() kAuction:BidsFrameScrollUpdate() end, 0.5);
+		kAuction.auctions[iAuction].closed = true;
 		-- No bids, auto DE
-		if #self.auctions[iAuction].bids == 0 then
-			self.auctions[iAuction].disenchant = true;
-			kAuction:Server_AwardAuction(self.auctions[iAuction]);
-		elseif #self.auctions[iAuction].bids == 1 then
-			for i,v in pairs(self.auctions[iAuction].bids) do
-				kAuction:Server_AwardAuction(self.auctions[iAuction], v.name);				
+		if #kAuction.auctions[iAuction].bids == 0 then
+			kAuction.auctions[iAuction].disenchant = true;
+			kAuction:Server_AwardAuction(kAuction.auctions[iAuction]);
+		elseif #kAuction.auctions[iAuction].bids == 1 then
+			for i,v in pairs(kAuction.auctions[iAuction].bids) do
+				kAuction:Server_AwardAuction(kAuction.auctions[iAuction], v.name);				
 			end
-		elseif self.db.profile.looting.autoAwardRandomAuctions then
-			kAuction:ScheduleTimer("DetermineRandomAuctionWinner", self.db.profile.looting.auctionCloseDelay, iAuction);	
-			kAuction:ScheduleTimer("Server_AwardAuction", self.db.profile.looting.auctionCloseDelay + 1, self.auctions[iAuction]);	
+		elseif kAuction.db.profile.looting.autoAwardRandomAuctions then
+			kAuction:ScheduleTimer("DetermineRandomAuctionWinner", kAuction.db.profile.looting.auctionCloseDelay, iAuction);	
+			kAuction:ScheduleTimer("Server_AwardAuction", kAuction.db.profile.looting.auctionCloseDelay + 1, kAuction.auctions[iAuction]);	
 		end
 	end
 end
@@ -848,12 +842,6 @@ function kAuction:Server_UpdateRaidRoster()
 	for i = 1, GetNumRaidMembers() do
 		name, _, _, _, class, _, _, online = GetRaidRosterInfo(i)
 		if online then
-			local class;
-			local s1, s2 = strsplit(" ", class);
-			class = strupper(strsub(s1, 1, 1)) .. strlower(strsub(s1, 2));
-			if s2 then
-				class = class .. " " .. strupper(strsub(s2, 1, 1)) .. strlower(strsub(s2, 2));
-			end
 			if self.actors[name] then
 				self.actors[name].presence = self.actors[name].presence + self.const.raid.presenceTick;
 			else -- new
