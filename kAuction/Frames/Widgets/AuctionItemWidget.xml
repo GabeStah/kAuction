@@ -140,6 +140,11 @@
 				</Anchors>
 				<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\xdark" />
 				<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\x" />
+				<Scripts>
+					<OnEnter>
+						kAuction:Gui_OnEnterCloseIcon(self)
+					</OnEnter>	
+				</Scripts>					
 			</Button>
 			<Button name="$parentStatusIcon" inherits="kAuctionTextIconTemplate" id="1">		
 				<Anchors>
@@ -161,19 +166,34 @@
 						 	</Shadow>
 						</FontString>
 					</Layer>
-				</Layers>				
+				</Layers>			
+				<Scripts>
+					<OnEnter>
+						kAuction:Gui_OnEnterStatusIcon(self)
+					</OnEnter>	
+				</Scripts>	
 			</Button>	
 			<Button name="$parentBidIcon" inherits="kAuctionTextIconTemplate" id="1">					
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentStatusIcon" relativePoint="LEFT" />
 				</Anchors>
 				<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\user-mystery" />
+				<Scripts>
+					<OnEnter>
+						kAuction:Gui_OnEnterBidIcon(self)
+					</OnEnter>	
+				</Scripts>					
 			</Button>						
 			<Button name="$parentVoteIcon" inherits="kAuctionTextIconTemplate" id="1">		
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentBidIcon" relativePoint="LEFT" />
 				</Anchors>
 				<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\exclaim" />
+				<Scripts>
+					<OnEnter>
+						kAuction:Gui_OnEnterVoteIcon(self)
+					</OnEnter>	
+				</Scripts>					
 			</Button>				
 		</Frames>
 		<Scripts>

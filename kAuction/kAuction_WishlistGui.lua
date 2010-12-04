@@ -578,6 +578,7 @@ function kAuction:WishlistGui_CreateFilterMenu(key, anchorFrame)
 			end
 		end
 		if menuData and #menuData > 0 then
+			kAuction:Gui_CreateDropdownMenuTimer()
 			EasyMenu(menuData, self.menu, anchorFrame, 0, 0, "MENU", 1.5)
 		end		
 	elseif key == 'zoneName' then
@@ -617,6 +618,7 @@ function kAuction:WishlistGui_CreateFilterMenu(key, anchorFrame)
 			});	
 		end
 		if menuData and #menuData > 0 then
+			kAuction:Gui_CreateDropdownMenuTimer()
 			EasyMenu(menuData, self.menu, anchorFrame, 0, 0, "MENU", 1.5)
 		end	
 	elseif key == 'mobName' then
@@ -697,6 +699,7 @@ function kAuction:WishlistGui_CreateFilterMenu(key, anchorFrame)
 			end
 		end
 		if menuData and #menuData > 0 then
+			kAuction:Gui_CreateDropdownMenuTimer()
 			EasyMenu(menuData, self.menu, anchorFrame, 0, 0, "MENU", 1.5)
 		end	
 	end
@@ -1144,6 +1147,7 @@ function kAuction:WishlistGui_CreateListItemBidTypeDropdown(listId, itemId, anch
 		tooltipText = "Click to set to Rot Bid Type",
 	});	
 	if menuData and #menuData > 0 then
+		kAuction:Gui_CreateDropdownMenuTimer()
 		EasyMenu(menuData, self.menu, anchorFrame, 0, 0, "MENU", 1.5)
 	end
 end
@@ -1225,6 +1229,7 @@ function kAuction:WishlistGui_CreateListItemDropdown(listId, itemId, anchorFrame
 		});
 	end
 	if (oWith and #oWith > 0) or (oWithout and #oWithout > 0) then
+		kAuction:Gui_CreateDropdownMenuTimer()
 		EasyMenu(menuData, self.menu, anchorFrame, 0, 0, "MENU", 1.5)
 	end
 end
@@ -1310,6 +1315,7 @@ function kAuction:WishlistGui_CreateSearchItemDropdown2(itemId, anchorFrame)
 		});
 	end
 	if (oWith and #oWith > 0) or (oWithout and #oWithout > 0) then
+		kAuction:Gui_CreateDropdownMenuTimer()
 		EasyMenu(menuData, self.menu, anchorFrame, 0, 0, "MENU", 1.5)
 	end
 end
@@ -1383,6 +1389,7 @@ function kAuction:WishlistGui_CreateSearchItemDropdown(itemId, anchorFrame)
 		end
 	end
 	if (oLists and #oLists > 0) then
+		kAuction:Gui_CreateDropdownMenuTimer()
 		EasyMenu(menuData, self.menu, anchorFrame, 0, 0, "MENU", 1.5)
 	end
 end

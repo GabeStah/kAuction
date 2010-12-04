@@ -33,13 +33,23 @@ function kAuction:Client_AuctionReceived(auction)
 		self.db.profile.gui.frames.bids.visible = true;
 		self.db.profile.gui.frames.main.visible = true;
 		kAuction:Gui_HookFrameRefreshUpdate();
-		kAuction:ScheduleTimer("Gui_HookFrameRefreshUpdate", auction.duration + auction.auctionCloseVoteDuration + auction.auctionCloseDelay);
+		tinsert(self.timers, {
+			timer = kAuction:ScheduleTimer("Gui_HookFrameRefreshUpdate", auction.duration + auction.auctionCloseVoteDuration + auction.auctionCloseDelay), 
+			expires = time() + auction.duration + auction.auctionCloseVoteDuration + auction.auctionCloseDelay
+		});		
 		-- Check if auto-remove auction is enabled and NOT server
 		if kAuction:Client_IsServer() then
 			return;
 		else
 			if self.db.profile.gui.frames.main.autoRemoveAuctions then
-				self:ScheduleTimer(function() kAuction:Gui_AuctionCloseButtonOnClick(auction) end, auction.duration + auction.auctionCloseVoteDuration + auction.auctionCloseDelay + self.db.profile.gui.frames.main.autoRemoveAuctionsDelay);
+				tinsert(self.timers, {
+					timer = self:ScheduleTimer(function()
+						kAuction:Gui_AuctionCloseButtonOnClick(auction)
+						-- Cancel timer
+						kAuction:CancelTimer(kAuction.timers['AUTO_REMOVE_AUCTIONS'], true);
+					end, auction.duration + auction.auctionCloseVoteDuration + auction.auctionCloseDelay + self.db.profile.gui.frames.main.autoRemoveAuctionsDelay), 
+					expires = time() + auction.duration + auction.auctionCloseVoteDuration + auction.auctionCloseDelay + self.db.profile.gui.frames.main.autoRemoveAuctionsDelay
+				});					
 			end
 		end	
 		-- Check if wishlist requires auto-bid

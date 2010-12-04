@@ -209,6 +209,7 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 		bidType = false, 
 		currentItemLink = currentItemLink, 
 		id = id,
+		itemLink = itemLink,
 		localStartTime = time(), 
 		setBonus = false,
 	});		
@@ -225,8 +226,14 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 	kAuction:Gui_HookFrameRefreshUpdate();
 	-- SendComm
 	kAuction:SendCommunication("Auction", self.auctions[#(self.auctions)])
-	kAuction:ScheduleTimer(Server_OnAuctionExpire, self.auctions[#(self.auctions)].duration + self.db.profile.looting.auctionCloseDelay, #(self.auctions));
-	kAuction:ScheduleTimer("Gui_HookFrameRefreshUpdate", self.db.profile.looting.auctionDuration + self.db.profile.looting.auctionCloseVoteDuration + self.db.profile.looting.auctionCloseDelay);
+	tinsert(self.timers, {
+		timer = kAuction:ScheduleTimer(Server_OnAuctionExpire, self.auctions[#(self.auctions)].duration + self.db.profile.looting.auctionCloseDelay, #(self.auctions)), 
+		expires = time() + self.auctions[#(self.auctions)].duration + self.db.profile.looting.auctionCloseDelay
+	});
+	tinsert(self.timers, {
+		timer = kAuction:ScheduleTimer("Gui_HookFrameRefreshUpdate", self.db.profile.looting.auctionDuration + self.db.profile.looting.auctionCloseVoteDuration + self.db.profile.looting.auctionCloseDelay);
+		expires = time() + self.db.profile.looting.auctionDuration + self.db.profile.looting.auctionCloseVoteDuration + self.db.profile.looting.auctionCloseDelay
+	});	
 	kAuction:Debug("FUNC: Server_AuctionItem: Item: " .. itemLink .. ", corpse: " .. corpseGuid, 1);
 	-- Check if wishlist requires auto-bid
 	if kAuction:Wishlist_IsEnabled() then
@@ -528,8 +535,10 @@ function Server_OnAuctionExpire(iAuction)
 		return;
 	end
 	if kAuction.auctions[iAuction] then
-		kAuction:ScheduleTimer(function() kAuction:MainFrameScrollUpdate() end, 0.5);
-		kAuction:ScheduleTimer(function() kAuction:BidsFrameScrollUpdate() end, 0.5);
+		tinsert(kAuction.timers, {
+			timer = kAuction:ScheduleTimer("Gui_HookFrameRefreshUpdate", 0.5),
+			expires = time() + 0.5
+		});		
 		kAuction.auctions[iAuction].closed = true;
 		-- No bids, auto DE
 		if #kAuction.auctions[iAuction].bids == 0 then
@@ -540,8 +549,14 @@ function Server_OnAuctionExpire(iAuction)
 				kAuction:Server_AwardAuction(kAuction.auctions[iAuction], v.name);				
 			end
 		elseif kAuction.db.profile.looting.autoAwardRandomAuctions then
-			kAuction:ScheduleTimer("DetermineRandomAuctionWinner", kAuction.db.profile.looting.auctionCloseDelay, iAuction);	
-			kAuction:ScheduleTimer("Server_AwardAuction", kAuction.db.profile.looting.auctionCloseDelay + 1, kAuction.auctions[iAuction]);	
+			tinsert(kAuction.timers, {
+				timer = kAuction:ScheduleTimer("DetermineRandomAuctionWinner", kAuction.db.profile.looting.auctionCloseDelay, iAuction),
+				expires = time() + kAuction.db.profile.looting.auctionCloseDelay
+			});				
+			tinsert(kAuction.timers, {
+				timer = kAuction:ScheduleTimer("Server_AwardAuction", kAuction.db.profile.looting.auctionCloseDelay + 1, kAuction.auctions[iAuction]),
+				expires = time() + kAuction.db.profile.looting.auctionCloseDelay + 1
+			});	
 		end
 	end
 end
@@ -632,7 +647,7 @@ function kAuction:Server_StartRaidTracking()
 	self.raidStartTime = date("%m/%d/%y %H:%M:%S");
 	self.raidStartTick = time();
 	self.raidZone = GetRealZoneText();
-	self.rosterUpdateTimer = kAuction:ScheduleRepeatingTimer("Server_UpdateRaidRoster", self.const.raid.presenceTick);
+	kAuction:ScheduleRepeatingTimer("Server_UpdateRaidRoster", self.const.raid.presenceTick);
 	-- Check if previous raid exists for this zone
 	
 	-- Create raid entry
@@ -668,7 +683,7 @@ function kAuction:Server_StopRaidTracking()
 		hasEditBox = 1,
 	};	
 	StaticPopup_Show("kAuctionPopup_GetRaidXmlString");
-	kAuction:CancelTimer(self.rosterUpdateTimer);
+	kAuction:CancelTimer(self.rosterUpdateTimer, true);
 	self.actors = {};
 	kAuction:SendCommunication("RaidEnd");
 	kAuction:Debug("FUNC: Server_StopRaidtracking", 1);
@@ -857,10 +872,17 @@ function kAuction:Server_VersionCheck(outputResult)
 	for i=1,GetNumRaidMembers() do
 		self.versions[GetRaidRosterInfo(i)] = false;
 	end
+	self:CancelTimer(self.timers['VERIFY_VERSIONS'], true)
 	if outputResult then
-		kAuction:ScheduleTimer("Server_VerifyVersions", 6, outputResult);
+		tinsert(self.timers, {
+			timer = kAuction:ScheduleTimer("Server_VerifyVersions", 6, outputResult),
+			expires = time() + 6
+		});				
 	else
-		kAuction:ScheduleTimer("Server_VerifyVersions", 6);
+		tinsert(self.timers, {
+			timer = kAuction:ScheduleTimer("Server_VerifyVersions", 6),
+			expires = time() + 6
+		});			
 	end
 	kAuction:SendCommunication("VersionRequest", self.version)
 end

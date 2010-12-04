@@ -4,8 +4,11 @@ local _G = _G
 local kAuction = LibStub("AceAddon-3.0"):NewAddon("kAuction", "AceComm-3.0", "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0", "AceSerializer-3.0", "AceTimer-3.0")
 _G.kAuction = kAuction
 kAuction.menu = {};
+kAuction.colorHex = {};
+kAuction.timers = {};
 kAuction.updates = {};
 kAuction.updates[1] = 0;
+kAuction.updates[2] = 0;
 kAuction.currentZone = false;
 local sharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 kAuction.sharedMedia = sharedMedia
@@ -57,6 +60,15 @@ function kAuction:InitializeEvents()
 	
 	-- Update
 	_G[self.db.profile.gui.frames.main.name]:SetScript("OnUpdate", function(frame,elapsed) kAuction:OnUpdate(1, elapsed) end)
+	-- Color Hex codes
+	kAuction.colorHex['green'] = kAuction:RGBToHex(0,255,0);
+	kAuction.colorHex['red'] = kAuction:RGBToHex(255,0,0);
+	kAuction.colorHex['yellow'] = kAuction:RGBToHex(255,255,0);
+	kAuction.colorHex['white'] = kAuction:RGBToHex(255,255,255,1);
+	kAuction.colorHex['grey'] = kAuction:RGBToHex(128,128,128);
+	kAuction.colorHex['orange'] = kAuction:RGBToHex(255,165,0);
+	kAuction.colorHex['gold'] = kAuction:RGBToHex(175,150,0);
+	kAuction.colorHex['test'] = kAuction:RGBToHex(100,255,0);
 end
 --[[
 do
@@ -446,23 +458,20 @@ function kAuction:OnUpdate(index, elapsed)
 		kAuction.updates[index] = 0;
 		kAuction:MainFrameScrollUpdate()
 	end
-	--[[
-	_G[self.db.profile.gui.frames.main.name]:SetScript("OnUpdate", function(frame,elapsed,index)
-		kAuction.iconUpdates[index] = kAuction.iconUpdates[index] + elapsed;
-		if (kAuction.iconUpdates[index] > 0.2) then
-			local time = kAuction:GetAuctionTimeleft(objAuction);
-			kAuction.iconUpdates[index] = 0			
-			if time and time > 0 then
-				timerText:SetText(math.floor(time))
-			else
-				timerText:SetText("")
-				statusIcon:SetScript("OnUpdate", nil)
-			end	
+	-- Destroy scheduled timers that have expired
+	kAuction.updates[2] = kAuction.updates[2] + elapsed;
+	if (kAuction.updates[2] > 1) then
+		kAuction.updates[2] = 0;
+		for i = #self.timers, 1, -1 do
+			if self.timers[i].expires + 10 <= time() then
+				self:CancelTimer(self.timers[i].timer, true)				
+				table.remove(self.timers, i)
+			end
 		end
-	end)		
-	]]
+	end	
 end
 function kAuction:MainFrameScrollUpdate()
+	-- BASE MEMORY USAGE: +0KB
 	if self.auctions and #(self.auctions) > 0 and self.db.profile.gui.frames.main.visible then
 		local line; -- 1 through 5 of our window to scroll
 		local lineplusoffset; -- an index into our data calculated from the scroll offset
@@ -475,15 +484,19 @@ function kAuction:MainFrameScrollUpdate()
 				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."ItemNameText"]:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.main.font), self.db.profile.gui.frames.main.fontSize);
 				-- Removed r8702, replaced by dropdown system -- Update Bid Button --kAuction:Gui_UpdateAuctionBidButton(line, self.auctions[lineplusoffset]);
 				-- Update Close Button
-				kAuction:Gui_UpdateAuctionCloseButton(line, self.auctions[lineplusoffset]);
+				-- MEMORY USAGE: +0.88KB
+				--kAuction:Gui_UpdateAuctionCloseButton(line, self.auctions[lineplusoffset]);
 				-- Update Current Item Buttons
-				kAuction:Gui_UpdateAuctionCurrentItemButtons(line, self.auctions[lineplusoffset]);
+				-- MEMORY USAGE: +1.17KB
+				--kAuction:Gui_UpdateAuctionCurrentItemButtons(line, self.auctions[lineplusoffset]);
 				-- Update Candy Bars
 				--kAuction:Gui_UpdateAuctionCandyBar(line, self.auctions[lineplusoffset]);
 				-- Update Icons
+				-- MEMORY USAGE: +4.44KB
 				kAuction:Gui_UpdateAuctionIcons(line, self.auctions[lineplusoffset]);
 				-- Update Pullout menu
-				kAuction:Gui_UpdateItemMatchMenu(line, self.auctions[lineplusoffset]);
+				-- MEMORY USAGE: +3.66KB
+				--kAuction:Gui_UpdateItemMatchMenu(line, self.auctions[lineplusoffset]);
 				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line]:Show();
 			else
 				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line]:Hide();

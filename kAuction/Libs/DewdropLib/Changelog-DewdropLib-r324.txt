@@ -1,0 +1,25 @@
+------------------------------------------------------------------------
+r324 | sylvanaar | 2010-09-05 12:14:27 +0000 (Sun, 05 Sep 2010) | 1 line
+Changed paths:
+   M /trunk/Dewdrop-2.0/Dewdrop-2.0.lua
+
+missing this and event parameters for secureFrames
+------------------------------------------------------------------------
+r323 | sylvanaar | 2010-09-04 20:18:08 +0000 (Sat, 04 Sep 2010) | 1 line
+Changed paths:
+   M /trunk/Dewdrop-2.0/Dewdrop-2.0.lua
+
+fixed a couple more 'this' and 'arg1' usages
+------------------------------------------------------------------------
+r322 | sylvanaar | 2010-09-02 22:23:56 +0000 (Thu, 02 Sep 2010) | 1 line
+Changed paths:
+   M /trunk/Dewdrop-2.0/Dewdrop-2.0.lua
+
+cata fixes, tested on live
+------------------------------------------------------------------------
+r321 | Zeksie | 2010-01-03 23:38:05 +0000 (Sun, 03 Jan 2010) | 1 line
+Changed paths:
+   M /trunk/Dewdrop-2.0/Dewdrop-2.0.lua
+
+Fix dewdrop menus triggered from FuBarPlugin icons.
+------------------------------------------------------------------------
