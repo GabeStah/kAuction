@@ -45,164 +45,6 @@ kAuction.const.wishlist.atlasLootTableName = "AtlasLootWishList";
 kAuction.defaults = {
 	profile = {
 		modules = {
-			aura = {
-				enabled = true,
-				auras = {
-					{
-						criteria = {
-							{
-								comparison = "ANY", -- ANY, ALL, NONE
-								auras = {
-									{id = 73780}, -- Infest Heroic 
-									{id = 70541}, -- Infest Normal
-									{id = 33844}, -- Entangling Roots
-								},
-							},
-						},
-						criteriaType = "ALL",
-						enabled = false,
-						id = 47440, -- Commanding Shout
-						specs = {
-							[1] = true,
-							[2] = true,
-						},
-						zones = {
-							{name="Crystalsong Forest", enabled = true},
-							{name="Icecrown Citadel", enabled = true},
-							{name="Naxxramas", enabled = false},
-							{name="Onyxia's Lair", enabled = false},
-							{name="Orgrimmar", enabled = false},
-							{name="The Obsidian Sanctum", enabled = false},
-							{name="Trial of the Crusader", enabled = false},
-							{name="Ulduar", enabled = false},
-							{name="Vault of Archavon", enabled = false},
-						},
-					},
-					{
-						criteria = {
-							{
-								comparison = "ANY", -- ANY, ALL, NONE
-								auras = {
-									{id = 73780}, -- Infest Heroic 
-									{id = 70541}, -- Infest Normal
-									{id = 33844}, -- Entangling Roots
-								},
-							},
-						},
-						criteriaType = "ALL",
-						enabled = false,
-						id = 72590, -- Fortitude (Scroll)
-						specs = {
-							[1] = true,
-							[2] = true,
-						},
-						zones = {
-							{name="Crystalsong Forest", enabled = true},
-							{name="Icecrown Citadel", enabled = true},
-							{name="Naxxramas", enabled = false},
-							{name="Onyxia's Lair", enabled = false},
-							{name="Orgrimmar", enabled = false},
-							{name="The Obsidian Sanctum", enabled = false},
-							{name="Trial of the Crusader", enabled = false},
-							{name="Ulduar", enabled = false},
-							{name="Vault of Archavon", enabled = false},
-						},
-					},
-					{
-						criteria = {
-							{
-								comparison = "ANY", -- ANY, ALL, NONE
-								auras = {
-									{id = 73780}, -- Infest Heroic 
-									{id = 70541}, -- Infest Normal
-									{id = 33844}, -- Entangling Roots
-								},
-							},
-						},
-						criteriaType = "ALL",
-						enabled = false,
-						id = 72586, -- Mark of the Wild (Drums)
-						specs = {
-							[1] = true,
-							[2] = true,
-						},
-						zones = {
-							{name="Crystalsong Forest", enabled = true},
-							{name="Icecrown Citadel", enabled = true},
-							{name="Naxxramas", enabled = false},
-							{name="Onyxia's Lair", enabled = false},
-							{name="Orgrimmar", enabled = false},
-							{name="The Obsidian Sanctum", enabled = false},
-							{name="Trial of the Crusader", enabled = false},
-							{name="Ulduar", enabled = false},
-							{name="Vault of Archavon", enabled = false},
-						},
-					},
-					{
-						criteria = {
-							{
-								comparison = "ANY", -- ANY, ALL, NONE
-								auras = {
-									{id = 73780}, -- Infest Heroic 
-									{id = 70541}, -- Infest Normal
-									{id = 33844}, -- Entangling Roots
-								},
-							},
-						},
-						criteriaType = "ALL",
-						enabled = false,
-						id = 48162, -- Prayer of Fortitude
-						specs = {
-							[1] = true,
-							[2] = true,
-						},
-						zones = {
-							{name="Crystalsong Forest", enabled = true},
-							{name="Icecrown Citadel", enabled = true},
-							{name="Naxxramas", enabled = false},
-							{name="Onyxia's Lair", enabled = false},
-							{name="Orgrimmar", enabled = false},
-							{name="The Obsidian Sanctum", enabled = false},
-							{name="Trial of the Crusader", enabled = false},
-							{name="Ulduar", enabled = false},
-							{name="Vault of Archavon", enabled = false},
-						},
-					},
-					{
-						criteria = {
-							{
-								comparison = "ANY", -- ANY, ALL, NONE
-								auras = {
-									{id = 73780}, -- Infest Heroic 
-									{id = 70541}, -- Infest Normal
-									{id = 33844}, -- Entangling Roots
-								},
-							},
-						},
-						criteriaType = "ALL",
-						enabled = false,
-						id = 48470, -- Gift of the Wild
-						specs = {
-							[1] = true,
-							[2] = true,
-						},
-						zones = {
-							{name="Crystalsong Forest", enabled = true},
-							{name="Icecrown Citadel", enabled = true},
-							{name="Naxxramas", enabled = false},
-							{name="Onyxia's Lair", enabled = false},
-							{name="Orgrimmar", enabled = false},
-							{name="The Obsidian Sanctum", enabled = false},
-							{name="Trial of the Crusader", enabled = false},
-							{name="Ulduar", enabled = false},
-							{name="Vault of Archavon", enabled = false},
-						},
-					},
-				},
-			},
-			theTraitorKing = {
-				enabled = true,
-			},
 		},
 		coords = {
 		},
@@ -231,6 +73,10 @@ kAuction.defaults = {
 					minimized = false,
 					visible = true,
 					width = 325,
+				},
+				currentItem = {
+					name = 'kAuctionCurrentItemFrame',
+					visible = true,
 				},
 				main = {
 					autoRemoveAuctions = false,

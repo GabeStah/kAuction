@@ -1485,8 +1485,8 @@ function kAuction:Gui_TriggerEffectsAuctionWon()
 		PlaySoundFile(sound);
 	end
 end
-function kAuction:Gui_SetGlowTooltip(parent,text,anchorPoint,parentAnchorPoint)
-
+function kAuction:Gui_ShowGlowTooltip(parent,text,anchorPoint,parentAnchorPoint)
+	-- TODO: Finish dynamic side assignments
     parent.arrow:SetSize(21, 53)
     parent.arrow.arrow = _G[self.arrow:GetName() .. "Arrow"]
     parent.arrow.glow = _G[self.arrow:GetName() .. "Glow"]

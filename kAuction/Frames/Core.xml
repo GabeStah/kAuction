@@ -1,4 +1,59 @@
 ﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Texture name="kAuctionHighlightTextureTemplate" alphaMode="ADD" virtual="true">
+		<Color r="0" g="0.4" b="0.3" a="0.1"/>
+	</Texture>
+	<Button name="kAuctionTextIconTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>						
+		<Anchors>
+			<Anchor point="RIGHT" />
+		</Anchors>
+		<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\user-mystery" />
+	</Button>		
+	<Button name="kAuctionIconTemplate" virtual="true">
+		<Size>
+			<AbsDimension x="24" y="24"/>
+		</Size>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentIcon" file="Interface\Icons\INV_Misc_QuestionMark">
+					<Size>
+						<AbsDimension x="24" y="24"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</Button>
+	<Button name="kAuctionButtonTemplate" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="$parentText" text="But">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Size>
+			<AbsDimension x="18" y="18"></AbsDimension>
+		</Size>
+		<HighlightTexture>
+			<Anchors>
+				<Anchor point="TOPLEFT">
+					<Offset x="2" y="-2"/>
+				</Anchor>
+				<Anchor point="BOTTOMRIGHT">
+					<Offset x="-2" y="2"/>
+				</Anchor>
+			</Anchors>
+			<Color r="1.0" g="1.0" b="0" a="0.1"/>
+		</HighlightTexture>
+	</Button>	
 	<Texture name="kAuctionButtonBackground" virtual="true">
 		<Anchors>
 			<Anchor point="TOPLEFT">
@@ -75,6 +130,73 @@
 			</BorderColor>
 		</Backdrop>		
 		<Frames>
+			<Frame name="$parentTitle" toplevel="true" movable="true" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"></AbsDimension>
+						</Offset>
+					</Anchor>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:RegisterForDrag("LeftButton");
+					</OnLoad>
+					<OnDragStart>
+						if IsAltKeyDown() then
+							self:GetParent():StartMoving();
+							self:GetParent().isMoving = true;
+						end
+					</OnDragStart>
+					<OnDragStop>
+						self:GetParent():StopMovingOrSizing();
+						self:GetParent().isMoving = false;
+					</OnDragStop>
+				</Scripts>
+				<Size>
+					<AbsDimension y="25"/>
+				</Size>
+				<Frames>
+					<Button name="$parentConfig" inherits="kAuctionButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-5" y="-5"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								-- TODO: Add configure dropdown to display filtered slots used for this particular item when showing current item selections
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\xdark" />
+						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\x" />
+					</Button>					
+					<Button name="$parentClose" inherits="kAuctionButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-5" y="-5"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								kAuction.db.profile.gui.frames.currentItem.visible = false;
+								kAuctionCurrentItemFrame:Hide();
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\xdark" />
+						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\x" />
+					</Button>
+				</Frames>
+			</Frame>			
 			<Frame name="$parentMainScrollContainer" toplevel="true" enableMouse="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
@@ -104,10 +226,10 @@
 						</Anchors>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(self, offset, 16, kAuction:MainFrameScrollUpdate());
+								--FauxScrollFrame_OnVerticalScroll(self, offset, 16, kAuction:MainFrameScrollUpdate());
 							</OnVerticalScroll>
 							<OnShow>
-								kAuction:MainFrameScrollUpdate()
+								--kAuction:MainFrameScrollUpdate()
 							</OnShow>
 						</Scripts>
 					</ScrollFrame>
@@ -180,7 +302,7 @@
 			</Button>			
 		</Frames>
 	</Frame>
-	<Frame name="kAuctionGlowTooltip" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="false" frameStrata="DIALOG" framelevel="2">
+	<Frame name="kAuctionGlowTooltip" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" framelevel="2">
         <Size x="220" y="100"/>
         <Anchors>
             <Anchor point="LEFT" relativeTo="kAuctionCurrentItemFrame" relativePoint="RIGHT" x="20" y="0"/>
