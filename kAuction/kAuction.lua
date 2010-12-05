@@ -480,17 +480,17 @@ function kAuction:MainFrameScrollUpdate()
 		for line=1,5 do
 			lineplusoffset = line + FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
 			if lineplusoffset <= #(self.auctions) then
-				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."ItemNameText"]:SetText(self.auctions[lineplusoffset].itemLink);
-				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."ItemNameText"]:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.main.font), self.db.profile.gui.frames.main.fontSize);
+				local fNameText = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."ItemNameText"];
+				fNameText:SetText(GetItemInfo(self.auctions[lineplusoffset].itemLink))
+				fNameText:SetTextColor(kAuction:Item_GetColor(self.auctions[lineplusoffset].itemLink))
+				fNameText:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.main.font), self.db.profile.gui.frames.main.fontSize);
 				-- Removed r8702, replaced by dropdown system -- Update Bid Button --kAuction:Gui_UpdateAuctionBidButton(line, self.auctions[lineplusoffset]);
 				-- Update Close Button
 				-- MEMORY USAGE: +0.88KB
 				--kAuction:Gui_UpdateAuctionCloseButton(line, self.auctions[lineplusoffset]);
 				-- Update Current Item Buttons
 				-- MEMORY USAGE: +1.17KB
-				--kAuction:Gui_UpdateAuctionCurrentItemButtons(line, self.auctions[lineplusoffset]);
-				-- Update Candy Bars
-				--kAuction:Gui_UpdateAuctionCandyBar(line, self.auctions[lineplusoffset]);
+				kAuction:Gui_UpdateAuctionCurrentItemButtons(line, self.auctions[lineplusoffset]);
 				-- Update Icons
 				-- MEMORY USAGE: +4.44KB
 				kAuction:Gui_UpdateAuctionIcons(line, self.auctions[lineplusoffset]);

@@ -904,7 +904,7 @@ function kAuction:Gui_UpdateAuctionIcons(index, objAuction)
 	local localAuctionData = self:Client_GetLocalAuctionDataById(objAuction.id);
 	local time = kAuction:GetAuctionTimeleft(objAuction);
 	local states = kAuction:Gui_GetAuctionStateArray(statusIcon);
-	-- TODO: Finish tooltip data for all icon states
+	-- TODO: Create new current item popout
 	-- Check if auction is open
 	-- DEFAULT HIDE
 	voteIcon:Hide()

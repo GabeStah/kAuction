@@ -32,17 +32,11 @@ function kAuction:Item_CleanupWhitelistDropdownValues()
 	end
 	table.sort(self.db.profile.looting.councilMembers);
 end
-function kAuction:Item_GetRGBColorByRarity(rarity)
-	if rarity == 4 then
-		return 176/255, 72/255, 248/255;
-	elseif rarity == 5 then
-		return 255/255, 128/255, 0;
-	elseif rarity == 6 then
-		return 230/255, 204/255, 128/255;
-	elseif rarity == 7 then
-		return 230/255, 204/255, 128/255;
-	end
-	return nil;
+function kAuction:Item_GetColorByRarity(rarity)
+	return GetItemQualityColor(rarity);
+end
+function kAuction:Item_GetColor(item)
+	return kAuction:Item_GetColorByRarity(select(3, GetItemInfo(item)));
 end
 function kAuction:Item_GetWhitelistDropdownValues()
 	local slotList = {};

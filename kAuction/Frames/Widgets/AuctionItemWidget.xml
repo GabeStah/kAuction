@@ -100,7 +100,7 @@
 						kAuction:OnCurrentItemEnter(self);
 					</OnEnter>
 					<OnLeave>
-						<!--kAuction:OnCurrentItemLeave(self);-->
+						kAuction:OnCurrentItemLeave(self);
 					</OnLeave>
 				</Scripts>
 				<Frames>

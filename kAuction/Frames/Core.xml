@@ -205,14 +205,9 @@
 								kAuction.db.profile.gui.frames.main.visible = false;
 								kAuctionMainFrame:Hide();
 							</OnClick>
-							<OnEnter> </OnEnter>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up">
-							<TexCoords left="0.175" top="0.175" right="0.825" bottom="0.825"/>
-						</NormalTexture>
-						<PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down">
-							<TexCoords left="0.175" top="0.175" right="0.825" bottom="0.825"/>
-						</PushedTexture>
+						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\xdark" />
+						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\x" />
 					</Button>
 				</Frames>
 			</Frame>
