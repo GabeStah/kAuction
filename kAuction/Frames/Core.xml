@@ -161,23 +161,7 @@
 				<Size>
 					<AbsDimension y="25"/>
 				</Size>
-				<Frames>
-					<Button name="$parentConfig" inherits="kAuctionButtonTemplate">
-						<Anchors>
-							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
-								<Offset>
-									<AbsDimension x="-5" y="-5"></AbsDimension>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Scripts>
-							<OnClick>
-								-- TODO: Add configure dropdown to display filtered slots used for this particular item when showing current item selections
-							</OnClick>
-						</Scripts>
-						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\xdark" />
-						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\x" />
-					</Button>					
+				<Frames>				
 					<Button name="$parentClose" inherits="kAuctionButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
@@ -194,6 +178,22 @@
 						</Scripts>
 						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\xdark" />
 						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\x" />
+					</Button>
+					<Button name="$parentConfig" inherits="kAuctionButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="$parentClose" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="-2" y="-1"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								-- TODO: Add configure dropdown to display filtered slots used for this particular item when showing current item selections
+							</OnClick>
+						</Scripts>
+						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\gear" />
+						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\gear-gold" />
 					</Button>
 				</Frames>
 			</Frame>			
