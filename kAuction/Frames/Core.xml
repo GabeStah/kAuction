@@ -48,7 +48,181 @@
 		<Anchors>
 			<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" />
 		</Anchors>
+	</Frame>	
+	<Frame name="kAuctionCurrentItemFrame" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="UIParent" resizable="true">
+		<Size>
+			<AbsDimension x="300" y="400"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="250" />
+				</Offset>
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="4" right="4" top="4" bottom="4" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="16" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="16" />
+			</EdgeSize>
+			<BorderColor>
+				<Color r=".3" g=".3" b=".3"/>
+			</BorderColor>
+		</Backdrop>		
+		<Frames>
+			<Frame name="$parentMainScrollContainer" toplevel="true" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="7"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="5" y="-2"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-27" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(self, offset, 16, kAuction:MainFrameScrollUpdate());
+							</OnVerticalScroll>
+							<OnShow>
+								kAuction:MainFrameScrollUpdate()
+							</OnShow>
+						</Scripts>
+					</ScrollFrame>
+					<Frame name="$parentAuctionItem1" inherits="kAuctionAuctionItemWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+								<Offset>
+									<AbsDimension y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentAuctionItem2" inherits="kAuctionAuctionItemWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentAuctionItem1" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentAuctionItem3" inherits="kAuctionAuctionItemWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentAuctionItem2" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentAuctionItem4" inherits="kAuctionAuctionItemWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentAuctionItem3" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentAuctionItem5" inherits="kAuctionAuctionItemWidget">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentAuctionItem4" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Button name="$parentResizeLeft" enableMouse="true">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" />
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\kAuction\Images\ResizeGripLeft" />
+				<HighlightTexture file="Interface\AddOns\kAuction\Images\ResizeGripLeft" />
+				<Scripts>
+					<OnMouseDown>
+						kAuction:Gui_ResizeFrame(self,button,"start")
+					</OnMouseDown>
+					<OnMouseUp>
+						kAuction:Gui_ResizeFrame(self,button,"stop")
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+			<Button name="$parentResizeRight" enableMouse="true">
+				<Size>
+					<AbsDimension x="16" y="16"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" />
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\kAuction\Images\ResizeGripRight" />
+				<HighlightTexture file="Interface\AddOns\kAuction\Images\ResizeGripRight" />
+				<Scripts>
+					<OnMouseDown>
+						kAuction:Gui_ResizeFrame(self,button,"start")
+					</OnMouseDown>
+					<OnMouseUp>
+						kAuction:Gui_ResizeFrame(self,button,"stop")
+					</OnMouseUp>
+				</Scripts>
+			</Button>			
+		</Frames>
 	</Frame>
+	<Frame name="kAuctionGlowTooltip" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="false" frameStrata="DIALOG" framelevel="2">
+        <Size x="220" y="100"/>
+        <Anchors>
+            <Anchor point="LEFT" relativeTo="kAuctionCurrentItemFrame" relativePoint="RIGHT" x="20" y="0"/>
+        </Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parentText" parentKey="text" inherits="GameFontHighlightLeft" justifyV="TOP" text="" >
+                    <Size x="188" y="0"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="16" y="-24"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="$parentClose" parentKey="close" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" x="6" y="6"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        Clique.settings.alerthidden = true
+                        CliqueTabAlert:Hide();
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Frame name="$parentArrow" parentKey="arrow" inherits="GlowBoxArrowTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
+                </Anchors>
+            </Frame>
+        </Frames>
+        <Scripts>
+            <OnLoad>
+
+            </OnLoad>
+            <OnShow>
+                self:SetHeight(42)
+                --self:SetHeight(self.text:GetHeight() + 42)
+            </OnShow>
+        </Scripts>
+    </Frame>	
 	<Frame name="kAuctionMainFrame" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="UIParent" resizable="true">
 		<Size>
 			<AbsDimension x="400" y="152"/>

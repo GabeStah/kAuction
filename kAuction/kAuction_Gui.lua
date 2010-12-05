@@ -1485,6 +1485,19 @@ function kAuction:Gui_TriggerEffectsAuctionWon()
 		PlaySoundFile(sound);
 	end
 end
+function kAuction:Gui_SetGlowTooltip(parent,text,anchorPoint,parentAnchorPoint)
+
+    parent.arrow:SetSize(21, 53)
+    parent.arrow.arrow = _G[self.arrow:GetName() .. "Arrow"]
+    parent.arrow.glow = _G[self.arrow:GetName() .. "Glow"]
+    parent.arrow.arrow:SetAllPoints(true)
+    parent.arrow.glow:SetAllPoints(true)
+    -- Rotate 90 degrees
+    -- left, bottom, right, bottom, left, top, right, top
+    parent.arrow.arrow:SetTexCoord(0.78515625, 0.58789063, 0.99218750, 0.58789063, 0.78515625, 0.54687500, 0.99218750, 0.54687500)
+    parent.arrow.glow:SetTexCoord(0.40625000, 0.82812500, 0.66015625, 0.82812500, 0.40625000, 0.77343750, 0.66015625, 0.77343750)
+    parent.text:SetSpacing(4)	
+end
 
 -- TODO: UPDATE
 function kAuction:Gui_MinimizeFrame()
