@@ -6,9 +6,6 @@
 		<Size>
 			<AbsDimension x="24" y="24"/>
 		</Size>						
-		<Anchors>
-			<Anchor point="RIGHT" />
-		</Anchors>
 		<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\user-mystery" />
 	</Button>		
 	<Button name="kAuctionIconTemplate" virtual="true">
@@ -104,9 +101,9 @@
 			<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" />
 		</Anchors>
 	</Frame>	
-	<Frame name="kAuctionCurrentItemFrame" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="UIParent" resizable="true">
+	<Frame name="kAuctionCurrentItemFrame" inherits="GlowBoxTemplate" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="UIParent" resizable="true">
 		<Size>
-			<AbsDimension x="300" y="400"/>
+			<AbsDimension x="250" y="250"/>
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER">
@@ -114,21 +111,7 @@
 					<AbsDimension x="250" />
 				</Offset>
 			</Anchor>
-		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-			<BackgroundInsets>
-				<AbsInset left="4" right="4" top="4" bottom="4" />
-			</BackgroundInsets>
-			<TileSize>
-				<AbsValue val="16" />
-			</TileSize>
-			<EdgeSize>
-				<AbsValue val="16" />
-			</EdgeSize>
-			<BorderColor>
-				<Color r=".3" g=".3" b=".3"/>
-			</BorderColor>
-		</Backdrop>		
+		</Anchors>	
 		<Frames>
 			<Frame name="$parentTitle" toplevel="true" movable="true" enableMouse="true">
 				<Anchors>
@@ -196,10 +179,68 @@
 						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\gear-gold" />
 					</Button>
 				</Frames>
-			</Frame>			
-			<Frame name="$parentMainScrollContainer" toplevel="true" enableMouse="true">
+			</Frame>
+			<Frame name="$parentItemContainer" toplevel="true" enableMouse="true">
+				<Size>
+					<AbsDimension y="50"/>
+				</Size>				
+				<Frames>
+					<Button name="$parentIcon" inherits="kAuctionTextIconTemplate">
+						<Size>
+							<AbsDimension x="40" y="40"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\bulb-grey" />
+						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\bulb-yellow" />				
+					</Button>						
+				</Frames>				
+				<Layers>
+					<Layer level="HIGHLIGHT">
+						<Texture inherits="kAuctionHighlightTextureTemplate"/>
+					</Layer>
+		            <Layer level="NORMAL">
+						<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Select the item you'll replace:">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeTo="$parentIcon" relativePoint="TOPRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>									
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0"/>
+									</Offset>									
+								</Anchor>
+							</Anchors>
+							<FontHeight>
+								<AbsValue val="18" />
+							</FontHeight>
+							<Color r="0.9" g="0.82" b="0" />
+						</FontString>
+		            </Layer>
+				</Layers>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+					<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>					
+					<Anchor point="TOPRIGHT" relativeTo="$parentTitleClose" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentScrollContainer" toplevel="true" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentItemContainer" relativePoint="BOTTOMLEFT">
 						<Offset>
 							<AbsDimension x="0" y="0"/>
 						</Offset>
@@ -233,7 +274,7 @@
 							</OnShow>
 						</Scripts>
 					</ScrollFrame>
-					<Frame name="$parentAuctionItem1" inherits="kAuctionAuctionItemWidget">
+					<Frame name="$parentCurrentItem1" inherits="kAuctionCurrentItemWidget">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
 								<Offset>
@@ -242,24 +283,24 @@
 							</Anchor>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentAuctionItem2" inherits="kAuctionAuctionItemWidget">
+					<Frame name="$parentCurrentItem2" inherits="kAuctionCurrentItemWidget">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentAuctionItem1" relativePoint="BOTTOM"/>
+							<Anchor point="TOP" relativeTo="$parentCurrentItem1" relativePoint="BOTTOM"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentAuctionItem3" inherits="kAuctionAuctionItemWidget">
+					<Frame name="$parentCurrentItem3" inherits="kAuctionCurrentItemWidget">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentAuctionItem2" relativePoint="BOTTOM"/>
+							<Anchor point="TOP" relativeTo="$parentCurrentItem2" relativePoint="BOTTOM"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentAuctionItem4" inherits="kAuctionAuctionItemWidget">
+					<Frame name="$parentCurrentItem4" inherits="kAuctionCurrentItemWidget">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentAuctionItem3" relativePoint="BOTTOM"/>
+							<Anchor point="TOP" relativeTo="$parentCurrentItem3" relativePoint="BOTTOM"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentAuctionItem5" inherits="kAuctionAuctionItemWidget">
+					<Frame name="$parentCurrentItem5" inherits="kAuctionCurrentItemWidget">
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentAuctionItem4" relativePoint="BOTTOM"/>
+							<Anchor point="TOP" relativeTo="$parentCurrentItem4" relativePoint="BOTTOM"/>
 						</Anchors>
 					</Frame>
 				</Frames>
@@ -282,7 +323,7 @@
 					</OnMouseUp>
 				</Scripts>
 			</Button>
-			<Button name="$parentResizeRight" enableMouse="true">
+			<Button name="$parentResizeRight" enableMouse="true">				
 				<Size>
 					<AbsDimension x="16" y="16"/>
 				</Size>
@@ -300,6 +341,11 @@
 					</OnMouseUp>
 				</Scripts>
 			</Button>			
+            <Frame name="$parentArrow" parentKey="arrow" inherits="GlowBoxArrowTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
+                </Anchors>
+            </Frame>			
 		</Frames>
 	</Frame>
 	<Frame name="kAuctionGlowTooltip" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" framelevel="2">

@@ -433,16 +433,6 @@ function kAuction:Gui_AuctionBidDisenchantButtonOnClick(objAuction)
 	kAuction:Server_AwardAuction(localAuction);
 	kAuction:Gui_HookFrameRefreshUpdate();
 end
-function kAuction:Gui_AuctionCloseButtonOnClick(objAuction)
-	if self.auctions[kAuction:Client_GetAuctionIndexByAuctionId(objAuction.id)] then
-		local auction = self.auctions[kAuction:Client_GetAuctionIndexByAuctionId(objAuction.id)];
-		tremove(self.auctions, kAuction:Client_GetAuctionIndexByAuctionId(objAuction.id))
-		if kAuction:Client_IsServer() then
-			kAuction:SendCommunication("AuctionDelete", auction, 3);	
-		end
-	end
-	kAuction:Gui_HookFrameRefreshUpdate();
-end
 function kAuction:Gui_AuctionItemOnClick(frame, button)
 	kAuction:Debug("auctionitemonclick frame: "..frame:GetName() .. ', butt: ' .. button)
 	offset = FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
@@ -889,13 +879,9 @@ function kAuction:Gui_UpdateAuctionCurrentItemButtons(index, objAuction)
 		frameCurrentItemIcon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark");				
 	end
 end
-function kAuction:Gui_UpdateAuctionCloseButton(index, objAuction)
-	-- Check status
-	local button = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."Close"];
-	button:SetScript("OnClick", function() kAuction:Gui_AuctionCloseButtonOnClick(objAuction) end);
-end
 -- @MEMUSAGE 0.12KB
 function kAuction:Gui_UpdateAuctionIcons(index, objAuction)
+	local close = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."Close"];
 	local timerText = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."StatusIconText"];
 	local statusIcon = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."StatusIcon"];
 	local bidIcon = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."BidIcon"];
@@ -905,7 +891,7 @@ function kAuction:Gui_UpdateAuctionIcons(index, objAuction)
 	local time = kAuction:GetAuctionTimeleft(objAuction);
 	local states = kAuction:Gui_GetAuctionStateArray(statusIcon);
 	-- TODO: Create new current item popout
-	-- Check if auction is open
+	statusIcon:SetPoint("RIGHT", close, "LEFT", 0, 0)
 	-- DEFAULT HIDE
 	voteIcon:Hide()
 	-- VOTE ICON
@@ -935,11 +921,14 @@ function kAuction:Gui_UpdateAuctionIcons(index, objAuction)
 	elseif states.auctionClosed then	
 		bidIcon:Hide();
 		if states.winnerSelf then
-			statusIcon:SetNormalTexture(sharedMedia:Fetch('texture','star'))
+			statusIcon:SetPoint("RIGHT", close, "LEFT", 0, 1)
+			statusIcon:SetNormalTexture(sharedMedia:Fetch('texture','star2-full'))
 		elseif states.winnerOther then
-			statusIcon:SetNormalTexture(sharedMedia:Fetch('texture','star-half'))
+			statusIcon:SetPoint("RIGHT", close, "LEFT", 0, 1)
+			statusIcon:SetNormalTexture(sharedMedia:Fetch('texture','star2-half'))
 		elseif states.winnerDE then
-			statusIcon:SetNormalTexture(sharedMedia:Fetch('texture','star-none'))
+			statusIcon:SetPoint("RIGHT", close, "LEFT", 0, 1)
+			statusIcon:SetNormalTexture(sharedMedia:Fetch('texture','star2-empty'))
 		else
 			statusIcon:SetNormalTexture(sharedMedia:Fetch('texture','clockdark'))
 		end
@@ -1086,6 +1075,15 @@ function kAuction:Gui_GetAuctionStateArray(frame)
 	end		
 	return states;
 end
+function kAuction:Gui_OnClickCloseIcon(frame)
+	local offset, selectFrame = FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
+	local _, _, row = string.find(frame:GetName(), "(%d+)");
+	local sTitle, sClickText, sText;
+	local iIndex = offset + row;
+	local auction = self.auctions[iIndex];
+	-- Delete Auction
+	kAuction:DeleteAuction(auction)
+end
 function kAuction:Gui_OnEnterBidIcon(frame)
 	local offset, selectFrame = FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
 	local _, _, row = string.find(frame:GetName(), "(%d+)");
@@ -1120,7 +1118,6 @@ function kAuction:Gui_OnEnterCloseIcon(frame)
 	local localAuctionData = kAuction:Client_GetLocalAuctionDataById(auction.id);	
 	local states = kAuction:Gui_GetAuctionStateArray(frame);
 	sTitle, sClickText, sText = self:Gui_GetIconStrings(frame,'close',states,auction,timeLeft,auction.winner)	
-	frame:SetScript("OnClick", function() kAuction:Gui_AuctionCloseButtonOnClick(auction) end);	
 	-- Create tooltips
 	kAuction:Gui_SetIconTooltipStrings(frame,sTitle,sText,sClickText)
 end
@@ -1498,7 +1495,33 @@ function kAuction:Gui_ShowGlowTooltip(parent,text,anchorPoint,parentAnchorPoint)
     parent.arrow.glow:SetTexCoord(0.40625000, 0.82812500, 0.66015625, 0.82812500, 0.40625000, 0.77343750, 0.66015625, 0.77343750)
     parent.text:SetSpacing(4)	
 end
-
+function kAuction:Gui_ShowCurrentItemPopup(frame)
+	local offset = FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
+	local popup = _G[self.db.profile.gui.frames.currentItem.name];
+	local parent = popup:GetParent();
+	local _, _, row = string.find(frame:GetName(), "(%d+)");
+	local iIndex = offset + row;
+	local auction = self.auctions[iIndex];
+	local timeLeft = kAuction:GetAuctionTimeleft(auction);
+	local anchorSide = self.db.profile.gui.frames.currentItem.anchorSide;
+	local localAuctionData = kAuction:Client_GetLocalAuctionDataById(auction.id);	
+	local states = kAuction:Gui_GetAuctionStateArray(frame);
+	--sTitle, sClickText, sText = self:Gui_GetIconStrings(frame,'close',states,auction,timeLeft,auction.winner)	
+	-- Create tooltips
+	--kAuction:Gui_SetIconTooltipStrings(frame,sTitle,sText,sClickText)	
+    parent.arrow:SetSize(21, 53)
+    parent.arrow.arrow = _G[popup.arrow:GetName() .. "Arrow"]
+    parent.arrow.glow = _G[popup.arrow:GetName() .. "Glow"]
+    parent.arrow.arrow:SetAllPoints(true)
+    parent.arrow.glow:SetAllPoints(true)
+    -- Rotate 90 degrees
+    -- left, bottom, right, bottom, left, top, right, top
+    parent.arrow.arrow:SetTexCoord(0.78515625, 0.58789063, 0.99218750, 0.58789063, 0.78515625, 0.54687500, 0.99218750, 0.54687500)
+    parent.arrow.glow:SetTexCoord(0.40625000, 0.82812500, 0.66015625, 0.82812500, 0.40625000, 0.77343750, 0.66015625, 0.77343750)
+    parent.text:SetSpacing(4)	
+	popup:Show()
+	-- TODO: Finish coding anchoring for popup from auction frame
+end
 -- TODO: UPDATE
 function kAuction:Gui_MinimizeFrame()
 	kAuction:ShrinkFrame(gui.main_frame, self.db.profile.gui.mainframe.anchorpoint, minwidth, minheight);

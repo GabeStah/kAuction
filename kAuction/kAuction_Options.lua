@@ -76,6 +76,7 @@ kAuction.defaults = {
 				},
 				currentItem = {
 					name = 'kAuctionCurrentItemFrame',
+					anchorSide = 'LEFT',
 					visible = true,
 				},
 				main = {

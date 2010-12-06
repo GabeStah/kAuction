@@ -44,7 +44,7 @@ function kAuction:Client_AuctionReceived(auction)
 			if self.db.profile.gui.frames.main.autoRemoveAuctions then
 				tinsert(self.timers, {
 					timer = self:ScheduleTimer(function()
-						kAuction:Gui_AuctionCloseButtonOnClick(auction)
+						kAuction:DeleteAuction(auction)
 						-- Cancel timer
 						kAuction:CancelTimer(kAuction.timers['AUTO_REMOVE_AUCTIONS'], true);
 					end, auction.duration + auction.auctionCloseVoteDuration + auction.auctionCloseDelay + self.db.profile.gui.frames.main.autoRemoveAuctionsDelay), 

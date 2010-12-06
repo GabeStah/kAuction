@@ -162,6 +162,9 @@ function kAuction:RegisterLibSharedMediaObjects()
 	sharedMedia:Register("texture", "star", [[Interface\AddOns\kAuction\Images\Textures\star.tga]]);
 	sharedMedia:Register("texture", "star-half", [[Interface\AddOns\kAuction\Images\Textures\star-half.tga]]);
 	sharedMedia:Register("texture", "star-none", [[Interface\AddOns\kAuction\Images\Textures\star-none.tga]]);
+	sharedMedia:Register("texture", "star2-full", [[Interface\AddOns\kAuction\Images\Textures\star2-full.tga]]);
+	sharedMedia:Register("texture", "star2-half", [[Interface\AddOns\kAuction\Images\Textures\star2-half.tga]]);
+	sharedMedia:Register("texture", "star2-empty", [[Interface\AddOns\kAuction\Images\Textures\star2-empty.tga]]);
 	sharedMedia:Register("texture", "clock", [[Interface\AddOns\kAuction\Images\Textures\clock.tga]]);
 	sharedMedia:Register("texture", "clockdark", [[Interface\AddOns\kAuction\Images\Textures\clockdark.tga]]);
 	sharedMedia:Register("texture", "x", [[Interface\AddOns\kAuction\Images\Textures\x.tga]]);
@@ -976,4 +979,14 @@ function kAuction:SplitString(subject, delimiter)
 	end
 	table.insert( result, string.sub( subject, from  ) )
 	return result
+end
+function kAuction:DeleteAuction(auction)
+	local lAuction = self.auctions[kAuction:Client_GetAuctionIndexByAuctionId(auction.id)];
+	if lAuction then
+		tremove(self.auctions, kAuction:Client_GetAuctionIndexByAuctionId(auction.id))
+		if kAuction:Client_IsServer() then
+			kAuction:SendCommunication("AuctionDelete", auction, 3);	
+		end
+	end
+	kAuction:Gui_HookFrameRefreshUpdate();	
 end

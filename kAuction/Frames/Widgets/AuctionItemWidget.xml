@@ -88,7 +88,10 @@
 				<Scripts>
 					<OnEnter>
 						kAuction:Gui_OnEnterCloseIcon(self)
-					</OnEnter>	
+					</OnEnter>
+					<OnClick>
+						kAuction:Gui_OnClickCloseIcon(self)
+					</OnClick>	
 				</Scripts>					
 			</Button>
 			<Button name="$parentStatusIcon" inherits="kAuctionTextIconTemplate" id="1">		
