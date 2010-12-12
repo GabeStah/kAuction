@@ -126,21 +126,6 @@
 						</Offset>
 					</Anchor>
 				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:RegisterForDrag("LeftButton");
-					</OnLoad>
-					<OnDragStart>
-						if IsAltKeyDown() then
-							self:GetParent():StartMoving();
-							self:GetParent().isMoving = true;
-						end
-					</OnDragStart>
-					<OnDragStop>
-						self:GetParent():StopMovingOrSizing();
-						self:GetParent().isMoving = false;
-					</OnDragStop>
-				</Scripts>
 				<Size>
 					<AbsDimension y="25"/>
 				</Size>
@@ -661,10 +646,10 @@
 						</Anchors>
 						<Scripts>
 							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(self, offset, 16, kAuction:MainFrameScrollUpdate());
+								FauxScrollFrame_OnVerticalScroll(self, offset, 16, kAuction:Gui_UpdateMainFrameScroll());
 							</OnVerticalScroll>
 							<OnShow>
-								kAuction:MainFrameScrollUpdate()
+								kAuction:Gui_UpdateMainFrameScroll()
 							</OnShow>
 						</Scripts>
 					</ScrollFrame>

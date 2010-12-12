@@ -1,3 +1,90 @@
+-- EVENTS
+function kAuction:Gui_OnEnterBidRoll(frame)
+	offset = FauxScrollFrame_GetOffset(kAuctionMainFrameBidScrollContainerScrollFrame);
+	local _, _, line = string.find(frame:GetName(), "(%d+)");
+	local auction = self.auctions[self.selectedAuctionIndex];
+	--kAuction:Gui_OnLeaveBidRoll(nil);
+	--kAuction:Gui_OnLeaveBidItemsWon(nil);
+	local tip = self.qTip:Acquire("GameTooltip", 4, "LEFT", "LEFT", "RIGHT", "RIGHT")	
+	if auction.auctionType == 2 and (auction.visiblePublicBidVoters or kAuction:Client_IsServer() or kAuction:IsLootCouncilMember(auction)) then
+		local bid = self.auctions[self.selectedAuctionIndex].bids[offset + line];
+		local rollFrame = _G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..line.."Roll"];
+		kAuction:Debug("FUNC: Gui_OnEnterBidRoll, Hovering.", 1);
+		local objRed = {};
+		local objGreen = {};
+		tip:Clear();
+		tip:SetPoint("TOP", rollFrame, "BOTTOM");
+		local fontRed = CreateFont("kAuctionBidRollFontRed")
+		fontRed:CopyFontObject(GameTooltipText)
+		fontRed:SetTextColor(1,0,0)
+		local fontGreen = CreateFont("kAuctionBidRollFontGreen")
+		fontGreen:CopyFontObject(GameTooltipText)
+		fontGreen:SetTextColor(0,1,0)
+		for iVote, vVote in pairs(auction.councilMembers) do
+			local booIsVoterInBid = false;
+			for iBid,vBid in pairs(bid.lootCouncilVoters) do
+				if vVote == vBid then
+					booIsVoterInBid = true;
+				end
+			end
+			if booIsVoterInBid then
+				tinsert(objGreen, vVote)
+			else
+				tinsert(objRed, vVote)
+			end
+		end
+		if #(objGreen) > 0 and #(objRed) > 0 then
+			tip:AddHeader("Voters", nil, "Not Voted");
+		elseif #(objGreen) > 0 then
+			tip:AddHeader("Voters");
+		elseif #(objRed) > 0 then
+			tip:AddHeader(nil, nil, "Not Voted");
+		end		
+		if #(objGreen) >= #(objRed) then
+			for i = 1, #(objGreen)+1 do
+				tip:AddLine("");
+			end
+		elseif #(objRed) >= #(objGreen) then
+			for i = 1, #(objRed)+1 do
+				tip:AddLine("");
+			end	
+		end
+		for i,val in pairs(objGreen) do
+			tip:SetCell(i+1, 1, val, fontGreen, "LEFT", 2);
+		end
+		for i,val in pairs(objRed) do
+			tip:SetCell(i+1, 3, val, fontRed, "RIGHT", 2);
+		end
+		tip:Show();
+	elseif auction.auctionType == 2 then
+		local rollFrame = _G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..line.."Roll"];
+		tip:Clear();
+		tip:SetPoint("TOP", rollFrame, "BOTTOM");
+		tip:AddHeader("Votes Hidden");
+		tip:Show();
+	elseif auction.auctionType == 1 then
+		if auction.visiblePublicBidRolls or kAuction:Client_IsServer() or kAuction:IsLootCouncilMember(auction) then
+			self.qTip:Release(self.qTip:Acquire("GameTooltip"));
+		else
+			local rollFrame = _G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..line.."Roll"];
+			tip:Clear();
+			tip:SetPoint("TOP", rollFrame, "BOTTOM");
+			tip:AddHeader("Roll Hidden");
+			tip:Show()
+		end
+	end
+end
+function kAuction:Gui_OnLeaveBidRoll(frame)
+	--self.qTip:Release();
+	local tip = self.qTip:Acquire("GameTooltip");
+	tip:Hide();
+end
+function kAuction:Gui_OnLeaveBidItemsWon(frame)
+	local tip = self.qTip:Acquire("GameTooltip");
+	tip:Hide();
+end
+-- EVENTS END
+
 function kAuction:Gui_ConfigureBidColumns(line, auction)
 	local frameBid = _G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..line];
 	local frameItemsWon = _G[frameBid:GetName().."ItemsWon"];

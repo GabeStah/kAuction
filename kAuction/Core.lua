@@ -460,7 +460,7 @@ function kAuction:OnUpdate(index, elapsed)
 	kAuction.updates[index] = kAuction.updates[index] + elapsed;
 	if (kAuction.updates[index] > 0.1) then
 		kAuction.updates[index] = 0;
-		kAuction:MainFrameScrollUpdate()
+		kAuction:Gui_UpdateMainFrameScroll()
 	end
 	-- Destroy scheduled timers that have expired
 	kAuction.updates[2] = kAuction.updates[2] + elapsed;
@@ -473,44 +473,6 @@ function kAuction:OnUpdate(index, elapsed)
 			end
 		end
 	end	
-end
-function kAuction:MainFrameScrollUpdate()
-	-- BASE MEMORY USAGE: +0KB
-	if self.auctions and #(self.auctions) > 0 and self.db.profile.gui.frames.main.visible then
-		local line; -- 1 through 5 of our window to scroll
-		local lineplusoffset; -- an index into our data calculated from the scroll offset
-		FauxScrollFrame_Update(kAuctionMainFrameMainScrollContainerScrollFrame,#(self.auctions),5,16);
-		_G[self.db.profile.gui.frames.main.name.."TitleText"]:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.main.font), 16);
-		for line=1,5 do
-			lineplusoffset = line + FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
-			if lineplusoffset <= #(self.auctions) then
-				local fNameText = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."ItemNameText"];
-				fNameText:SetText(GetItemInfo(self.auctions[lineplusoffset].itemLink))
-				fNameText:SetTextColor(kAuction:Item_GetColor(self.auctions[lineplusoffset].itemLink))
-				fNameText:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.main.font), self.db.profile.gui.frames.main.fontSize);
-				-- Removed r8702, replaced by dropdown system -- Update Bid Button --kAuction:Gui_UpdateAuctionBidButton(line, self.auctions[lineplusoffset]);
-				-- Update Close Button
-				-- MEMORY USAGE: +0.88KB
-				--kAuction:Gui_UpdateAuctionCloseButton(line, self.auctions[lineplusoffset]);
-				-- Update Current Item Buttons
-				-- MEMORY USAGE: +1.17KB
-				--kAuction:Gui_UpdateAuctionCurrentItemButtons(line, self.auctions[lineplusoffset]);
-				-- Update Icons
-				-- MEMORY USAGE: +4.44KB
-				kAuction:Gui_UpdateAuctionIcons(line, self.auctions[lineplusoffset]);
-				-- Update Pullout menu
-				-- MEMORY USAGE: +3.66KB
-				--kAuction:Gui_UpdateItemMatchMenu(line, self.auctions[lineplusoffset]);
-				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line]:Show();
-			else
-				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line]:Hide();
-			end
-		end
-		--_G[self.db.profile.gui.frames.main.name.."MainScrollContainer"]:Show();
-		_G[self.db.profile.gui.frames.main.name]:Show();
-	else
-		_G[self.db.profile.gui.frames.main.name]:Hide();
-	end
 end
 function kAuction:DetermineRandomAuctionWinner(iAuction)
 	-- Verify raid leader

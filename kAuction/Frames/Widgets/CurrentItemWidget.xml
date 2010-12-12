@@ -25,7 +25,7 @@
 						self:SetSize(kAuction.currentItemWidgetHeight, kAuction.currentItemWidgetHeight)
 					</OnShow>
 					<OnEnter>
-						kAuction:Gui_OnEnterCurrentItem(self);
+						kAuction:Gui_OnEnterCurrentItemIcon(self);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide()
@@ -72,6 +72,13 @@
 					</FontHeight>
 					<Color r="0.9" g="0.82" b="0" />
 				</FontString>				
+				<Scripts>
+					<OnEnter>
+						kAuction:Gui_OnEnterCurrentItemNameText(self)
+					</OnEnter>
+					<OnLeave>
+					</OnLeave>
+				</Scripts>
 			</Layer>
 			<Layer level="HIGHLIGHT">
 				<Texture inherits="kAuctionHighlightTextureTemplate"/>
@@ -85,7 +92,7 @@
 				kAuction:Gui_OnClickAuctionItem(self, button)
 			</OnMouseDown>
 			<OnEnter>
-				--kAuction:Gui_OnEnterAuctionItem(self)
+				kAuction:Gui_OnEnterCurrentItem(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide()

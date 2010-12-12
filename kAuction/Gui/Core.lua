@@ -122,7 +122,7 @@ function kAuction:Gui_OnClickCurrentItem(frame)
 	if localAuctionData.currentItemLink ~= false and not localAuctionData.bid and kAuction:GetAuctionTimeleft(auction) then -- Check if currentItemlink and no active bid
 		localAuctionData.currentItemLink = false;
 	end	
-	kAuction:Gui_ShowCurrentItemFrame(auction);	
+	kAuction:Gui_ShowCurrentItemFrame(auction, frame);	
 end
 function kAuction:Gui_OnEnterCurrentItem(frame)
 	kAuction:Debug("FUNC: Gui_OnEnterCurrentItem, frame: " .. frame:GetName(), 3);
@@ -380,7 +380,7 @@ function kAuction:Gui_HookFrameRefreshUpdate()
 	else
 		_G["kAuctionMainFrameBidScrollContainer"]:Hide()
 		_G["kAuctionMainFrameMainScrollContainer"]:Show()
-		kAuction:MainFrameScrollUpdate();
+		kAuction:Gui_UpdateMainFrameScroll();
 	end
 	kAuction:Gui_UpdateBidTabs();
 end
@@ -439,6 +439,13 @@ function kAuction:Gui_ResizeFrame(frame,button,state)
 				kAuction:Debug("Resize BOTTOMLEFT START", 3)
 				frame:GetParent():StartSizing("BOTTOMLEFT")
 			elseif frame:GetName() == "kAuctionMainFrameResizeRight" or frame:GetName() == "kAuctionBidsFrameResizeRight" then
+				kAuction:Debug("Resize BOTTOMRIGHT START", 3)
+				frame:GetParent():StartSizing("BOTTOMRIGHT")
+			end	
+			if frame:GetName() == "kAuctionCurrentItemFrameResizeLeft" then
+				kAuction:Debug("Resize BOTTOMLEFT START", 3)
+				frame:GetParent():StartSizing("BOTTOMLEFT")
+			elseif frame:GetName() == "kAuctionCurrentItemFrameResizeRight" then
 				kAuction:Debug("Resize BOTTOMRIGHT START", 3)
 				frame:GetParent():StartSizing("BOTTOMRIGHT")
 			end	
@@ -569,6 +576,44 @@ function kAuction:Gui_UpdateAuctionIcons(index, objAuction)
 		timerText:SetText(math.floor(time))
 	else
 		timerText:SetText('')
+	end
+end
+function kAuction:Gui_UpdateMainFrameScroll()
+	-- BASE MEMORY USAGE: +0KB
+	if self.auctions and #(self.auctions) > 0 and self.db.profile.gui.frames.main.visible then
+		local line; -- 1 through 5 of our window to scroll
+		local lineplusoffset; -- an index into our data calculated from the scroll offset
+		FauxScrollFrame_Update(kAuctionMainFrameMainScrollContainerScrollFrame,#(self.auctions),5,16);
+		_G[self.db.profile.gui.frames.main.name.."TitleText"]:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.main.font), 16);
+		for line=1,5 do
+			lineplusoffset = line + FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
+			if lineplusoffset <= #(self.auctions) then
+				local fNameText = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."ItemNameText"];
+				fNameText:SetText(GetItemInfo(self.auctions[lineplusoffset].itemLink))
+				fNameText:SetTextColor(kAuction:Item_GetColor(self.auctions[lineplusoffset].itemLink))
+				fNameText:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.main.font), self.db.profile.gui.frames.main.fontSize);
+				-- Removed r8702, replaced by dropdown system -- Update Bid Button --kAuction:Gui_UpdateAuctionBidButton(line, self.auctions[lineplusoffset]);
+				-- Update Close Button
+				-- MEMORY USAGE: +0.88KB
+				--kAuction:Gui_UpdateAuctionCloseButton(line, self.auctions[lineplusoffset]);
+				-- Update Current Item Buttons
+				-- MEMORY USAGE: +1.17KB
+				--kAuction:Gui_UpdateAuctionCurrentItemButtons(line, self.auctions[lineplusoffset]);
+				-- Update Icons
+				-- MEMORY USAGE: +4.44KB
+				kAuction:Gui_UpdateAuctionIcons(line, self.auctions[lineplusoffset]);
+				-- Update Pullout menu
+				-- MEMORY USAGE: +3.66KB
+				--kAuction:Gui_UpdateItemMatchMenu(line, self.auctions[lineplusoffset]);
+				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line]:Show();
+			else
+				_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line]:Hide();
+			end
+		end
+		--_G[self.db.profile.gui.frames.main.name.."MainScrollContainer"]:Show();
+		_G[self.db.profile.gui.frames.main.name]:Show();
+	else
+		_G[self.db.profile.gui.frames.main.name]:Hide();
 	end
 end
 --- Creates scrips and text for auction icons and tooltips
@@ -738,19 +783,6 @@ function kAuction:Gui_TriggerEffectsAuctionWon()
 	if sound then
 		PlaySoundFile(sound);
 	end
-end
-function kAuction:Gui_ShowGlowTooltip(parent,text,anchorPoint,parentAnchorPoint)
-	-- TODO: Finish dynamic side assignments
-    parent.arrow:SetSize(21, 53)
-    parent.arrow.arrow = _G[self.arrow:GetName() .. "Arrow"]
-    parent.arrow.glow = _G[self.arrow:GetName() .. "Glow"]
-    parent.arrow.arrow:SetAllPoints(true)
-    parent.arrow.glow:SetAllPoints(true)
-    -- Rotate 90 degrees
-    -- left, bottom, right, bottom, left, top, right, top
-    parent.arrow.arrow:SetTexCoord(0.78515625, 0.58789063, 0.99218750, 0.58789063, 0.78515625, 0.54687500, 0.99218750, 0.54687500)
-    parent.arrow.glow:SetTexCoord(0.40625000, 0.82812500, 0.66015625, 0.82812500, 0.40625000, 0.77343750, 0.66015625, 0.77343750)
-    parent.text:SetSpacing(4)	
 end
 function kAuction:Gui_ShowCurrentItemPopup(frame)
 	local offset = FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
