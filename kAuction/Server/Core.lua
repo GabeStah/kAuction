@@ -243,7 +243,7 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 			local wishlistItem = kAuction:Wishlist_GetHighestPriorityItemFromSet(oMatches);
 			if wishlistItem then
 				if wishlistItem.autoBid == true then
-					kAuction:Gui_AuctionBidButtonOnClick(self.auctions[#self.auctions], wishlistItem.bidType, wishlistItem.bestInSlot, wishlistItem.setBonus);				
+					kAuction:Gui_OnClickAuctionBidButton(self.auctions[#self.auctions], wishlistItem.bidType, wishlistItem.bestInSlot, wishlistItem.setBonus);				
 					-- Auto bid, check if alert
 					if wishlistItem.alert == true then
 						local sBidType;
@@ -280,7 +280,7 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 							button1 = "Keep Bid",
 							button2 = "Cancel Bid",
 							OnCancel = function()
-								kAuction:Gui_AuctionBidButtonOnClick(self.auctions[#self.auctions], 'none');				
+								kAuction:Gui_OnClickAuctionBidButton(self.auctions[#self.auctions], 'none');				
 							end,
 							timeout = self.auctions[#(self.auctions)].duration,
 							whileDead = 1,
@@ -321,7 +321,7 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 						"Best in Slot: " .. sBestInSlot .. "|n" ..
 						"Set Bonus: " .. sSetBonus .. "|n",
 						OnAccept = function()
-							kAuction:Gui_AuctionBidButtonOnClick(self.auctions[#self.auctions], wishlistItem.bidType, wishlistItem.bestInSlot, wishlistItem.setBonus);
+							kAuction:Gui_OnClickAuctionBidButton(self.auctions[#self.auctions], wishlistItem.bidType, wishlistItem.bestInSlot, wishlistItem.setBonus);
 						end,
 						button1 = "Bid",
 						button2 = "No Thanks",

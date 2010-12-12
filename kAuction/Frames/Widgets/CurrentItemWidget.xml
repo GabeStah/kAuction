@@ -1,28 +1,8 @@
 <Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\UI.xsd" xmlns="http://www.blizzard.com/wow/ui/">	
 	<Frame name="kAuctionCurrentItemWidget" virtual="true" enableMouse="true">
 		<Size>
-			<AbsDimension y="24" />
+			<AbsDimension y="32" />
 		</Size>
-		<Layers>
-			<Layer level="BORDER">
-				<FontString name="$parentItemNameText" font="Fonts\FRIZQT__.TTF" text="Lorem ipsum dolor sit">
-					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
-							<Offset>
-								<AbsDimension x="30"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					<FontHeight>
-						<AbsValue val="9" />
-					</FontHeight>
-					<Color r="0.9" g="0.82" b="0" />
-				</FontString>				
-			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture inherits="kAuctionHighlightTextureTemplate"/>
-			</Layer>
-		</Layers>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
 				<Offset>
@@ -36,16 +16,19 @@
 			</Anchor>
 		</Anchors>
 		<Frames>			
-			<Button name="$parentCurrentItem" inherits="kAuctionIconTemplate" id="1">	
+			<Button name="$parentCurrentItem" inherits="kAuctionTextIconTemplate">	
 				<Anchors>
 					<Anchor point="LEFT" />
 				</Anchors>
 				<Scripts>
+					<OnShow>
+						self:SetSize(kAuction.currentItemWidgetHeight, kAuction.currentItemWidgetHeight)
+					</OnShow>
 					<OnEnter>
-						kAuction:OnCurrentItemEnter(self);
+						kAuction:Gui_OnEnterCurrentItem(self);
 					</OnEnter>
 					<OnLeave>
-						kAuction:OnCurrentItemLeave(self);
+						GameTooltip:Hide()
 					</OnLeave>
 				</Scripts>
 			</Button>						
@@ -63,15 +46,46 @@
 					<OnEnter>
 						kAuction:Gui_OnEnterCloseIcon(self)
 					</OnEnter>	
+					<OnShow>
+						self:SetSize(kAuction.currentItemWidgetHeight, kAuction.currentItemWidgetHeight)
+					</OnShow>					
 				</Scripts>					
 			</Button>									
 		</Frames>
+		<Layers>
+			<Layer level="NORMAL">
+				<FontString name="$parentItemNameText" font="Fonts\FRIZQT__.TTF" text="Lorem ipsum dolor sit" justifyh="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentCurrentItem" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="2"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentClose" relativePoint="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="-2"/>
+							</Offset>
+						</Anchor>						
+					</Anchors>
+					<FontHeight>
+						<AbsValue val="9" />
+					</FontHeight>
+					<Color r="0.9" g="0.82" b="0" />
+				</FontString>				
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture inherits="kAuctionHighlightTextureTemplate"/>
+			</Layer>
+		</Layers>		
 		<Scripts>
+			<OnShow>
+				self:SetHeight(kAuction.currentItemWidgetHeight)
+			</OnShow>
 			<OnMouseDown>
-				kAuction:Gui_AuctionItemOnClick(self, button)
+				kAuction:Gui_OnClickAuctionItem(self, button)
 			</OnMouseDown>
 			<OnEnter>
-				kAuction:Gui_AuctionItemOnEnter(self)
+				--kAuction:Gui_OnEnterAuctionItem(self)
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide()

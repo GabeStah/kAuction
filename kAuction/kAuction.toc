@@ -5,12 +5,17 @@
 ## Interface: 40000
 ## SavedVariables: kAuctionDB, kAuctionRaidDB
 
-embeds.xml
-kAuction.lua
-kAuction_Client.lua
-kAuction_Gui.lua
-kAuction_Item.lua
-kAuction_Options.lua
-kAuction_Server.lua
-kAuction_Wishlist.lua
-kAuction_WishlistGui.lua
+Embeds.xml
+Core.lua
+Client/Core.lua
+Gui/Core.lua
+Gui/Bid.lua
+Gui/BidTabs.lua
+Gui/CurrentItem.lua
+Gui/Events.lua
+Gui/Whisper.lua
+Gui/Wishlist.lua
+Item/Core.lua
+Options/Core.lua
+Server/Core.lua
+Wishlist/Core.lua

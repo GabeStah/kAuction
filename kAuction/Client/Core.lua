@@ -60,7 +60,7 @@ function kAuction:Client_AuctionReceived(auction)
 				local wishlistItem = kAuction:Wishlist_GetHighestPriorityItemFromSet(oMatches);
 				if wishlistItem then
 					if wishlistItem.autoBid == true then
-						kAuction:Gui_AuctionBidButtonOnClick(auction, wishlistItem.bidType, wishlistItem.bestInSlot, wishlistItem.setBonus);				
+						kAuction:Gui_OnClickAuctionBidButton(auction, wishlistItem.bidType, wishlistItem.bestInSlot, wishlistItem.setBonus);				
 						-- Auto bid, check if alert
 						if wishlistItem.alert == true then
 							local sBidType;
@@ -82,7 +82,7 @@ function kAuction:Client_AuctionReceived(auction)
 								button2 = "Cancel Bid",
 								OnCancel = function(a,b,c,d)
 									if c ~= 'timeout' then
-										kAuction:Gui_AuctionBidButtonOnClick(auction, 'none');				
+										kAuction:Gui_OnClickAuctionBidButton(auction, 'none');				
 									end
 								end,
 								timeout = auction.duration,
@@ -123,7 +123,7 @@ function kAuction:Client_AuctionReceived(auction)
 							"Best in Slot: " .. sBestInSlot .. "|n" ..
 							"Set Bonus: " .. sSetBonus .. "|n",
 							OnAccept = function()
-								kAuction:Gui_AuctionBidButtonOnClick(auction, wishlistItem.bidType, wishlistItem.bestInSlot, wishlistItem.setBonus);
+								kAuction:Gui_OnClickAuctionBidButton(auction, wishlistItem.bidType, wishlistItem.bestInSlot, wishlistItem.setBonus);
 							end,
 							button1 = "Bid",
 							button2 = "No Thanks",

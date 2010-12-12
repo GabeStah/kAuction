@@ -322,6 +322,8 @@ function kAuction:Item_GetInventoryItemMatchTable(matchItem)
 			end
 		end
 	end
+	-- Sort by iLevel
+	sort(matchTable, function(a,b) return select(4, GetItemInfo(a)) > select(4, GetItemInfo(b)) end)
 	if matchTable then
 		return matchTable;
 	else

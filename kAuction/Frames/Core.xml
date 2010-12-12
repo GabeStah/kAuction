@@ -101,7 +101,7 @@
 			<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" />
 		</Anchors>
 	</Frame>	
-	<Frame name="kAuctionCurrentItemFrame" inherits="GlowBoxTemplate" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="UIParent" resizable="true">
+	<Frame name="kAuctionCurrentItemFrame" inherits="GlowBoxTemplate" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="UIParent" resizable="true" hidden="true">
 		<Size>
 			<AbsDimension x="250" y="250"/>
 		</Size>
@@ -187,17 +187,24 @@
 				<Frames>
 					<Button name="$parentIcon" inherits="kAuctionTextIconTemplate">
 						<Size>
-							<AbsDimension x="40" y="40"/>
+							<AbsDimension x="50" y="50"/>
 						</Size>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="0" y="0"/>
+									<AbsDimension x="2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
-						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\bulb-grey" />
-						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\bulb-yellow" />				
+						<HighlightTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>		
+						<Scripts>
+							<OnEnter>
+								kAuction:Gui_OnEnterCurrentItemContainerIcon(self)
+							</OnEnter>
+							<OnLeave>
+								GameTooltip:Hide()
+							</OnLeave>
+						</Scripts>		
 					</Button>						
 				</Frames>				
 				<Layers>
@@ -205,7 +212,7 @@
 						<Texture inherits="kAuctionHighlightTextureTemplate"/>
 					</Layer>
 		            <Layer level="NORMAL">
-						<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Select the item you'll replace:">
+						<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Select the item you'll replace.">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentIcon" relativePoint="TOPRIGHT">
 									<Offset>
@@ -267,14 +274,14 @@
 						</Anchors>
 						<Scripts>
 							<OnVerticalScroll>
-								--FauxScrollFrame_OnVerticalScroll(self, offset, 16, kAuction:MainFrameScrollUpdate());
+								FauxScrollFrame_OnVerticalScroll(self, offset, kAuction.currentItemWidgetHeight, kAuction:Gui_UpdateCurrentItemScroll());
 							</OnVerticalScroll>
 							<OnShow>
-								--kAuction:MainFrameScrollUpdate()
-							</OnShow>
+								kAuction:Gui_UpdateCurrentItemScroll()
+							</OnShow>										
 						</Scripts>
 					</ScrollFrame>
-					<Frame name="$parentCurrentItem1" inherits="kAuctionCurrentItemWidget">
+					<Frame name="$parentCurrentItem1" inherits="kAuctionCurrentItemWidget" id="1">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
 								<Offset>
@@ -283,22 +290,22 @@
 							</Anchor>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentCurrentItem2" inherits="kAuctionCurrentItemWidget">
+					<Frame name="$parentCurrentItem2" inherits="kAuctionCurrentItemWidget" id="2">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentCurrentItem1" relativePoint="BOTTOM"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentCurrentItem3" inherits="kAuctionCurrentItemWidget">
+					<Frame name="$parentCurrentItem3" inherits="kAuctionCurrentItemWidget" id="3">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentCurrentItem2" relativePoint="BOTTOM"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentCurrentItem4" inherits="kAuctionCurrentItemWidget">
+					<Frame name="$parentCurrentItem4" inherits="kAuctionCurrentItemWidget" id="4">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentCurrentItem3" relativePoint="BOTTOM"/>
 						</Anchors>
 					</Frame>
-					<Frame name="$parentCurrentItem5" inherits="kAuctionCurrentItemWidget">
+					<Frame name="$parentCurrentItem5" inherits="kAuctionCurrentItemWidget" id="5">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentCurrentItem4" relativePoint="BOTTOM"/>
 						</Anchors>
@@ -347,6 +354,11 @@
                 </Anchors>
             </Frame>			
 		</Frames>
+		<Scripts>
+			<OnShow>
+				kAuction:Gui_UpdateCurrentItemScroll()
+			</OnShow>										
+		</Scripts>			
 	</Frame>
 	<Frame name="kAuctionGlowTooltip" inherits="GlowBoxTemplate" parent="UIParent" enableMouse="true" hidden="true" frameStrata="DIALOG" framelevel="2">
         <Size x="220" y="100"/>

@@ -41,11 +41,14 @@
 					<Anchor point="LEFT" />
 				</Anchors>
 				<Scripts>
+					<OnClick>
+						kAuction:Gui_OnClickCurrentItem(self);
+					</OnClick>
 					<OnEnter>
-						kAuction:OnCurrentItemEnter(self);
+						kAuction:Gui_OnEnterCurrentItem(self);
 					</OnEnter>
 					<OnLeave>
-						kAuction:OnCurrentItemLeave(self);
+						kAuction:Gui_OnLeaveCurrentItem(self);
 					</OnLeave>
 				</Scripts>
 				<Frames>
@@ -146,10 +149,10 @@
 		</Frames>
 		<Scripts>
 			<OnMouseDown>
-				kAuction:Gui_AuctionItemOnClick(self, button)
+				kAuction:Gui_OnClickAuctionItem(self, button)
 			</OnMouseDown>
 			<OnEnter>
-				kAuction:Gui_AuctionItemOnEnter(self)
+				kAuction:Gui_OnEnterAuctionItem(self)
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide()

@@ -96,10 +96,10 @@
 				</Layers>
 				<Scripts>
 					<OnEnter>
-						kAuction:Gui_CreateTooltipBidRollOnEnter(self)
+						kAuction:Gui_OnEnterBidRoll(self)
 					</OnEnter>
 					<OnLeave>
-						kAuction:Gui_OnBidItemsWonLeave(self)
+						kAuction:Gui_OnLeaveBidItemsWon(self)
 					</OnLeave>
 				</Scripts>
 			</Frame>
@@ -164,7 +164,7 @@
 						kAuction:OnBidItemsWonEnter(self)
 					</OnEnter>
 					<OnLeave>
-						kAuction:Gui_OnBidRollOnLeave(self)
+						kAuction:Gui_OnLeaveBidRoll(self)
 					</OnLeave>
 				</Scripts>
 			</Frame>

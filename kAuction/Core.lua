@@ -10,6 +10,7 @@ kAuction.updates = {};
 kAuction.updates[1] = 0;
 kAuction.updates[2] = 0;
 kAuction.currentZone = false;
+kAuction.currentItemWidgetHeight = 34;
 local sharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 kAuction.sharedMedia = sharedMedia
 function kAuction:OnInitialize()
@@ -420,7 +421,7 @@ function kAuction:BidsFrameScrollUpdate()
 	--_G[self.db.profile.gui.frames.main.name.."BidScrollContainerTitleRightText"]:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.bids.font), 16);
 	if #(self.auctions) > 0 and #(self.auctions) >= self.selectedAuctionIndex and self.selectedAuctionIndex ~= 0 and self.db.profile.gui.frames.bids.visible then
 		--_G[self.db.profile.gui.frames.main.name.."BidScrollContainerTitleText"]:SetText(self.auctions[self.selectedAuctionIndex].itemLink);
-		--_G[self.db.profile.gui.frames.main.name.."BidScrollContainerTitle"]:SetScript("OnEnter", function() kAuction:Gui_CurrentItemMenuOnEnter(_G[self.db.profile.gui.frames.main.name.."BidScrollContainerTitleText"), self.auctions[self.selectedAuctionIndex].itemLink) end);
+		--_G[self.db.profile.gui.frames.main.name.."BidScrollContainerTitle"]:SetScript("OnEnter", function() kAuction:Gui_OnEnterCurrentItemMenu(_G[self.db.profile.gui.frames.main.name.."BidScrollContainerTitleText"), self.auctions[self.selectedAuctionIndex].itemLink) end);
 		--_G[self.db.profile.gui.frames.main.name.."BidScrollContainerTitle"]:SetScript("OnLeave", function() GameTooltip:Hide() end);
 		FauxScrollFrame_Update(kAuctionMainFrameBidScrollContainerScrollFrame,#(self.auctions[self.selectedAuctionIndex].bids),5,16);
 		for line=1,5 do
@@ -493,7 +494,7 @@ function kAuction:MainFrameScrollUpdate()
 				--kAuction:Gui_UpdateAuctionCloseButton(line, self.auctions[lineplusoffset]);
 				-- Update Current Item Buttons
 				-- MEMORY USAGE: +1.17KB
-				kAuction:Gui_UpdateAuctionCurrentItemButtons(line, self.auctions[lineplusoffset]);
+				--kAuction:Gui_UpdateAuctionCurrentItemButtons(line, self.auctions[lineplusoffset]);
 				-- Update Icons
 				-- MEMORY USAGE: +4.44KB
 				kAuction:Gui_UpdateAuctionIcons(line, self.auctions[lineplusoffset]);
@@ -776,13 +777,13 @@ function kAuction:OnBidItemsWonEnter(frame)
 			iSelectFrame = iSelectFrame + 1;
 		end
 		if #(wonItemList) > 0 then
-			kAuction:Gui_OnBidRollOnLeave(nil);
-			kAuction:Gui_OnBidItemsWonLeave(nil);		
+			kAuction:Gui_OnLeaveBidRoll(nil);
+			kAuction:Gui_OnLeaveBidItemsWon(nil);		
 			selectFrame:Show();
 			-- Update tooltip
 			--[[
 			if localAuctionData.currentItemLink ~= false then
-				kAuction:Gui_CurrentItemMenuOnEnter(frame,localAuctionData.currentItemLink);
+				kAuction:Gui_OnEnterCurrentItemMenu(frame,localAuctionData.currentItemLink);
 			end
 			]]
 			local tip = self.qTip:Acquire("GameTooltip", 1, "LEFT")
@@ -835,54 +836,67 @@ function kAuction:OnBidNameOnEnter(frame)
 	end
 	tip:Show();
 end
-function kAuction:OnCurrentItemEnter(frame)
-	kAuction:Debug("FUNC: OnCurrentItemEnter, frame: " .. frame:GetName(), 3);
-	kAuctionTooltip:Hide(); -- Clear tooltip
-	offset = FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
-	local _, _, row = string.find(frame:GetName(), "(%d+)");
-	local selectFrame;
-	local localAuctionData = kAuction:Client_GetLocalAuctionDataById(self.auctions[offset + row].id);	
-	-- If active bid, menu locked, do not show
-	if self.auctions[offset + row].currentItemSlot and not localAuctionData.bid and kAuction:GetAuctionTimeleft(self.auctions[offset + row]) then
-		--Current item mouse over, show select frame
-		selectFrame = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..row.."CurrentItemSelectFrame"];
-		--selectFrame = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..row.."CurrentItemSelectFrame", 1];
-		local i = 1;
-		local matchTable = kAuction:Item_GetInventoryItemMatchTable(self.auctions[offset + row].currentItemSlot)
-		while _G[selectFrame:GetName().."Button"..i] do
-			if i <= #(matchTable) then
-				_G[selectFrame:GetName().."Button"..i]:Show()
-			end
-			i=i+1;			
-		end
-	end
-	-- Hide other Rows
-	local iSelectFrame = 1;
-	while _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..iSelectFrame.."CurrentItemSelectFrame"] do
-		if iSelectFrame ~= row then
-			_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..iSelectFrame.."CurrentItemSelectFrame"]:Hide();
-		end
-		iSelectFrame = iSelectFrame + 1;
-	end
-	if self.auctions[offset + row].currentItemSlot then
-		if not localAuctionData.bid and kAuction:GetAuctionTimeleft(self.auctions[offset + row]) then
-			selectFrame:Show();
-		end
-		-- Update tooltip
-		if localAuctionData.currentItemLink ~= false then
-			kAuction:Gui_CurrentItemMenuOnEnter(frame,localAuctionData.currentItemLink);
-		end
-		--kAuction:Threading_StartTimer("kAuctionThreadingFrameMain"..row);
+function kAuction:GetAuctionStateArray(frame)
+	local offset, selectFrame = FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
+	local row, iIndex, auction;
+	if frame.id then
+		auction = frame;
 	else
-		if _G["kAuctionThreadingFrameMain"..row] then
-			_G["kAuctionThreadingFrameMain"..row]:Hide();
+		row = select(3, string.find(frame:GetName(), "(%d+)"))
+		auction = self.auctions[offset + row];
+	end
+	local timeLeft = kAuction:GetAuctionTimeleft(auction);
+	local timeLeftVote = kAuction:GetAuctionTimeleft(auction, auction.auctionCloseVoteDuration);
+	local localAuctionData = kAuction:Client_GetLocalAuctionDataById(auction.id);	
+	local states = {};	
+	if auction.winner then
+		if auction.winner == self.playerName then -- STATE: winnerSelf
+			states.winnerSelf = true
+		else -- STATE: winnerOther
+			states.winnerOther = true
 		end
 	end
-end
-function kAuction:OnCurrentItemLeave(frame)
-	kAuction:Debug("FUNC: OnCurrentItemLeave, frame: " .. frame:GetName(), 1);
-	local _, _, row = string.find(frame:GetName(), "(%d+)");
-	_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..row.."CurrentItemSelectFrame"]:Hide();
+	if auction.disenchant then -- STATE: winnerDE
+		states.winnerDE = true
+	end
+	if auction.closed then -- Closed, cannot bid or cancel bid, remove button -- STATE: auctionClosed
+		states.auctionClosed = true
+	end
+	if timeLeft then -- STATE: auctionOpen
+		states.auctionOpen = true
+	end
+	if auction.bids and #auction.bids > 0 then
+		if timeLeftVote then
+			states.voteOpen = true
+		else
+			states.voteClosed = true
+		end
+	end
+	if localAuctionData.bid and timeLeft then -- Bid, not closed, show Cancel button
+		states.bidType = localAuctionData.bidType
+		states.bid = true
+	elseif not localAuctionData.bid and timeLeft then -- No Bid, not closed, show Cancel button
+		states.noBid = true
+	end		
+	-- Council
+	if auction.bids then
+		-- Check if auctionType is Loot Council
+		if auction.auctionType == 2 and self:IsLootCouncilMember(auction, self.playerName) and timeLeftVote then
+			local booBidFound = false;
+			for i,bid in pairs(auction.bids) do
+				if self:BidHasCouncilMemberVote(bid, self.playerName) then
+					booBidFound = true;
+				end
+			end
+			-- Check if council vote
+			if booBidFound then
+				states.vote = true
+			else
+				states.noVote = true
+			end
+		end
+	end		
+	return states;
 end
 function IsInPopoutMainFrameTimer(timerName)
 	-- Hide other rows if needed
