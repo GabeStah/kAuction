@@ -24,5 +24,6 @@
 	<Include file="Frames\Widgets\AuctionItemWidget.xml"/>
 	<Include file="Frames\Widgets\BidWidget.xml"/>
 	<Include file="Frames\Widgets\CurrentItemWidget.xml"/>
+	<Include file="Frames\Widgets\ItemsWonWidget.xml"/>
 	<Include file="Frames\Core.xml"/>
 </Ui>

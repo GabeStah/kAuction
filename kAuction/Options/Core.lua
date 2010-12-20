@@ -1,7 +1,7 @@
 -- Author      : Gabe
 -- Create Date : 2/15/2009 7:20:42 PM
-kAuction.minRequiredVersion = 2.045;
-kAuction.version = 2.0045;
+kAuction.minRequiredVersion = '2.0.145';
+kAuction.version = '2.0.145';
 kAuction.versions = {};
 
 kAuction.const = {};
@@ -69,7 +69,6 @@ kAuction.defaults = {
 				bids = {
 					font = "ABF",
 					fontSize = 12,
-					itemPopoutDuration = 1,					
 					minimized = false,
 					visible = true,
 					width = 325,
@@ -78,6 +77,11 @@ kAuction.defaults = {
 					name = 'kAuctionCurrentItemFrame',
 					anchorSide = 'LEFT',
 					visible = true,
+				},
+				itemsWon = {
+					name = 'kAuctionItemsWonFrame',
+					anchorSide = 'TOP',
+					visible = false,
 				},
 				main = {
 					autoRemoveAuctions = false,
@@ -142,7 +146,7 @@ kAuction.defaults = {
 			whiteListSelected = 1,
 		},
 		looting = {
-			auctionWhisperBidEnabled = true,
+			auctionWhisperBidEnabled = false,
 			auctionWhisperBidSuppressionEnabled = true,
 			auctionWhisperBidSuppressionDelay = 60,
 			auctionCloseDelay = 3,
@@ -152,19 +156,17 @@ kAuction.defaults = {
 			autoAwardRandomAuctions = true,
 			autoAssignIfMasterLoot = true,
 			councilMembers = {
-				"Pohx",
+				"Kulldon",
 				"Kulldam",
-				"Khrashdin",
 				"Kilwenn",
-				"Huggeybear",
-				"Ugra",
-				"Kheelan",
+				"Kainhighwind",
+				"Bunny",
+				"Boheem",
 			},
 			councilMemberSelected = 1,
 			disenchanters = { -- Disenchanters
-				"Khrashdin",
-				"Thawfore",
-				"Wakamii",
+				"Bunny",
+				"Duux",
 			},	
 			disenchanterSelected = 1,
 			displayFirstOpenAuction = false,
@@ -181,7 +183,7 @@ kAuction.defaults = {
 			enabled = true,
 			autoUpdate = true,
 			config = {
-				selectedSection = 'search',
+				selectedSection = 'list',
 				searchReturnLimit = 50,
 				searchMinRarity = 4,
 				searchMinItemLevel = 226,
@@ -208,11 +210,10 @@ kAuction.defaults = {
 		},
 		zones = {
 			validZones = {
-				"Naxxramas",
-				"The Eye of Eternity",
-				"The Obsidian Sanctum",
-				"Ulduar",
-				"Trial of the Crusader",
+				"Baradin Hold",
+				"Blackrock Mountain: Blackwing Descent",
+				"The Bastion of Twilight",
+				"Throne of the Four Winds",
 			},
 			zoneSelected = 1,
 		}
@@ -643,7 +644,7 @@ kAuction.options = {
 						},	
 						]]				
 					},
-				},			
+				},
 				disenchantment = {
 					name = 'Disenchantment',
 					type = 'group',
@@ -891,12 +892,12 @@ kAuction.options = {
 							order = 3,
 						},
 					},
-				},	
+				},			
 				zonesInline = {
 					name = 'Zones',
 					type = 'group',
 					cmdHidden = true,
-					order = 6,
+					order = 7,
 					args = {
 						description = {
 							name = 'Use these settings to edit a list of valid Raid Zones where kAuction will track active raids.  To add a new zone, enter the name in the Add box and press Enter.  The current list of Raid Zones is found in the Zones dropdown.  To remove an Zone, select the name in the drop down and press Delete.',
@@ -1004,34 +1005,6 @@ kAuction.options = {
 										kAuction:Gui_HookFrameRefreshUpdate();
 									end,
 									get = function(info) return kAuction.db.profile.gui.frames.bids.fontSize end,
-								},
-							},
-						},
-						details = {
-							name = 'Details',
-							type = 'group',
-							guiInline = true,
-							order = 3,
-							args = {
-								itemPopoutDuration = {
-									name = 'Items Won Popout Check Frequency',
-									desc = 'Seconds the Items Won by popout window will be displayed after mouse leaves applicable frames.',
-									type = 'range',
-									min = 0.5,
-									max = 5,
-									step = 0.1,
-									set = function(info,value)
-										kAuction.db.profile.gui.frames.bids.itemPopoutDuration = value
-										--i = 1;
-										--while kAuction.timers.IsMouseInCurrentItemsWonRowFrame[i] do
-											--if kAuction:CancelTimer(kAuction.timers.IsMouseInCurrentItemsWonRowFrame[i]) then
-												--kAuction.timers.IsMouseInCurrentItemsWonRowFrame[i] = nil;
-											--end
-											--i=i+1;
-										--end
-									end,
-									get = function(info) return kAuction.db.profile.gui.frames.bids.itemPopoutDuration end,
-									width = 'full',
 								},
 							},
 						},
@@ -1291,96 +1264,11 @@ kAuction.options = {
 									end,
 								},
 							},
-						},
-						details = {
-							name = 'Details',
-							type = 'group',
-							guiInline = true,
-							order = 8,
-							args = {
-								itemPopoutDuration = {
-									name = 'Current Item Selection Popout Check Frequency',
-									desc = 'Seconds the Current Item Selection popout window will be displayed after mouse leaves applicable frames.',
-									type = 'range',
-									min = 0.5,
-									max = 5,
-									step = 0.1,
-									set = function(info,value)
-										kAuction.db.profile.gui.frames.main.itemPopoutDuration = value
-										--i = 1;
-										--while kAuction.timers.IsMouseInCurrentItemRowFrame[i] do
-											--if kAuction:CancelTimer(kAuction.timers.IsMouseInCurrentItemRowFrame[i]) then
-												--kAuction.timers.IsMouseInCurrentItemRowFrame[i] = nil;
-											--end
-											--i=i+1;
-										--end
-									end,
-									get = function(info) return kAuction.db.profile.gui.frames.main.itemPopoutDuration end,
-									width = 'full',
-								},
-							},
-						},						
+						},					
 					},
 				},						
 			},
 		},
-		modules = {
-			name = 'Modules',
-			type = 'group',
-			cmdHidden = true,
-			args = {
-				auctions = {
-					name = 'The Traitor King',
-					type = 'group',
-					cmdHidden = true,
-					order = 1,
-					args = {	
-						description = {
-							name = 'Here you can change the options for the Traitor King Achievement Module for use in the Trial of the Crusade raid instance.',
-							type = 'description',
-							order = 0,
-							hidden = true,
-						},
-						enabled = {
-							name = 'Enabled',
-							desc = 'Enable/Disable the Traitor King achievement assistance module.',
-							type = 'toggle',
-							set = function(info,value) kAuction.db.profile.modules.theTraitorKing.enabled = value end,
-							get = function(info) return kAuction.db.profile.modules.theTraitorKing.enabled end,
-							width = 'full',
-						},
-					},
-				},
-				aura = {
-					name = 'Aura',
-					type = 'group',
-					cmdHidden = true,
-					order = 1,
-					args = {	
-						description = {
-							name = 'The kAuction Aura Module is primarily designed to automatically remove specific auras (buffs) from the player based on certain criteria.  These criteria can be zone, current talent spec, and also a mix and match of other auras currently active or not active on the player.',
-							type = 'description',
-							order = 0,
-						},
-						enabled = {
-							name = 'Enabled',
-							desc = 'Enable/Disable the Aura Module.',
-							type = 'toggle',
-							set = function(info,value)
-								kAuction.db.profile.modules.aura.enabled = value;
-								if kAuction.db.profile.modules.aura.enabled then
-									kAuction:RegisterEvent("UNIT_AURA");
-								else
-									kAuction:UnregisterEvent("UNIT_AURA");
-								end
-							end,
-							get = function(info) return kAuction.db.profile.modules.aura.enabled end,
-							width = 'full',
-						},
-					},
-				},
-			},
-		},		
 		debug = {
 			name = 'Debug',
 			type = 'group',
@@ -1406,16 +1294,17 @@ kAuction.options = {
 					get = function(info) return kAuction.db.profile.debug.threshold end,
 				},
 			},
+			cmdHidden = true,
 		},
-        ui = {
+        config = {
 			type = 'execute',
-			name = 'UI',
-			desc = 'Open the User Interface',
+			name = 'Config',
+			desc = 'Open the Configuration Interface',
 			func = function() 
 				kAuction.dialog:Open("kAuction") 
 			end,
 			guiHidden = true,
-        },
+        },    
         version = {
 			type = 'execute',
 			name = 'Version',
@@ -1431,15 +1320,6 @@ kAuction.options = {
 			desc = 'Open the Wishlist Interface',
 			func = function() 
 				kAuction:WishlistGui_InitializeFrames();
-			end,
-			guiHidden = true,
-        },
-        aura = {
-			type = 'execute',
-			name = 'Aura Module',
-			desc = 'Open the Aura Module Interface',
-			func = function() 
-				kAuction:Aura_InitializeFrames();
 			end,
 			guiHidden = true,
         },

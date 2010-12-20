@@ -15,6 +15,7 @@ function kAuction:Gui_OnClickAuctionTab(auction,button)
 			end
 		end
 	end
+	kAuctionItemsWonFrame:Hide();
 	kAuction:Gui_HookFrameRefreshUpdate();
 end
 --- EVENTS END

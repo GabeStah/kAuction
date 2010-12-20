@@ -1,5 +1,5 @@
-## Title: kAuction |cffb5a5d5[2.045]|r |cff7fff7fAce3|r 
-## Version: 2.045
+## Title: kAuction |cffb5a5d5[2.0.145]|r |cff7fff7fAce3|r 
+## Version: 2.0.145
 ## Author: Kulldam
 ## Notes: Simple item auctioning system.
 ## Interface: 40000
@@ -13,6 +13,7 @@ Gui\Bid.lua
 Gui\BidTabs.lua
 Gui\CurrentItem.lua
 Gui\Events.lua
+Gui\ItemsWon.lua
 Gui\Whisper.lua
 Gui\Wishlist.lua
 Item\Core.lua

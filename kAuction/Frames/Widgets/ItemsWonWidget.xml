@@ -1,12 +1,12 @@
 <Ui xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\UI.xsd" xmlns="http://www.blizzard.com/wow/ui/">	
-	<Frame name="kAuctionCurrentItemWidget" virtual="true" enableMouse="true">
+	<Frame name="kAuctionItemsWonWidget" virtual="true" enableMouse="true" hidden="true">
 		<Size>
 			<AbsDimension y="32" />
 		</Size>
 		<Anchors>
 			<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
 				<Offset>
-					<AbsDimension x="5" y="0" />
+					<AbsDimension x="2" y="0" />
 				</Offset>
 			</Anchor>
 			<Anchor point="RIGHT" relativeTo="$parent" relativePoint="RIGHT">
@@ -16,55 +16,33 @@
 			</Anchor>
 		</Anchors>
 		<Frames>			
-			<Button name="$parentCurrentItem" inherits="kAuctionTextIconTemplate">	
+			<Button name="$parentItem" inherits="kAuctionTextIconTemplate">	
 				<Anchors>
 					<Anchor point="LEFT" />
 				</Anchors>
 				<Scripts>
 					<OnShow>
-						self:SetSize(kAuction.currentItemWidgetHeight, kAuction.currentItemWidgetHeight)
+						self:SetSize(kAuction.itemsWonWidgetHeight, kAuction.itemsWonWidgetHeight)
 					</OnShow>
 					<OnEnter>
-						kAuction:Gui_OnEnterCurrentItemGraphic(self);
+						kAuction:Gui_OnEnterItemsWonItemGraphic(self);
 					</OnEnter>
 					<OnLeave>
 						GameTooltip:Hide()
 					</OnLeave>
 				</Scripts>
-			</Button>						
-			<Button name="$parentCancel" inherits="kAuctionTextIconTemplate">
-				<Anchors>
-					<Anchor point="RIGHT">
-						<Offset>
-							<AbsDimension x="0" y="0" />
-						</Offset>
-					</Anchor>
-				</Anchors>
-				<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\xdark" />
-				<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\x" />
-				<Scripts>
-					<OnEnter>
-						kAuction:Gui_OnEnterCurrentItemCancelIcon(self)
-					</OnEnter>	
-					<OnClick>
-						kAuction:Gui_OnClickCurrentItemCancelIcon(self)
-					</OnClick>
-					<OnShow>
-						self:SetSize(kAuction.currentItemWidgetHeight, kAuction.currentItemWidgetHeight)
-					</OnShow>					
-				</Scripts>					
-			</Button>									
+			</Button>														
 		</Frames>
 		<Layers>
 			<Layer level="NORMAL">
 				<FontString name="$parentItemNameText" font="Fonts\FRIZQT__.TTF" text="Lorem ipsum dolor sit" justifyh="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentCurrentItem" relativePoint="TOPRIGHT">
+						<Anchor point="TOPLEFT" relativeTo="$parentItem" relativePoint="TOPRIGHT">
 							<Offset>
 								<AbsDimension x="2"/>
 							</Offset>
 						</Anchor>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentCancel" relativePoint="BOTTOMLEFT">
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
 							<Offset>
 								<AbsDimension x="-2"/>
 							</Offset>
@@ -77,10 +55,8 @@
 				</FontString>				
 				<Scripts>
 					<OnEnter>
-						kAuction:Gui_OnEnterCurrentItemNameText(self)
+						kAuction:Gui_OnEnterItemsWonItemNameText(self)
 					</OnEnter>
-					<OnLeave>
-					</OnLeave>
 				</Scripts>
 			</Layer>
 			<Layer level="HIGHLIGHT">
@@ -89,13 +65,10 @@
 		</Layers>		
 		<Scripts>
 			<OnShow>
-				self:SetHeight(kAuction.currentItemWidgetHeight)
+				self:SetHeight(kAuction.itemsWonWidgetHeight)
 			</OnShow>
-			<OnMouseDown>
-				kAuction:Gui_OnClickCurrentItem(self, button)
-			</OnMouseDown>
 			<OnEnter>
-				kAuction:Gui_OnEnterCurrentItem(self);
+				kAuction:Gui_OnEnterItemsWonItem(self);
 			</OnEnter>
 			<OnLeave>
 				GameTooltip:Hide()

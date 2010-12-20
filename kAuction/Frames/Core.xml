@@ -128,8 +128,8 @@
 				</Anchors>
 				<Size>
 					<AbsDimension y="25"/>
-				</Size>
-				<Frames>				
+				</Size>			
+				<Frames>									
 					<Button name="$parentClose" inherits="kAuctionButtonTemplate">
 						<Anchors>
 							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
@@ -143,15 +143,56 @@
 								kAuction.db.profile.gui.frames.currentItem.visible = false;
 								kAuctionCurrentItemFrame:Hide();
 							</OnClick>
+							<OnEnter>
+								kAuction:Gui_OnEnterCurrentItemCloseIcon(self)
+							</OnEnter>								
 						</Scripts>
 						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\xdark" />
 						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\x" />
 					</Button>
-					<Button name="$parentConfig" inherits="kAuctionButtonTemplate">
+					<Button name="$parentAnchor" inherits="kAuctionButtonTemplate">
 						<Anchors>
 							<Anchor point="RIGHT" relativeTo="$parentClose" relativePoint="LEFT">
 								<Offset>
-									<AbsDimension x="-2" y="-1"></AbsDimension>
+									<AbsDimension x="-2" y="0"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if kAuction.db.profile.gui.frames.currentItem.anchorSide == 'LEFT' then
+									kAuction.db.profile.gui.frames.currentItem.anchorSide = 'RIGHT'
+									self:SetNormalTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-left-grey]])
+									self:SetHighlightTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-left]])
+									kAuction:Gui_AttachCurrentItemFrame('BOTTOMLEFT', kAuctionCurrentItemFrame.anchorFrame, 'RIGHT', 0, 0)
+								else
+									kAuction.db.profile.gui.frames.currentItem.anchorSide = 'LEFT'
+									self:SetNormalTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-right-grey]])
+									self:SetHighlightTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-right]])
+									kAuction:Gui_AttachCurrentItemFrame('BOTTOMRIGHT', kAuctionCurrentItemFrame.anchorFrame, 'LEFT', 0, 0)
+								end
+							</OnClick>
+							<OnEnter>
+								kAuction:Gui_OnEnterCurrentItemAnchorIcon(self);
+							</OnEnter>
+							<OnShow>
+								if kAuction.db.profile.gui.frames.currentItem.anchorSide == 'LEFT' then
+									self:SetNormalTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-right-grey]])
+									self:SetHighlightTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-right]])
+								else
+									self:SetNormalTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-left-grey]])
+									self:SetHighlightTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-left]])
+								end
+							</OnShow>								
+						</Scripts>
+						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\gear" />
+						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\gear-gold" />
+					</Button>					
+					<Button name="$parentConfig" inherits="kAuctionButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="$parentAnchor" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="-2" y="0"></AbsDimension>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -159,11 +200,102 @@
 							<OnClick>
 								-- TODO: Add configure dropdown to display filtered slots used for this particular item when showing current item selections
 							</OnClick>
+							<OnEnter>
+								kAuction:Gui_OnEnterCurrentItemConfigIcon(self)
+							</OnEnter>								
 						</Scripts>
 						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\gear" />
 						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\gear-gold" />
 					</Button>
-				</Frames>
+					<Button name="$parentSetBonus" inherits="kAuctionButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="$parentConfig" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="-2" y="0"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								kAuction:Gui_OnClickCurrentItemSetBonus(self)
+							</OnClick>
+							<OnEnter>
+								kAuction:Gui_OnEnterCurrentItemSetBonusIcon(self)
+							</OnEnter>
+						</Scripts>
+						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\shield-red" />
+						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\shield-blue" />
+					</Button>	
+					<Button name="$parentBestInSlot" inherits="kAuctionButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="$parentSetBonus" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="-2" y="-1"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								kAuction:Gui_OnClickCurrentItemBestInSlot(self)
+							</OnClick>
+							<OnEnter>
+								kAuction:Gui_OnEnterCurrentItemBestInSlotIcon(self)
+							</OnEnter>							
+						</Scripts>
+						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\medal2-grey" />
+						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\medal2" />
+					</Button>				
+					<Frame name="$parentBidType" enableMouse="true">
+						<Size>
+							<AbsDimension y="25" />
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>									
+							</Anchor>								
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parentBestInSlot" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>									
+							</Anchor>
+						</Anchors>						
+						<Layers>
+				            <Layer level="NORMAL">
+								<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Normal Bid" justifyH="CENTER">
+									<Size>
+										<AbsDimension x="120" />
+									</Size>
+									<Anchors>
+										<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>									
+										</Anchor>								
+										<Anchor point="RIGHT" relativeTo="$parentBestInSlot" relativePoint="LEFT">
+											<Offset>
+												<AbsDimension x="0" y="0"/>
+											</Offset>									
+										</Anchor>
+									</Anchors>
+									<FontHeight>
+										<AbsValue val="18" />
+									</FontHeight>
+									<Color r="0.9" g="0.82" b="0" />						
+								</FontString>
+				            </Layer>
+						</Layers>	
+						<Scripts>
+							<OnMouseDown>
+								kAuction:Gui_OnClickCurrentItemBidType(self)
+							</OnMouseDown>
+							<OnEnter>
+								kAuction:Gui_OnEnterCurrentItemBidTypeIcon(self)
+							</OnEnter>							
+						</Scripts>													
+					</Frame>
+				</Frames>			
 			</Frame>
 			<Frame name="$parentItemContainer" toplevel="true" enableMouse="true">
 				<Size>
@@ -197,7 +329,7 @@
 						<Texture inherits="kAuctionHighlightTextureTemplate"/>
 					</Layer>
 		            <Layer level="NORMAL">
-						<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Select the item you'll replace.">
+						<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Bid by selecting the item you wish to replace.">
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentIcon" relativePoint="TOPRIGHT">
 									<Offset>
@@ -211,7 +343,7 @@
 								</Anchor>
 							</Anchors>
 							<FontHeight>
-								<AbsValue val="18" />
+								<AbsValue val="14" />
 							</FontHeight>
 							<Color r="0.9" g="0.82" b="0" />
 						</FontString>
@@ -294,45 +426,9 @@
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentCurrentItem4" relativePoint="BOTTOM"/>
 						</Anchors>
-					</Frame>
+					</Frame>																														
 				</Frames>
-			</Frame>
-			<Button name="$parentResizeLeft" enableMouse="true">
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" />
-				</Anchors>
-				<NormalTexture file="Interface\AddOns\kAuction\Images\ResizeGripLeft" />
-				<HighlightTexture file="Interface\AddOns\kAuction\Images\ResizeGripLeft" />
-				<Scripts>
-					<OnMouseDown>
-						kAuction:Gui_ResizeFrame(self,button,"start")
-					</OnMouseDown>
-					<OnMouseUp>
-						kAuction:Gui_ResizeFrame(self,button,"stop")
-					</OnMouseUp>
-				</Scripts>
-			</Button>
-			<Button name="$parentResizeRight" enableMouse="true">				
-				<Size>
-					<AbsDimension x="16" y="16"/>
-				</Size>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT" />
-				</Anchors>
-				<NormalTexture file="Interface\AddOns\kAuction\Images\ResizeGripRight" />
-				<HighlightTexture file="Interface\AddOns\kAuction\Images\ResizeGripRight" />
-				<Scripts>
-					<OnMouseDown>
-						kAuction:Gui_ResizeFrame(self,button,"start")
-					</OnMouseDown>
-					<OnMouseUp>
-						kAuction:Gui_ResizeFrame(self,button,"stop")
-					</OnMouseUp>
-				</Scripts>
-			</Button>			
+			</Frame>		
             <Frame name="$parentArrow" parentKey="arrow" inherits="GlowBoxArrowTemplate">
                 <Anchors>
                     <Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
@@ -342,6 +438,196 @@
 		<Scripts>
 			<OnShow>
 				kAuction:Gui_UpdateCurrentItemScroll()
+			</OnShow>										
+		</Scripts>			
+	</Frame>
+	<Frame name="kAuctionItemsWonFrame" inherits="GlowBoxTemplate" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="UIParent" resizable="true" hidden="true">
+		<Size>
+			<AbsDimension x="100" y="100"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER">
+				<Offset>
+					<AbsDimension x="250" />
+				</Offset>
+			</Anchor>
+		</Anchors>	
+		<Frames>
+			<Frame name="$parentTitle" toplevel="true" movable="true" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"></AbsDimension>
+						</Offset>
+					</Anchor>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="0" y="0"></AbsDimension>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Size>
+					<AbsDimension y="25"/>
+				</Size>			
+				<Frames>									
+					<Button name="$parentClose" inherits="kAuctionButtonTemplate">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+								<Offset>
+									<AbsDimension x="-5" y="-5"></AbsDimension>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								kAuction.db.profile.gui.frames.itemsWon.visible = false;
+								kAuctionItemsWonFrame:Hide();
+							</OnClick>
+							<OnEnter>
+								kAuction:Gui_OnEnterItemsWonCloseIcon(self);
+							</OnEnter>
+						</Scripts>
+						<NormalTexture file="Interface\AddOns\kAuction\Images\Textures\xdark" />
+						<HighlightTexture file="Interface\AddOns\kAuction\Images\Textures\x" />
+					</Button>
+					<Button name="$parentAnchor" inherits="kAuctionButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" relativeTo="$parentClose" relativePoint="LEFT">
+								<Offset>
+									<AbsDimension x="0" y="0" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick>
+								if kAuction.db.profile.gui.frames.itemsWon.anchorSide == 'BOTTOM' then
+									kAuction.db.profile.gui.frames.itemsWon.anchorSide = 'TOP'
+									self:SetNormalTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-up-grey]])
+									self:SetHighlightTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-up]])
+									kAuction:Gui_AttachItemsWonFrame('TOP', kAuctionItemsWonFrame.anchorFrame, 'BOTTOM', 0, 0, #kAuctionItemsWonFrame.matchTable)
+								else
+									kAuction.db.profile.gui.frames.itemsWon.anchorSide = 'BOTTOM'
+									self:SetNormalTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-down-grey]])
+									self:SetHighlightTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-down]])
+									kAuction:Gui_AttachItemsWonFrame('BOTTOM', kAuctionItemsWonFrame.anchorFrame, 'TOP', 0, 0, #kAuctionItemsWonFrame.matchTable)
+								end
+							</OnClick>
+							<OnEnter>
+								kAuction:Gui_OnEnterItemsWonAnchorIcon(self);
+							</OnEnter>
+							<OnShow>
+								if kAuction.db.profile.gui.frames.itemsWon.anchorSide == 'BOTTOM' then
+									self:SetNormalTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-up-grey]])
+									self:SetHighlightTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-up]])
+								else
+									self:SetNormalTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-up-grey]])
+									self:SetHighlightTexture([[Interface\AddOns\kAuction\Images\Textures\arrow-up]])
+								end
+							</OnShow>
+						</Scripts>
+					</Button>					
+				</Frames>			
+			</Frame>
+			<Frame name="$parentScrollContainer" toplevel="true" enableMouse="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentTitle" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="2" y="1"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Frames>
+					<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="5" y="-2"/>
+								</Offset>
+							</Anchor>
+							<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-26" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnVerticalScroll>
+								FauxScrollFrame_OnVerticalScroll(self, offset, kAuction.itemsWonWidgetHeight, kAuction:Gui_UpdateItemsWonScroll());
+							</OnVerticalScroll>
+							<OnShow>
+								kAuction:Gui_UpdateItemsWonScroll()
+							</OnShow>										
+						</Scripts>
+					</ScrollFrame>
+					<Frame name="$parentItem1" inherits="kAuctionItemsWonWidget" id="1">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+								<Offset>
+									<AbsDimension y="-2"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentItem2" inherits="kAuctionItemsWonWidget" id="2">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentItem1" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentItem3" inherits="kAuctionItemsWonWidget" id="3">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentItem2" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentItem4" inherits="kAuctionItemsWonWidget" id="4">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentItem3" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentItem5" inherits="kAuctionItemsWonWidget" id="5">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentItem4" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>	
+					<Frame name="$parentItem6" inherits="kAuctionItemsWonWidget" id="5">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentItem5" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentItem7" inherits="kAuctionItemsWonWidget" id="5">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentItem6" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentItem8" inherits="kAuctionItemsWonWidget" id="5">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentItem7" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentItem9" inherits="kAuctionItemsWonWidget" id="5">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentItem8" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>																																														<Frame name="$parentItem10" inherits="kAuctionItemsWonWidget" id="5">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentItem9" relativePoint="BOTTOM"/>
+						</Anchors>
+					</Frame>							
+				</Frames>
+			</Frame>		
+            <Frame name="$parentArrow" parentKey="arrow" inherits="GlowBoxArrowTemplate">
+                <Anchors>
+                    <Anchor point="RIGHT" relativePoint="LEFT" x="0" y="0"/>
+                </Anchors>
+            </Frame>			
+		</Frames>
+		<Scripts>
+			<OnShow>
+				kAuction:Gui_UpdateItemsWonScroll()
 			</OnShow>										
 		</Scripts>			
 	</Frame>
@@ -388,7 +674,7 @@
             </OnShow>
         </Scripts>
     </Frame>	
-	<Frame name="kAuctionMainFrame" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="UIParent" resizable="true">
+	<Frame name="kAuctionMainFrame" frameStrata="HIGH" toplevel="true" enableMouse="true" movable="true" parent="UIParent" resizable="true" hidden="true">
 		<Size>
 			<AbsDimension x="400" y="152"/>
 		</Size>
@@ -616,6 +902,14 @@
 						</Anchors>
 					</Frame>
 				</Frames>
+				<Scripts>
+					<OnHide>
+						kAuctionItemsWonFrame:Hide()
+					</OnHide>
+					<OnShow>
+						kAuctionCurrentItemFrame:Hide()
+					</OnShow>
+				</Scripts>
 			</Frame>
 			<Frame name="$parentMainScrollContainer" toplevel="true" enableMouse="true">
 				<Anchors>

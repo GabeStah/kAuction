@@ -11,6 +11,7 @@ kAuction.updates[1] = 0;
 kAuction.updates[2] = 0;
 kAuction.currentZone = false;
 kAuction.currentItemWidgetHeight = 34;
+kAuction.itemsWonWidgetHeight = 20;
 local sharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 kAuction.sharedMedia = sharedMedia
 function kAuction:OnInitialize()
@@ -172,6 +173,10 @@ function kAuction:RegisterLibSharedMediaObjects()
 	sharedMedia:Register("texture", "check", [[Interface\AddOns\kAuction\Images\Textures\check.tga]]);
 	sharedMedia:Register("texture", "exclaim", [[Interface\AddOns\kAuction\Images\Textures\exclaim.tga]]);
 	sharedMedia:Register("texture", "xdark", [[Interface\AddOns\kAuction\Images\Textures\xdark.tga]]);
+	sharedMedia:Register("texture", "shield-red", [[Interface\AddOns\kAuction\Images\Textures\shield-red.tga]]);
+	sharedMedia:Register("texture", "shield-blue", [[Interface\AddOns\kAuction\Images\Textures\shield-blue.tga]]);
+	sharedMedia:Register("texture", "medal", [[Interface\AddOns\kAuction\Images\Textures\medal.tga]]);
+	sharedMedia:Register("texture", "medal-grey", [[Interface\AddOns\kAuction\Images\Textures\medal-grey.tga]]);
 end
 
 function kAuction:OnEnable()
@@ -353,10 +358,10 @@ function kAuction:ParseAuctionItemLinkCommString(string)
 	return itemLink, id, seedTime, duration, corpseGuid;
 end
 function kAuction:Debug(msg, threshold)
-	if self.db.profile.debug.enabled then
+	if kAuction.db.profile.debug.enabled then
 		if threshold == nil then
 			kAuction:Print(ChatFrame1, "DEBUG: " .. msg)		
-		elseif threshold <= self.db.profile.debug.threshold then
+		elseif threshold <= kAuction.db.profile.debug.threshold then
 			kAuction:Print(ChatFrame1, "DEBUG: " .. msg)		
 		end
 	end
@@ -429,8 +434,6 @@ function kAuction:BidsFrameScrollUpdate()
 			if lineplusoffset <= #(self.auctions[self.selectedAuctionIndex].bids) then
 				-- Update Bid Current Item Buttons
 				kAuction:Gui_UpdateBidCurrentItemButtons(line, self.auctions[self.selectedAuctionIndex], self.auctions[self.selectedAuctionIndex].bids[lineplusoffset]);
-				-- Update Bid Items Won Frame
-				kAuction:Gui_UpdateBidItemsWonFrame(_G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..line.."ItemsWon"]);
 				-- Update Bid Items Won Text
 				kAuction:Gui_UpdateBidItemsWonText(_G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..line.."ItemsWonText"]);
 				-- Update Bid Name Text
@@ -456,12 +459,92 @@ function kAuction:GetFirstOpenAuctionIndex()
 	end
 	return 1;
 end
+function kAuction:GetUniqueTimerId()
+	local newId
+	local isValidId = false;
+	while isValidId == false do
+		matchFound = false;
+		newId = (math.random(0,2147483647) * -1);
+		for i,val in pairs(self.timers) do
+			if val.id == newId then
+				matchFound = true;
+			end
+		end
+		if matchFound == false then
+			isValidId = true;
+		end
+	end
+	return newId;
+end
+function kAuction:CreateTimer(f,t,r,...)
+	local v, i;
+	if type(f) == 'string' then
+		kAuction:Debug("CreateTimer func "..f, 1)
+	end
+	if r then -- repeater
+		v  = {id = kAuction:GetUniqueTimerId(), interval = t, func = f, rep = r, args = ...}
+	else
+		v  = {id = kAuction:GetUniqueTimerId(), time = GetTime() + t, func = f, rep = r, args = ...}
+	end
+	table.insert(self.timers, v);
+end
 function kAuction:OnUpdate(index, elapsed)
 	kAuction.updates[index] = kAuction.updates[index] + elapsed;
 	if (kAuction.updates[index] > 0.1) then
 		kAuction.updates[index] = 0;
 		kAuction:Gui_UpdateMainFrameScroll()
 	end
+	local time, i = GetTime();
+	for i = #self.timers, 1, -1 do 
+		-- Check if repeater
+		if self.timers[i].rep then
+			self.timers[i].elapsed = (self.timers[i].elapsed or 0) + elapsed;
+			if self.timers[i].elapsed >= (self.timers[i].interval or 0) then
+				local cancelTimer = false;
+				-- Check if func is string
+				if type(self.timers[i].func) == 'function' then
+					if self.timers[i].args then
+						cancelTimer = self.timers[i].func(unpack(self.timers[i].args));
+					else
+						cancelTimer = self.timers[i].func();
+					end
+				else
+					if self.timers[i].args then
+						cancelTimer = self[self.timers[i].func](unpack(self.timers[i].args));
+					else
+						cancelTimer = self[self.timers[i].func]();
+					end
+				end
+				self.timers[i].elapsed = 0;
+				-- Check if cancel required
+				if cancelTimer then
+					kAuction:Debug("REMOVE FUNC", 1)
+					tremove(self.timers, i)
+				end
+			end
+		else
+			if self.timers[i].time then
+				if self.timers[i].time <= time then
+					-- One-time exec, remove
+					if type(self.timers[i].func) == 'function' then
+						if self.timers[i].args then
+							self.timers[i].func(unpack(self.timers[i].args));
+						else
+							self.timers[i].func();
+						end
+					else
+						if self.timers[i].args then
+							self[self.timers[i].func](unpack(self.timers[i].args));
+						else
+							self[self.timers[i].func]();
+						end
+					end
+					tremove(self.timers, i)
+				end
+			end
+		end
+	end
+	--[[
 	-- Destroy scheduled timers that have expired
 	kAuction.updates[2] = kAuction.updates[2] + elapsed;
 	if (kAuction.updates[2] > 1) then
@@ -473,6 +556,7 @@ function kAuction:OnUpdate(index, elapsed)
 			end
 		end
 	end	
+	]]	
 end
 function kAuction:DetermineRandomAuctionWinner(iAuction)
 	-- Verify raid leader
@@ -711,47 +795,19 @@ function kAuction:OnBidItemsWonEnter(frame)
 	local selectFrame;	
 	if self.auctions[self.selectedAuctionIndex] and self.auctions[self.selectedAuctionIndex].bids[offset+row] then
 		local wonItemList = kAuction:Item_GetPlayerWonItemList(self.auctions[self.selectedAuctionIndex].bids[offset+row].name);
-		-- If active bid, menu locked, do not show
 		if #(wonItemList) > 0 then
-			--Current item mouse over, show select frame
-			selectFrame = _G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..row.."ItemsWonSelectFrame"];
-			local i = 1;
-			while _G[selectFrame:GetName().."Button"..i] and i <= #(kAuction:Item_GetPlayerWonItemList(self.auctions[self.selectedAuctionIndex].bids[offset+row].name))  do
-				_G[selectFrame:GetName().."Button"..i]:Show()
-				i=i+1;
-			end
-			--kAuction:Threading_StartTimer("kAuctionThreadingFrameBids"..row);
-			if _G["kAuctionThreadingFrameBids"..row] then
-				_G["kAuctionThreadingFrameBids"..row]:Show();
-			end
-		else
-			if _G["kAuctionThreadingFrameBids"..row] then
-				_G["kAuctionThreadingFrameBids"..row]:Hide();
-			end
-			_G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..row.."ItemsWonSelectFrame"]:Hide();
-		end
-		-- Hide other Rows
-		local iSelectFrame = 1;
-		while _G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..iSelectFrame.."ItemsWonSelectFrame"] do
-			if iSelectFrame ~= row then
-				_G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..iSelectFrame.."ItemsWonSelectFrame"]:Hide();
-			end
-			iSelectFrame = iSelectFrame + 1;
-		end
-		if #(wonItemList) > 0 then
-			kAuction:Gui_OnLeaveBidRoll(nil);
-			kAuction:Gui_OnLeaveBidItemsWon(nil);		
-			selectFrame:Show();
-			-- Update tooltip
-			--[[
-			if localAuctionData.currentItemLink ~= false then
-				kAuction:Gui_OnEnterCurrentItemMenu(frame,localAuctionData.currentItemLink);
-			end
-			]]
 			local tip = self.qTip:Acquire("GameTooltip", 1, "LEFT")
+			tip:ClearAllPoints();
 			tip:Clear();
-			tip:SetPoint("TOP", frame, "BOTTOM", 0, 0);
+			if self.db.profile.gui.frames.itemsWon.anchorSide == 'BOTTOM' then
+				tip:SetPoint("TOP", frame, "BOTTOM", 0, 0);
+			elseif self.db.profile.gui.frames.itemsWon.anchorSide == 'TOP' then
+				tip:SetPoint("BOTTOM", frame, "TOP", 0, 0);
+			end
 			tip:AddHeader("Items Won by " .. self.auctions[self.selectedAuctionIndex].bids[offset+row].name);
+			tip:AddLine("");
+			tip:AddLine("");
+			tip:AddLine("");
 			tip:AddLine("");
 			tip:AddLine("");
 			tip:AddLine("");
@@ -764,9 +820,13 @@ function kAuction:OnBidItemsWonEnter(frame)
 			local fontYellow = CreateFont("kAuctionBidItemsWonFontYellow")
 			fontYellow:CopyFontObject(GameTooltipText)
 			fontYellow:SetTextColor(1,1,0)
+			local fontOrange = CreateFont("kAuctionBidItemsWonFontOrange")
+			fontOrange:CopyFontObject(GameTooltipText)
+			fontOrange:SetTextColor(1,0.6,0)
 			tip:SetCell(2, 1, "Normal", fontGreen);
 			tip:SetCell(3, 1, "Offspec", fontYellow);
 			tip:SetCell(4, 1, "Rot", fontRed);
+			tip:SetCell(7, 1, "Left-Click to toggle view.", fontOrange);
 			tip:Show();
 		end
 	end	
@@ -776,8 +836,13 @@ function kAuction:OnBidNameOnEnter(frame)
 	local _, _, row = string.find(frame:GetName(), "(%d+)");
 	local bidType = self.auctions[self.selectedAuctionIndex].bids[offset+row].bidType;
 	local tip = self.qTip:Acquire("GameTooltip", 1, "LEFT")
+	tip:ClearAllPoints();
 	tip:Clear();
-	tip:SetPoint("TOP", frame, "BOTTOM", 0, 0);
+	if self.db.profile.gui.frames.itemsWon.anchorSide == 'BOTTOM' then
+		tip:SetPoint("TOP", frame, "BOTTOM", 0, 0);
+	elseif self.db.profile.gui.frames.itemsWon.anchorSide == 'TOP' then
+		tip:SetPoint("BOTTOM", frame, "TOP", 0, 0);
+	end
 	tip:AddHeader(self.auctions[self.selectedAuctionIndex].bids[offset+row].name.."'s Bid Type:");
 	tip:AddLine("");
 	local fontRed = CreateFont("kAuctionBidItemsWonFontRed")
@@ -859,80 +924,6 @@ function kAuction:GetAuctionStateArray(frame)
 		end
 	end		
 	return states;
-end
-function IsInPopoutMainFrameTimer(timerName)
-	-- Hide other rows if needed
-	local _, _, row = string.find(timerName, "(%d+)");
-	if not kAuction:IsInPopoutMainFrame(row) then
-		local i = 1;
-		while _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..row.."CurrentItemSelectFrameButton"..i] do
-			_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..row.."CurrentItemSelectFrameButton"..i]:Hide();
-			i=i+1;
-		end
-		_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..row.."CurrentItemSelectFrame"]:Hide();
-		--kAuction:Threading_StopTimer(timerName);	
-		_G[timerName]:Hide();
-	end
-end
-function IsInPopoutBidsFrameTimer(timerName)
-	-- Hide other rows if needed
-	local _, _, row = string.find(timerName, "(%d+)");
-	if not kAuction:IsInPopoutBidsFrame(row) then
-		local i = 1;
-		while _G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..row.."ItemsWonSelectFrameButton"..i] do
-			_G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..row.."ItemsWonSelectFrameButton"..i]:Hide();
-			i=i+1;
-		end
-		_G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..row.."ItemsWonSelectFrame"]:Hide();
-		--kAuction:Threading_StopTimer(timerName);
-		_G[timerName]:Hide();
-	end
-end
-function kAuction:IsInPopoutMainFrame(row)
-	local objFrames = {};
-	local objCurrentItemFrame = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..row.."CurrentItem"];
-	if objCurrentItemFrame then
-		tinsert(objFrames, #(objFrames)+1, objCurrentItemFrame);
-		if _G[objCurrentItemFrame:GetName().."SelectFrame"] then
-			tinsert(objFrames, #(objFrames)+1, _G[objCurrentItemFrame:GetName().."SelectFrame"]);	
-			local iButton = 1;
-			while _G[objCurrentItemFrame:GetName().."SelectFrameButton"..iButton] do
-				tinsert(objFrames, #(objFrames)+1, _G[objCurrentItemFrame:GetName().."SelectFrameButton"..iButton]);
-				iButton=iButton+1;
-			end
-		end
-	end
-	local currentFrame = GetMouseFocus();
-	for i,val in pairs(objFrames) do
-		kAuction:Debug("FUNC: IsInPopoutMainFrame, FrameCheck: "..val:GetName(), 2);
-		if val == currentFrame then
-			kAuction:Debug("FUNC: IsInPopoutMainFrame, Row: "..row..", VALUE: true", 2);
-			return true;
-		end
-	end
-end
-function kAuction:IsInPopoutBidsFrame(row)
-	local objFrames = {};
-	local objCurrentItemFrame = _G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..row.."ItemsWon"];
-	if objCurrentItemFrame then
-		tinsert(objFrames, #(objFrames)+1, objCurrentItemFrame);
-		if _G[objCurrentItemFrame:GetName().."SelectFrame"] then
-			tinsert(objFrames, #(objFrames)+1, _G[objCurrentItemFrame:GetName().."SelectFrame"]);	
-			local iButton = 1;
-			while _G[objCurrentItemFrame:GetName().."SelectFrameButton"..iButton] do
-				tinsert(objFrames, #(objFrames)+1, _G[objCurrentItemFrame:GetName().."SelectFrameButton"..iButton]);
-				iButton=iButton+1;
-			end
-		end
-	end
-	local currentFrame = GetMouseFocus();
-	for i,val in pairs(objFrames) do
-		kAuction:Debug("FUNC: IsInPopoutBidsFrame, FrameCheck: "..val:GetName(), 2);
-		if val == currentFrame then
-			kAuction:Debug("FUNC: IsInPopoutBidsFrame, Row: "..row..", VALUE: true", 2);
-			return true;
-		end
-	end
 end
 function kAuction:ZONE_CHANGED_NEW_AREA()
 	-- Check if entering a valid raid zone

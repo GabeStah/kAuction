@@ -1,4 +1,21 @@
+local sharedMedia = kAuction.sharedMedia
 -- EVENTS
+function kAuction:Gui_OnClickItemsWonFrane(frame)
+	local offset, selectFrame = FauxScrollFrame_GetOffset(kAuctionMainFrameBidScrollContainerScrollFrame);
+	kAuction:Debug("Gui_OnClickItemsWonFrane ON CLICk", 1)
+	local _, _, row = string.find(frame:GetName(), "(%d+)");
+	local sTitle, sClickText, sText;
+	local iIndex = offset + row;
+	local auction = self.auctions[self.selectedAuctionIndex]
+	local bid = auction.bids[iIndex];
+	-- Check if already visible with same name, then toggle off
+	if kAuctionItemsWonFrame:IsVisible() and bid.name == kAuctionItemsWonFrame.player then
+		kAuctionItemsWonFrame:Hide()
+		return nil;
+	end
+	local matchTable = kAuction:Item_GetPlayerWonItemList(bid.name);
+	kAuction:Gui_CreateItemsWonFrame(frame, matchTable, bid.name)
+end
 function kAuction:Gui_OnEnterBidRoll(frame)
 	offset = FauxScrollFrame_GetOffset(kAuctionMainFrameBidScrollContainerScrollFrame);
 	local _, _, line = string.find(frame:GetName(), "(%d+)");
@@ -12,8 +29,13 @@ function kAuction:Gui_OnEnterBidRoll(frame)
 		kAuction:Debug("FUNC: Gui_OnEnterBidRoll, Hovering.", 1);
 		local objRed = {};
 		local objGreen = {};
+		tip:ClearAllPoints();
 		tip:Clear();
-		tip:SetPoint("TOP", rollFrame, "BOTTOM");
+		if self.db.profile.gui.frames.itemsWon.anchorSide == 'BOTTOM' then
+			tip:SetPoint("TOP", frame, "BOTTOM", 0, 0);
+		elseif self.db.profile.gui.frames.itemsWon.anchorSide == 'TOP' then
+			tip:SetPoint("BOTTOM", frame, "TOP", 0, 0);
+		end
 		local fontRed = CreateFont("kAuctionBidRollFontRed")
 		fontRed:CopyFontObject(GameTooltipText)
 		fontRed:SetTextColor(1,0,0)
@@ -59,7 +81,11 @@ function kAuction:Gui_OnEnterBidRoll(frame)
 	elseif auction.auctionType == 2 then
 		local rollFrame = _G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..line.."Roll"];
 		tip:Clear();
-		tip:SetPoint("TOP", rollFrame, "BOTTOM");
+		if self.db.profile.gui.frames.itemsWon.anchorSide == 'BOTTOM' then
+			tip:SetPoint("TOP", frame, "BOTTOM", 0, 0);
+		elseif self.db.profile.gui.frames.itemsWon.anchorSide == 'TOP' then
+			tip:SetPoint("BOTTOM", frame, "TOP", 0, 0);
+		end
 		tip:AddHeader("Votes Hidden");
 		tip:Show();
 	elseif auction.auctionType == 1 then
@@ -67,8 +93,13 @@ function kAuction:Gui_OnEnterBidRoll(frame)
 			self.qTip:Release(self.qTip:Acquire("GameTooltip"));
 		else
 			local rollFrame = _G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..line.."Roll"];
+			tip:ClearAllPoints();
 			tip:Clear();
-			tip:SetPoint("TOP", rollFrame, "BOTTOM");
+			if self.db.profile.gui.frames.itemsWon.anchorSide == 'BOTTOM' then
+				tip:SetPoint("TOP", frame, "BOTTOM", 0, 0);
+			elseif self.db.profile.gui.frames.itemsWon.anchorSide == 'TOP' then
+				tip:SetPoint("BOTTOM", frame, "TOP", 0, 0);
+			end
 			tip:AddHeader("Roll Hidden");
 			tip:Show()
 		end
@@ -82,6 +113,9 @@ end
 function kAuction:Gui_OnLeaveBidItemsWon(frame)
 	local tip = self.qTip:Acquire("GameTooltip");
 	tip:Hide();
+end
+function kAuction:Gui_OnEnterBidCurrentItemIcon(frame)
+	kAuction:Gui_ShowItemTooltip(frame, frame.itemLink)
 end
 -- EVENTS END
 
@@ -126,10 +160,10 @@ function kAuction:Gui_UpdateBidCurrentItemButtons(index, auction, bid)
 	local frameCurrentItemIcon = _G[self.db.profile.gui.frames.main.name.."BidScrollContainerBid"..index.."CurrentItemIcon"];
 	if (auction.visiblePublicBidCurrentItems or kAuction:Client_IsServer() or kAuction:IsLootCouncilMember(auction)) and auction.currentItemSlot then -- Equippable and .visiblePublicBidCurrentItems = true
 		if bid.currentItemLink then
-			frameCurrentItem:SetScript("OnEnter", function() kAuction:Gui_OnEnterCurrentItemMenu(frameCurrentItem, bid.currentItemLink) end);
+			frameCurrentItem:SetScript("OnEnter", function() kAuction:Gui_ShowItemTooltip(frameCurrentItem, bid.currentItemLink) end);
 			frameCurrentItemIcon:SetTexture(kAuction:Item_GetTextureOfItem(bid.currentItemLink));
 		else
-			frameCurrentItem:SetScript("OnEnter", function() end);
+			frameCurrentItem:SetScript("OnEnter", nil);
 			frameCurrentItemIcon:SetTexture(kAuction:Item_GetEmptyPaperdollTextureOfItem(auction.itemLink) or kAuction:Item_GetEmptyPaperdollTextureOfItemSlot(auction.currentItemSlot));
 		end
 		frameCurrentItem:SetScript("OnLeave",function() GameTooltip:Hide() end)
@@ -223,66 +257,5 @@ function kAuction:Gui_UpdateBidVoteButton(line, auction, bid)
 		buttonVote:Show();
 	else
 		buttonVote:Hide();
-	end
-end
-function kAuction:Gui_UpdateBidItemsWonFrame(frame)
-	offset = FauxScrollFrame_GetOffset(kAuctionMainFrameBidScrollContainerScrollFrame);
-	local _, _, line = string.find(frame:GetName(), "(%d+)");
-	local name = self.auctions[self.selectedAuctionIndex].bids[offset+line].name;
-	local iItemWonList = kAuction:Item_GetPlayerWonItemList(name);
-	local i = 1;
-	local selectFrame = _G[frame:GetName().."SelectFrame"];
-	if #(iItemWonList) == 0 then
-		_G[frame:GetName().."SelectFrame"]:Hide();
-	end
-	if #(iItemWonList) > 0 then
-		-- Next, loop through Match Menu and create button for each match
-		local matchTable = kAuction:Item_GetPlayerWonItemList(name);
-		local button
-		if #(matchTable) then
-			-- Create/Update Threading Frame
-			--kAuction:Threading_UpdateThreadingFrame("kAuctionThreadingFrameBids"..line);
-			local selectFrameWidth;
-			for i=1,#(matchTable) do
-				button = kAuction:Gui_CreateBidItemWonMenuButton(line,i,matchTable[i].itemLink)
-				button:SetScale(0.5);
-				if i == 1 then
-					button:SetPoint("BOTTOMRIGHT",selectFrame,"BOTTOMRIGHT",-8,8)
-				elseif ((i-1) % 5) == 0 then
-					button:SetPoint("BOTTOM",_G[selectFrame:GetName().."Button"..(i-5)],"TOP",0,2)
-				else
-					button:SetPoint("RIGHT",_G[selectFrame:GetName().."Button"..(i-1)],"LEFT",-4,0)
-				end
-				if i >= 5 then
-					selectFrameWidth = (button:GetWidth()-3) * 5;
-				else
-					selectFrameWidth = (button:GetWidth()-3) * i;
-				end	
-				if matchTable[i].bidType == "normal" then
-					_G[button:GetName().."Icon"]:SetVertexColor(0,1,0,1)
-				elseif matchTable[i].bidType == "offspec" then
-					_G[button:GetName().."Icon"]:SetVertexColor(0.5,0.5,0,1)
-				elseif matchTable[i].bidType == "rot" then
-					_G[button:GetName().."Icon"]:SetVertexColor(1,0,0,1)
-				end
-				button:SetFrameStrata("TOOLTIP");
-			end		
-			selectFrame:SetPoint("BOTTOM",frame,"TOP");
-			if math.ceil(#(matchTable) / 5) == math.floor(#(matchTable) / 5) then
-				selectFrame:SetHeight(math.floor(#(matchTable) / 5) * (button:GetHeight()-0));
-			else
-				selectFrame:SetHeight((math.floor(#(matchTable) / 5) + 1) * (button:GetHeight()-0));
-			end
-			selectFrame:SetWidth(selectFrameWidth);
-			selectFrame:SetFrameStrata("DIALOG");
-		end		
-	end
-	-- Hide buttons as cleanup for new creations of SelectFrame is not visible (user not currently viewing this particular item won list)
-	if not _G[frame:GetName().."SelectFrame"]:IsVisible() then
-		for i=1,30 do
-			if _G[frame:GetName().."SelectFrameButton"..i] then
-				_G[frame:GetName().."SelectFrameButton"..i]:Hide();
-			end
-		end	
 	end
 end

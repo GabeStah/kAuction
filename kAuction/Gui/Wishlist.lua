@@ -1396,7 +1396,11 @@ end
 function kAuction:WishlistGui_CreateWidget_SectionDropdown(parent)
 	local f = self.AceGUI:Create("DropdownGroup")
 	f:SetLayout("Fill")
-	f:SetGroupList({list = "Wishlists", search = "Search"})
+	f:SetGroupList({list = "Wishlists"})
+	--f:SetGroupList({list = "Wishlists", search = "Search"})
+	if not self.db.profile.wishlist.config.selectedSection == 'list' then
+		self.db.profile.wishlist.config.selectedSection = 'list';
+	end
 	f:SetGroup(self.db.profile.wishlist.config.selectedSection);
 	f:SetDropdownWidth(150);
 	--f:SetTitle("Select Section")

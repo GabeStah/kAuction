@@ -42,41 +42,17 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						kAuction:Gui_OnClickCurrentItem(self);
+						kAuction:Gui_OnClickCurrentItemIcon(self);
 					</OnClick>
 					<OnEnter>
-						kAuction:Gui_OnEnterCurrentItem(self);
+						kAuction:Gui_OnEnterCurrentItemIcon(self);
 					</OnEnter>
 					<OnLeave>
-						kAuction:Gui_OnLeaveCurrentItem(self);
+						local tip = kAuction.qTip:Acquire("GameTooltip");
+						tip:Hide();						
+						GameTooltip:Hide()
 					</OnLeave>
 				</Scripts>
-				<Frames>
-					<Frame name="$parentSelectFrame" hidden="true">
-						<Size>
-							<AbsDimension x="40" y="35"/>
-						</Size>
-						<Anchors>
-							<Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
-								<Offset x="-2" />
-							</Anchor>
-						</Anchors>
-						<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
-							<BackgroundInsets>
-								<AbsInset left="4" right="4" top="4" bottom="4" />
-							</BackgroundInsets>
-							<TileSize>
-								<AbsValue val="16" />
-							</TileSize>
-							<EdgeSize>
-								<AbsValue val="16" />
-							</EdgeSize>
-							<BorderColor>
-								<Color r=".3" g=".3" b=".3"/>
-							</BorderColor>
-						</Backdrop>
-					</Frame>
-				</Frames>
 			</Button>						
 			<Button name="$parentClose" inherits="kAuctionTextIconTemplate">
 				<Anchors>
@@ -105,10 +81,10 @@
 				<Layers>				
 					<Layer level="TOOLTIP">
 						<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="15" justifyH="CENTER" justifyV="MIDDLE" toplevel="true">
-								<Color r="0.3" g="0.9" b="0.3" a="1"/>
+								<Color r="0.05" g="0.4" b="0.05" a="1"/>
 								<FontHeight val="16"/>
 								<Anchors>
-									<Anchor point="TOP" relativeTo="$parent" x="0" y="0" />
+									<Anchor point="TOP" relativeTo="$parent" x="0" y="-1" />
 									<Anchor point="BOTTOM" relativeTo="$parent" x="0" y="0" />
 								</Anchors>
 								<Shadow>

@@ -46,10 +46,9 @@ function kAuction:Gui_OnEnterBidIcon(frame)
 			if states.auctionOpen and states.bid then
 				kAuction:Gui_OnClickAuctionBidButton(auction, "none")
 			elseif states.auctionOpen and states.noBid then
-				kAuction:Gui_OnClickAuctionBidButton(auction, "normal")
+				-- Open currentitem tab
+				kAuction:Gui_CreateCurrentItemFrame(auction)
 			end
-		elseif button == 'RightButton' then
-			kAuction:Gui_CreateAuctionItemDropdown(auction, widget)
 		end
 	end);		
 	-- Create tooltips

@@ -1,5 +1,12 @@
 ﻿-- Author      : Gabe
 -- Create Date : 2/15/2009 6:53:22 PM
+function kAuction:Client_OnAuctionExpire(auction)
+	kAuction:Debug("Client_OnAuctionExpired, auctionid " .. auction.id, 1)
+	-- Remove unusable frames
+	if kAuctionCurrentItemFrame:IsVisible() and kAuctionCurrentItemFrame.auction.id == auction.id then
+		kAuctionCurrentItemFrame:Hide();
+	end
+end
 -- Purpose: New auction sent by Server, add to client auction list
 function kAuction:Client_AuctionReceived(auction)
 	if not kAuction:Client_DoesAuctionExist(auction.id) then
@@ -16,7 +23,7 @@ function kAuction:Client_AuctionReceived(auction)
 		tinsert(self.localAuctionData, { -- Update local Auction data
 			bestInSlot = false,
 			bid = false, 
-			bidType = false,
+			bidType = 'normal',
 			currentItemLink = currentItemLink, 
 			id = auction.id,
 			localStartTime = time(), 
@@ -33,23 +40,18 @@ function kAuction:Client_AuctionReceived(auction)
 		self.db.profile.gui.frames.bids.visible = true;
 		self.db.profile.gui.frames.main.visible = true;
 		kAuction:Gui_HookFrameRefreshUpdate();
-		tinsert(self.timers, {
-			timer = kAuction:ScheduleTimer("Gui_HookFrameRefreshUpdate", auction.duration + auction.auctionCloseVoteDuration + auction.auctionCloseDelay), 
-			expires = time() + auction.duration + auction.auctionCloseVoteDuration + auction.auctionCloseDelay
-		});		
+		-- Create timer to update appropriate frames
+		kAuction:CreateTimer("Client_OnAuctionExpire", auction.duration + 1, false, {nil, auction})
+		kAuction:CreateTimer("Gui_HookFrameRefreshUpdate", auction.duration + auction.auctionCloseVoteDuration + auction.auctionCloseDelay)
 		-- Check if auto-remove auction is enabled and NOT server
 		if kAuction:Client_IsServer() then
 			return;
 		else
 			if self.db.profile.gui.frames.main.autoRemoveAuctions then
-				tinsert(self.timers, {
-					timer = self:ScheduleTimer(function()
-						kAuction:DeleteAuction(auction)
-						-- Cancel timer
-						kAuction:CancelTimer(kAuction.timers['AUTO_REMOVE_AUCTIONS'], true);
-					end, auction.duration + auction.auctionCloseVoteDuration + auction.auctionCloseDelay + self.db.profile.gui.frames.main.autoRemoveAuctionsDelay), 
-					expires = time() + auction.duration + auction.auctionCloseVoteDuration + auction.auctionCloseDelay + self.db.profile.gui.frames.main.autoRemoveAuctionsDelay
-				});					
+				kAuction:CreateTimer("DeleteAuction", 
+					auction.duration + auction.auctionCloseVoteDuration + auction.auctionCloseDelay + self.db.profile.gui.frames.main.autoRemoveAuctionsDelay,
+					false,
+					{nil, auction})				
 			end
 		end	
 		-- Check if wishlist requires auto-bid
@@ -305,6 +307,14 @@ function kAuction:Client_GetLocalAuctionDataById(id)
 			return auction;
 		end
 	end
+	return nil;
+end
+function kAuction:Client_GetLocalAuctionIndex(auction)
+	for i,v in pairs(self.localAuctionData) do
+		if v.id == auction.id then
+			return i;
+		end
+	end	
 	return nil;
 end
 function kAuction:Client_IsServer()

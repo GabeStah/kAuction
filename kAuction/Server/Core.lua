@@ -119,13 +119,16 @@ function kAuction:Server_AwardAuction(auction, winner)
 		kAuction:SendCommunication("DataUpdate", kAuction:Serialize("auction", auction), 3);
 		if auction.winner then
 			kAuction:Debug("auctionwinner: " .. auction.winner, 1);
-			SendChatMessage(self.const.chatPrefix.."Auto-Response: Congratulations, you are the auction winner for " .. auction.itemLink .. "!", "WHISPER", nil, auction.winner);
+			if self.db.profile.looting.auctionWhisperBidEnabled then
+				SendChatMessage(self.const.chatPrefix.."Auto-Response: Congratulations, you are the auction winner for " .. auction.itemLink .. "!", "WHISPER", nil, auction.winner);
+			end
 			kAuction:SendCommunication("AuctionWinner", auction);
 		end
 	end
 end
 function kAuction:Server_WhisperAuctionToRaidRoster(itemLink)
 	local i, name, online
+	if not self.db.profile.looting.auctionWhisperBidEnabled then return nil end
 	for i = 1, GetNumRaidMembers() do
 		name, _, _, _, _, _, _, online = GetRaidRosterInfo(i)
 		if online then
@@ -165,6 +168,7 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 	if whitelistData.name then
 		kAuction:Debug("FUNC: Create auction, whitelist Data found, name: " .. whitelistData.name, 1);
 	end
+	--[[
 	if IsEquippableItem(itemLink) or whitelistData.currentItemSlot then
 		if self.db.profile.bidding.autoPopulateCurrentItem then
 			local slotItemLink = GetInventoryItemLink("player", whitelistData.currentItemSlot or kAuction:Item_GetEquipSlotNumberOfItem(itemLink));
@@ -174,6 +178,7 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 			end
 		end
 	end
+	]]
 	local id = kAuction:Server_GetUniqueAuctionId();
 	local councilMembers = {};
 	for iCouncil,vCouncil in pairs(self.db.profile.looting.councilMembers) do
@@ -226,14 +231,9 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 	kAuction:Gui_HookFrameRefreshUpdate();
 	-- SendComm
 	kAuction:SendCommunication("Auction", self.auctions[#(self.auctions)])
-	tinsert(self.timers, {
-		timer = kAuction:ScheduleTimer(Server_OnAuctionExpire, self.auctions[#(self.auctions)].duration + self.db.profile.looting.auctionCloseDelay, #(self.auctions)), 
-		expires = time() + self.auctions[#(self.auctions)].duration + self.db.profile.looting.auctionCloseDelay
-	});
-	tinsert(self.timers, {
-		timer = kAuction:ScheduleTimer("Gui_HookFrameRefreshUpdate", self.db.profile.looting.auctionDuration + self.db.profile.looting.auctionCloseVoteDuration + self.db.profile.looting.auctionCloseDelay);
-		expires = time() + self.db.profile.looting.auctionDuration + self.db.profile.looting.auctionCloseVoteDuration + self.db.profile.looting.auctionCloseDelay
-	});	
+	kAuction:CreateTimer("Client_OnAuctionExpire", self.auctions[#(self.auctions)].duration + 1, false, {nil, self.auctions[#(self.auctions)]})
+	kAuction:CreateTimer("Server_OnAuctionExpire", self.auctions[#(self.auctions)].duration + self.db.profile.looting.auctionCloseDelay, false, {nil, #(self.auctions)})
+	kAuction:CreateTimer("Gui_HookFrameRefreshUpdate", self.db.profile.looting.auctionDuration + self.db.profile.looting.auctionCloseVoteDuration + self.db.profile.looting.auctionCloseDelay)
 	kAuction:Debug("FUNC: Server_AuctionItem: Item: " .. itemLink .. ", corpse: " .. corpseGuid, 1);
 	-- Check if wishlist requires auto-bid
 	if kAuction:Wishlist_IsEnabled() then
@@ -530,18 +530,16 @@ function kAuction:Server_InitializeCouncilMemberList()
 	table.sort(self.db.profile.looting.councilMembers);
 end
 -- Fires when auction timer ends, 
-function Server_OnAuctionExpire(iAuction)
+function kAuction:Server_OnAuctionExpire(iAuction)
 	if not kAuction:Client_IsServer() then
 		return;
 	end
 	if kAuction.auctions[iAuction] then
-		tinsert(kAuction.timers, {
-			timer = kAuction:ScheduleTimer("Gui_HookFrameRefreshUpdate", 0.5),
-			expires = time() + 0.5
-		});		
+		kAuction:CreateTimer("Gui_HookFrameRefreshUpdate", 0.5)
 		kAuction.auctions[iAuction].closed = true;
 		-- No bids, auto DE
 		if #kAuction.auctions[iAuction].bids == 0 then
+			kAuction:Debug("Server_OnAuctionExpire NO BIDS SET DE", 1)
 			kAuction.auctions[iAuction].disenchant = true;
 			kAuction:Server_AwardAuction(kAuction.auctions[iAuction]);
 		elseif #kAuction.auctions[iAuction].bids == 1 then
@@ -549,14 +547,8 @@ function Server_OnAuctionExpire(iAuction)
 				kAuction:Server_AwardAuction(kAuction.auctions[iAuction], v.name);				
 			end
 		elseif kAuction.db.profile.looting.autoAwardRandomAuctions then
-			tinsert(kAuction.timers, {
-				timer = kAuction:ScheduleTimer("DetermineRandomAuctionWinner", kAuction.db.profile.looting.auctionCloseDelay, iAuction),
-				expires = time() + kAuction.db.profile.looting.auctionCloseDelay
-			});				
-			tinsert(kAuction.timers, {
-				timer = kAuction:ScheduleTimer("Server_AwardAuction", kAuction.db.profile.looting.auctionCloseDelay + 1, kAuction.auctions[iAuction]),
-				expires = time() + kAuction.db.profile.looting.auctionCloseDelay + 1
-			});	
+			kAuction:CreateTimer("DetermineRandomAuctionWinner", kAuction.db.profile.looting.auctionCloseDelay, false, {nil, iAuction})
+			kAuction:CreateTimer("Server_AwardAuction",kAuction.db.profile.looting.auctionCloseDelay + 1, false, {nil, kAuction.auctions[iAuction]})
 		end
 	end
 end
@@ -647,9 +639,13 @@ function kAuction:Server_StartRaidTracking()
 	self.raidStartTime = date("%m/%d/%y %H:%M:%S");
 	self.raidStartTick = time();
 	self.raidZone = GetRealZoneText();
-	kAuction:ScheduleRepeatingTimer("Server_UpdateRaidRoster", self.const.raid.presenceTick);
-	-- Check if previous raid exists for this zone
-	
+	kAuction:CreateTimer(function()
+		if kAuction.isActiveRaid then
+			kAuction:Server_UpdateRaidRoster();
+		else
+			return true;
+		end
+	end, self.const.raid.presenceTick, true)
 	-- Create raid entry
 	kAuction:Debug("FUNC: Server_StartRaidtracking", 1);
 end
@@ -872,17 +868,10 @@ function kAuction:Server_VersionCheck(outputResult)
 	for i=1,GetNumRaidMembers() do
 		self.versions[GetRaidRosterInfo(i)] = false;
 	end
-	self:CancelTimer(self.timers['VERIFY_VERSIONS'], true)
 	if outputResult then
-		tinsert(self.timers, {
-			timer = kAuction:ScheduleTimer("Server_VerifyVersions", 6, outputResult),
-			expires = time() + 6
-		});				
+		kAuction:CreateTimer("Server_VerifyVersions", 6, false, {nil, outputResult})
 	else
-		tinsert(self.timers, {
-			timer = kAuction:ScheduleTimer("Server_VerifyVersions", 6),
-			expires = time() + 6
-		});			
+		kAuction:CreateTimer("Server_VerifyVersions", 6)
 	end
 	kAuction:SendCommunication("VersionRequest", self.version)
 end
@@ -894,24 +883,37 @@ function kAuction:Server_VersionReceived(sender, version)
 	kAuction:Debug("FUNC: Server_VersionReceived sender: "..sender.. ", version: " .. version,1);
 	kAuction:Server_VerifyVersions();
 end
+function kAuction:Server_CheckVersion(curr,old)
+   local majorCurr, minorCurr, revCurr = strsplit('.', curr);
+   local majorOld, minorOld, revOld = strsplit('.', old);
+   if majorCurr > majorOld then
+      return true
+   elseif minorCurr > minorOld then
+      return true
+   elseif revCurr > revOld then
+      return true
+   end
+   return false
+end
 function kAuction:Server_VerifyVersions(outputResult)
 	if not kAuction:Client_IsServer() then
 		return;
 	end
 	local booIncompatibleFound = false;
-	for name,version in pairs(self.versions) do
+	
+	for name,version in pairs(kAuction.versions) do
 		if version == false then
 			if outputResult then
 				kAuction:Print("|cFF"..kAuction:RGBToHex(255,0,0).."No kAuction Install Found|r: " .. name);
 			end
 			booIncompatibleFound = true;
-		elseif version < self.version then
+		elseif kAuction:Server_CheckVersion(kAuction.version, version) then
 			booIncompatibleFound = true;
-			if version < self.minRequiredVersion then
+			if kAuction:Server_CheckVersion(kAuction.minRequiredVersion, version) then
 				if outputResult then
 					kAuction:Print("|cFF"..kAuction:RGBToHex(255,0,0).."Incompatible Version|r: " .. name .. " [" .. version .. "]");
 				end
-				kAuction:SendCommunication("VersionInvalid", kAuction:Serialize(name, self.minRequiredVersion, self.version));
+				kAuction:SendCommunication("VersionInvalid", kAuction:Serialize(name, kAuction.minRequiredVersion, kAuction.version));
 			else
 				if outputResult then
 					kAuction:Print("|cFF"..kAuction:RGBToHex(255,255,0).."Out of Date Version|r: " .. name .. " [" .. version .. "]");

@@ -30,6 +30,9 @@ kAuction.popout.SlotInfo = {
 }
 local sharedMedia = kAuction.sharedMedia
 
+--- TIMERS ---
+--- TIMERS END ---
+
 --- EVENTS ---
 function kAuction:Gui_OnClickAuctionBestInSlotButton(objAuction, value)
 	local localAuctionData = kAuction:Client_GetLocalAuctionDataById(objAuction.id);
@@ -41,20 +44,32 @@ function kAuction:Gui_OnClickAuctionBestInSlotButton(objAuction, value)
 end
 function kAuction:Gui_OnClickAuctionBidButton(objAuction, bidType, bestInSlot, setBonus)
 	local localAuctionData = kAuction:Client_GetLocalAuctionDataById(objAuction.id);
-	if bidType == "none" then -- Cancel bid
-		localAuctionData.bid = false; -- Set bid as false
-		localAuctionData.bidType = false;	
-		kAuction:SendCommunication("BidCancel", localAuctionData, 3);
-	else -- actual bid
-		localAuctionData.bid = true; -- Set as bid	
-		localAuctionData.bidType = bidType;
-		if bestInSlot ~= nil then
-			localAuctionData.bestInSlot = bestInSlot;		
+	if bidType then
+		if bidType == "none" then -- Cancel bid
+			localAuctionData.bid = false; -- Set bid as false
+			localAuctionData.bidType = false;	
+			kAuction:SendCommunication("BidCancel", localAuctionData, 3);
+		else -- actual bid
+			localAuctionData.bid = true; -- Set as bid	
+			localAuctionData.bidType = bidType;
+			if bestInSlot ~= nil then
+				localAuctionData.bestInSlot = bestInSlot;		
+			end
+			if setBonus ~= nil then
+				localAuctionData.setBonus = setBonus;		
+			end
+			kAuction:SendCommunication("Bid", localAuctionData, 3);
+			-- Trigger current item popup
+			kAuction:Gui_CreateCurrentItemFrame(objAuction)
 		end
-		if setBonus ~= nil then
-			localAuctionData.setBonus = setBonus;		
+	else
+		if not localAuctionData.bidType then
+			localAuctionData.bidType = 'normal'
 		end
+		-- No bidtype, pull from localAuction
 		kAuction:SendCommunication("Bid", localAuctionData, 3);
+		-- Trigger current item popup
+		kAuction:Gui_CreateCurrentItemFrame(objAuction)		
 	end
 	kAuction:Gui_HookFrameRefreshUpdate();	
 end
@@ -91,8 +106,10 @@ function kAuction:Gui_OnClickAuctionItem(frame, button)
 				kAuction:Gui_HookFrameRefreshUpdate();
 			end
 		end
+	--[[
 	elseif button == "RightButton" then
 		kAuction:Gui_CreateAuctionItemDropdown(self.auctions[offset+row], frame);
+	]]		
 	end
 end
 function kAuction:Gui_OnClickAuctionSetBonusButton(objAuction, value)
@@ -112,64 +129,48 @@ function kAuction:Gui_OnClickCloseIcon(frame)
 	-- Delete Auction
 	kAuction:DeleteAuction(auction)
 end
-function kAuction:Gui_OnClickCurrentItem(frame)
+function kAuction:Gui_OnClickCurrentItemIcon(frame)
 	local offset, selectFrame = FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
 	local _, _, row = string.find(frame:GetName(), "(%d+)");
 	local sTitle, sClickText, sText;
 	local iIndex = offset + row;
 	local auction = self.auctions[iIndex];
+	local timeLeft = kAuction:GetAuctionTimeleft(auction);
 	local localAuctionData = kAuction:Client_GetLocalAuctionDataById(auction.id);
-	if localAuctionData.currentItemLink ~= false and not localAuctionData.bid and kAuction:GetAuctionTimeleft(auction) then -- Check if currentItemlink and no active bid
+	if localAuctionData.currentItemLink ~= false and not localAuctionData.bid and timeLeft then -- Check if currentItemlink and no active bid
 		localAuctionData.currentItemLink = false;
 	end	
-	kAuction:Gui_ShowCurrentItemFrame(auction, frame);	
+	if timeLeft then
+		kAuction:Gui_CreateCurrentItemFrame(auction);	
+	end
 end
-function kAuction:Gui_OnEnterCurrentItem(frame)
-	kAuction:Debug("FUNC: Gui_OnEnterCurrentItem, frame: " .. frame:GetName(), 3);
-	kAuctionTooltip:Hide(); -- Clear tooltip
-	offset = FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
+function kAuction:Gui_OnEnterCurrentItemIcon(frame)
+	local offset, selectFrame = FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
 	local _, _, row = string.find(frame:GetName(), "(%d+)");
-	local selectFrame;
-	local localAuctionData = kAuction:Client_GetLocalAuctionDataById(self.auctions[offset + row].id);	
-	-- If active bid, menu locked, do not show
-	if self.auctions[offset + row].currentItemSlot and not localAuctionData.bid and kAuction:GetAuctionTimeleft(self.auctions[offset + row]) then
-		--Current item mouse over, show select frame
-		selectFrame = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..row.."CurrentItemSelectFrame"];
-		--selectFrame = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..row.."CurrentItemSelectFrame", 1];
-		local i = 1;
-		local matchTable = kAuction:Item_GetInventoryItemMatchTable(self.auctions[offset + row].currentItemSlot)
-		while _G[selectFrame:GetName().."Button"..i] do
-			if i <= #(matchTable) then
-				_G[selectFrame:GetName().."Button"..i]:Show()
-			end
-			i=i+1;			
-		end
+	local sTitle, sClickText, sText;
+	local iIndex = offset + row;
+	local auction = self.auctions[iIndex];
+	local timeLeft = kAuction:GetAuctionTimeleft(auction);
+	local localAuctionData = kAuction:Client_GetLocalAuctionDataById(auction.id);	
+	local tip = self.qTip:Acquire("GameTooltip", 1, "LEFT")
+	tip:ClearAllPoints();
+	tip:Clear();
+	tip:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 0, 0);
+	tip:AddHeader("Current Item");
+	if timeLeft then
+		tip:AddLine("");
+		tip:AddLine("");
+		local fontOrange = CreateFont("kAuctionBidItemsWonFontOrange")
+		fontOrange:CopyFontObject(GameTooltipText)
+		fontOrange:SetTextColor(1,0.6,0)
+		tip:SetCell(3, 1, "Left-Click to alter.", fontOrange);
 	end
-	-- Hide other Rows
-	local iSelectFrame = 1;
-	while _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..iSelectFrame.."CurrentItemSelectFrame"] do
-		if iSelectFrame ~= row then
-			_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..iSelectFrame.."CurrentItemSelectFrame"]:Hide();
-		end
-		iSelectFrame = iSelectFrame + 1;
-	end
-	if self.auctions[offset + row].currentItemSlot then
-		if not localAuctionData.bid and kAuction:GetAuctionTimeleft(self.auctions[offset + row]) then
-			selectFrame:Show();
-		end
-		-- Update tooltip
-		if localAuctionData.currentItemLink ~= false then
-			kAuction:Gui_OnEnterCurrentItemMenu(frame,localAuctionData.currentItemLink);
-		end
-		--kAuction:Threading_StartTimer("kAuctionThreadingFrameMain"..row);
-	else
-		if _G["kAuctionThreadingFrameMain"..row] then
-			_G["kAuctionThreadingFrameMain"..row]:Hide();
-		end
+	tip:Show();
+	if frame.currentItemLink then
+		kAuction:Gui_ShowItemTooltip(frame, frame.currentItemLink)
 	end
 end
 function kAuction:Gui_OnLeaveCurrentItem(frame)
-	kAuction:Debug("FUNC: Gui_OnLeaveCurrentItem, frame: " .. frame:GetName(), 1);
 	local _, _, row = string.find(frame:GetName(), "(%d+)");
 	_G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..row.."CurrentItemSelectFrame"]:Hide();
 end
@@ -364,15 +365,50 @@ function kAuction:Gui_CreateAuctionItemDropdown(auction, auctionFrame)
 end
 function kAuction:Gui_CreateDropdownMenuTimer()
 	-- Close timer
-	self:ScheduleRepeatingTimer(function()
+	self:CreateTimer(function()
 		if not DropDownList1:IsMouseOver() then
 			CloseDropDownMenus();
-			kAuction:CancelTimer(kAuction.timers['HIDE_DROPDOWN_MENU'], true);
+			return true;
 		end
-	end,2)	
+	end,2,true)	
+end
+function kAuction:Get_GetAuctionFromFrame(frame)
+	local offset, selectFrame = FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
+	local _, _, row = string.find(frame:GetName(), "(%d+)");
+	local sTitle, sClickText, sText;
+	local iIndex = offset + row;
+	local auction = self.auctions[iIndex];
+	if auction then
+		return auction
+	end
+	return nil
+end
+function kAuction:Gui_GetFrameIndexOfAuction(auction)
+	local line;
+	for line=1,5 do
+		lineplusoffset = line + FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
+		if lineplusoffset <= #(self.auctions) then
+			if self.auctions[lineplusoffset] then
+				return line;
+			end
+		end
+	end	
+	return nil;
+end
+function kAuction:Gui_GetBidFrameIndexOfName(name)
+	local line;
+	for line=1,5 do
+		lineplusoffset = line + FauxScrollFrame_GetOffset(kAuctionMainFrameBidScrollContainerScrollFrame);
+		if lineplusoffset <= #(self.auctions) then
+			if self.auctions[lineplusoffset] then
+				return line;
+			end
+		end
+	end	
+	return nil;
 end
 function kAuction:Gui_HookFrameRefreshUpdate()
-	kAuctionMainFrame:SetScale(self.db.profile.gui.frames.main.scale);
+	kAuctionMainFrame:SetScale(kAuction.db.profile.gui.frames.main.scale);
 	if kAuction:Gui_GetSelectedTab() then
 		_G["kAuctionMainFrameBidScrollContainer"]:Show()
 		_G["kAuctionMainFrameMainScrollContainer"]:Hide()
@@ -456,6 +492,8 @@ function kAuction:Gui_ResizeFrame(frame,button,state)
 			if frame:GetName() == "kAuctionMainFrameResizeLeft" or frame:GetName() == "kAuctionMainFrameResizeRight" then
 				self.db.profile.gui.frames.main.height = frame:GetParent():GetHeight();
 				self.db.profile.gui.frames.main.width = frame:GetParent():GetWidth();
+			elseif frame:GetName() == 'kAuctionCurrentItemFrameResizeLeft' or frame:GetName() == 'kAuctionCurrentItemFrameResizeRight' then
+				--kAuctionCurrentItemFrame:SetSize()
 			end
 			kAuction:Gui_HookFrameRefreshUpdate();
 			--frame:GetParent():SaveMainWindowPosition()
@@ -499,17 +537,16 @@ end
 function kAuction:Gui_UpdateAuctionCurrentItemButtons(index, objAuction)
 	local frameCurrentItem = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."CurrentItem"];
 	local frameCurrentItemIcon = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..index.."CurrentItemIcon"];
-	frameCurrentItem:SetScript("OnClick",function() kAuction:Gui_OnClickCurrentItem(index) end);
-	frameCurrentItem:SetScript("OnLeave",function() GameTooltip:Hide() end);
 	local localAuctionData = kAuction:Client_GetLocalAuctionDataById(objAuction.id);	
 	-- Check if auctioned item is equippable
+	frameCurrentItem.currentItemLink = nil;
 	if objAuction.currentItemSlot then
-		if localAuctionData.currentItemLink then
+		if localAuctionData.currentItemLink and localAuctionData.bid then
 			frameCurrentItemIcon:SetTexture(kAuction:Item_GetTextureOfItem(localAuctionData.currentItemLink))
+			frameCurrentItem.currentItemLink = localAuctionData.currentItemLink;
 		else
 			frameCurrentItemIcon:SetTexture(kAuction:Item_GetEmptyPaperdollTextureOfItem(objAuction.itemLink) or kAuction:Item_GetEmptyPaperdollTextureOfItemSlot(objAuction.currentItemSlot));
 		end
-		kAuction:Debug("vertex color: " .. frameCurrentItemIcon:GetVertexColor(), 3);
 		if localAuctionData.bid and kAuction:GetAuctionTimeleft(objAuction) then
 			frameCurrentItemIcon:SetVertexColor(1,0,0,1);
 		else
@@ -530,7 +567,6 @@ function kAuction:Gui_UpdateAuctionIcons(index, objAuction)
 	local localAuctionData = self:Client_GetLocalAuctionDataById(objAuction.id);
 	local time = kAuction:GetAuctionTimeleft(objAuction);
 	local states = kAuction:GetAuctionStateArray(statusIcon);
-	-- TODO: Create new current item popout
 	statusIcon:SetPoint("RIGHT", close, "LEFT", 0, 0)
 	-- DEFAULT HIDE
 	voteIcon:Hide()
@@ -583,6 +619,9 @@ function kAuction:Gui_UpdateMainFrameScroll()
 	if self.auctions and #(self.auctions) > 0 and self.db.profile.gui.frames.main.visible then
 		local line; -- 1 through 5 of our window to scroll
 		local lineplusoffset; -- an index into our data calculated from the scroll offset
+		local fCur = kAuctionCurrentItemFrame;		
+		local booIsCurrentItemActive = fCur.active;
+		local booIsCurrentItemMatchingAuction = false;
 		FauxScrollFrame_Update(kAuctionMainFrameMainScrollContainerScrollFrame,#(self.auctions),5,16);
 		_G[self.db.profile.gui.frames.main.name.."TitleText"]:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.main.font), 16);
 		for line=1,5 do
@@ -598,8 +637,24 @@ function kAuction:Gui_UpdateMainFrameScroll()
 				--kAuction:Gui_UpdateAuctionCloseButton(line, self.auctions[lineplusoffset]);
 				-- Update Current Item Buttons
 				-- MEMORY USAGE: +1.17KB
-				--kAuction:Gui_UpdateAuctionCurrentItemButtons(line, self.auctions[lineplusoffset]);
+				kAuction:Gui_UpdateAuctionCurrentItemButtons(line, self.auctions[lineplusoffset]);
 				-- Update Icons
+				-- Check for Current Item popup position
+				if booIsCurrentItemActive then
+					if fCur.auction then
+						-- Matching auction
+						if self.auctions[lineplusoffset].id == fCur.auction.id then
+							booIsCurrentItemMatchingAuction = true
+							local fCurrItem = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."CurrentItem"]
+							if  kAuction.db.profile.gui.frames.currentItem.anchorSide == 'LEFT' then 
+								kAuction:Gui_AttachCurrentItemFrame('BOTTOMRIGHT', fCurrItem, 'LEFT', 0, 0)
+							else
+								kAuction:Gui_AttachCurrentItemFrame('BOTTOMLEFT', fCurrItem:GetParent(), 'RIGHT', 0, 0)								
+							end
+							--kAuction:Gui_ShowCurrentItem()
+						end
+					end
+				end
 				-- MEMORY USAGE: +4.44KB
 				kAuction:Gui_UpdateAuctionIcons(line, self.auctions[lineplusoffset]);
 				-- Update Pullout menu
@@ -612,6 +667,10 @@ function kAuction:Gui_UpdateMainFrameScroll()
 		end
 		--_G[self.db.profile.gui.frames.main.name.."MainScrollContainer"]:Show();
 		_G[self.db.profile.gui.frames.main.name]:Show();
+		-- Hide Current Item if needed
+		if booIsCurrentItemActive and booIsCurrentItemMatchingAuction == false then
+			kAuction:Gui_HideCurrentItem()
+		end
 	else
 		_G[self.db.profile.gui.frames.main.name]:Hide();
 	end
@@ -656,15 +715,15 @@ function kAuction:Gui_GetIconStrings(icon,name,states,auction,timeLeft,winner)
 			if states.bid then
 				sTitle, sText, sClickText = 'Bid Active', 
 				('You bid on %s%s%s.'):format(auction.itemLink,'|cFF',kAuction.colorHex['white']), 
-				'Left-Click to remove your bid|nRight-Click to Customize a bid'			
+				'Left-Click to Remove your bid'			
 			else
 				sTitle, sText, sClickText = 'No Bid', 
 				('You have no bid for %s%s%s.'):format(auction.itemLink,'|cFF',kAuction.colorHex['white']), 
-				('Left-Click to submit a Normal Spec bid|nRight-Click to Customize a bid'):format(kAuction.colorHex['white'],kAuction.colorHex['green'], kAuction.colorHex['white'])		
+				('Left-Click to Create a bid'):format(kAuction.colorHex['white'],kAuction.colorHex['green'], kAuction.colorHex['white'])		
 			end
 		end
 		if name == 'status' then
-			sTitle, sClickText = 'Auction Open', 'Left-Click to view bids.|nRight-Click to bid.'
+			sTitle, sClickText = 'Auction Open', 'Left-Click to view bids.'
 			if timeLeft then
 				sText = ('Auction for %s%s%s expires in %s seconds.'):format(auction.itemLink,'|cFF',kAuction.colorHex['white'], timeLeft)
 			else
@@ -704,6 +763,7 @@ function kAuction:Gui_ShowItemTooltip(anchorFrame,item,anchorPoint,anchorFramePo
 	GameTooltip:SetHyperlink(itemLink);
 end
 function kAuction:Gui_SetIconTooltipStrings(frame, title, text, clickText)	
+	if not title or not text then return nil end
 	self:Gui_SetFrameBackdropColor(frame:GetParent(),0.9,0.9,0.9,0.1);
 	GameTooltip:SetOwner(WorldFrame,"ANCHOR_NONE");
 	GameTooltip:ClearLines();
