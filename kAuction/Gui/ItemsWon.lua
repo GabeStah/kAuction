@@ -69,7 +69,7 @@ function kAuction:Gui_AttachItemsWonFrame(anchorPoint, parent, relativePoint, xO
 		fArrowIcon:SetTexCoord(0.99218750, 0.58789063, 0.99218750, 0.54687500, 0.78515625, 0.58789063, 0.78515625, 0.54687500)
 		fGlowIcon:SetTexCoord(0.66015625, 0.82812500, 0.66015625, 0.77343750, 0.40625000, 0.82812500, 0.40625000, 0.77343750)	
 		fArrow:SetPoint('BOTTOM', fArrow:GetParent(), 'TOP', 0, 0)		
-		f:SetPoint(anchorPoint, parent, relativePoint, xOffset - 22, yOffset - arrowWidth)
+		f:SetPoint(anchorPoint, parent, relativePoint, xOffset, yOffset - arrowWidth)
 	elseif anchorPoint == 'BOTTOM' then
 		fArrow:SetSize(arrowHeight, arrowWidth)
 		fGlowIcon:SetSize(arrowHeight, arrowWidth)
@@ -77,7 +77,7 @@ function kAuction:Gui_AttachItemsWonFrame(anchorPoint, parent, relativePoint, xO
 		fGlowIcon:SetTexCoord(0.40625000, 0.77343750, 0.40625000, 0.82812500, 0.66015625, 0.77343750, 0.66015625, 0.82812500)
 		--f:SetPoint(anchorPoint, parent, relativePoint, xOffset - arrowWidth, yOffset - f:GetHeight() / 2)
 		fArrow:SetPoint('TOP', fArrow:GetParent(), 'BOTTOM', 0, 0)		
-		f:SetPoint(anchorPoint, parent, relativePoint, xOffset - 22, yOffset + arrowWidth)
+		f:SetPoint(anchorPoint, parent, relativePoint, xOffset, yOffset + arrowWidth)
 	end
 end
 function kAuction:Gui_CreateItemsWonFrame(parent, matchTable, player)

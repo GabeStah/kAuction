@@ -113,7 +113,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BORDER">
-						<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="#/#/#" justifyH="LEFT">
+						<FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="#/#/#" justifyH="CENTER">
 							<Anchors>
 								<Anchor point="LEFT" relativeTo="$parent" relativePoint="LEFT">
 									<Offset>
