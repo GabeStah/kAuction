@@ -626,7 +626,7 @@ function kAuction:Gui_UpdateMainFrameScroll()
 		_G[self.db.profile.gui.frames.main.name.."TitleText"]:SetFont(sharedMedia:Fetch("font", self.db.profile.gui.frames.main.font), 16);
 		for line=1,5 do
 			lineplusoffset = line + FauxScrollFrame_GetOffset(kAuctionMainFrameMainScrollContainerScrollFrame);
-			if lineplusoffset <= #(self.auctions) then
+			if lineplusoffset <= #(self.auctions) and GetItemInfo(self.auctions[lineplusoffset].itemLink) then
 				local fNameText = _G[self.db.profile.gui.frames.main.name.."MainScrollContainerAuctionItem"..line.."ItemNameText"];
 				fNameText:SetText(GetItemInfo(self.auctions[lineplusoffset].itemLink))
 				fNameText:SetTextColor(kAuction:Item_GetColor(self.auctions[lineplusoffset].itemLink))
