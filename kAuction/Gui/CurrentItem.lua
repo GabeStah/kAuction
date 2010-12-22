@@ -326,8 +326,8 @@ function kAuction:Gui_UpdateCurrentItemScroll()
 	local scrollHeight = kAuctionCurrentItemFrameScrollContainer:GetHeight();
 	local itemFrameCount = floor((scrollHeight / kAuction.currentItemWidgetHeight) + 0.5) or 1;
 	-- Check for matches
+	local line, lineplusoffset;
 	if matches and #matches > 0 then
-		local line, lineplusoffset;
 		-- Manual hack to properly set offset
 		FauxScrollFrame_SetOffset(kAuctionCurrentItemFrameScrollContainerScrollFrame, floor((kAuctionCurrentItemFrameScrollContainerScrollFrameScrollBar:GetValue() / kAuction.currentItemWidgetHeight) + 0.5))
 		FauxScrollFrame_Update(kAuctionCurrentItemFrameScrollContainerScrollFrame,#matches,itemFrameCount,kAuction.currentItemWidgetHeight);
@@ -345,6 +345,10 @@ function kAuction:Gui_UpdateCurrentItemScroll()
 			else
 				_G["kAuctionCurrentItemFrameScrollContainerCurrentItem"..line]:Hide();
 			end
+		end
+	else
+		for line=1,itemFrameCount do
+			_G["kAuctionCurrentItemFrameScrollContainerCurrentItem"..line]:Hide();
 		end
 	end
 end

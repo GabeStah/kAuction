@@ -27,6 +27,7 @@ function kAuction:Client_AuctionReceived(auction)
 			bidType = 'normal',
 			currentItemLink = currentItemLink, 
 			id = auction.id,
+			itemLink = auction.itemLink,
 			localStartTime = time(), 
 			setBonus = false,
 		});
