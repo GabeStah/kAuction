@@ -563,17 +563,17 @@ function kAuction:DetermineRandomAuctionWinner(iAuction)
 	if not IsRaidLeader() then
 		return;
 	end
-	if self.auctions and self.auctions[iAuction] then
-		if not self.auctions[iAuction].closed then
+	if kAuction.auctions and kAuction.auctions[iAuction] then
+		if not kAuction.auctions[iAuction].closed then
 			return;
 		end
 		-- Check auction type
-		if self.auctions[iAuction].auctionType == 1 then -- Random
-			if #(self.auctions[iAuction].bids) > 0 then
-				local winningBid = kAuction:GetRandomAuctionWinningBid(self.auctions[iAuction]);
+		if kAuction.auctions[iAuction].auctionType == 1 then -- Random
+			if #(kAuction.auctions[iAuction].bids) > 0 then
+				local winningBid = kAuction:GetRandomAuctionWinningBid(kAuction.auctions[iAuction]);
 				if winningBid then
-					self.auctions[iAuction].winner = winningBid.name; -- set winner
-					return self.auctions[iAuction].winner;
+					kAuction.auctions[iAuction].winner = winningBid.name; -- set winner
+					return kAuction.auctions[iAuction].winner;
 				end
 			end
 		end
