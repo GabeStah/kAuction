@@ -10,6 +10,7 @@ end
 -- Purpose: New auction sent by Server, add to client auction list
 function kAuction:Client_AuctionReceived(auction)
 	if not kAuction:Client_DoesAuctionExist(auction.id) then
+		kAuction:Debug("Client_AuctionReceived", 3)
 		local currentItemLink = false;
 		if auction.currentItemSlot then
 			if self.db.profile.bidding.autoPopulateCurrentItem then
@@ -319,9 +320,11 @@ function kAuction:Client_GetLocalAuctionIndex(auction)
 end
 function kAuction:Client_IsServer()
 	-- If debug, ignore requirements
+	--[[
 	if self.db.profile.debug.enabled then
 		return true;
 	end
+	]]
 	-- Verify raid leader
 	if GetNumRaidMembers() > 0 and IsRaidLeader() then -- Current Server
 		self.isServer = true;

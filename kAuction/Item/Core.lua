@@ -33,6 +33,7 @@ function kAuction:Item_CleanupWhitelistDropdownValues()
 	table.sort(self.db.profile.looting.councilMembers);
 end
 function kAuction:Item_GetColorByRarity(rarity)
+	if rarity == nil then return nil end;
 	return GetItemQualityColor(rarity);
 end
 function kAuction:Item_GetColor(item)

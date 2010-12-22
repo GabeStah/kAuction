@@ -342,7 +342,7 @@ end
 function kAuction:IsPlayerRaidLeader(name)
 	local i, n, rank
 	for i = 1, GetNumRaidMembers() do
-		name, rank = GetRaidRosterInfo(i)
+		n, rank = GetRaidRosterInfo(i)
 		if rank == 2 then
 			if n == name then
 				return true
