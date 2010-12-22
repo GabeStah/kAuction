@@ -323,13 +323,29 @@ function kAuction:Item_GetInventoryItemMatchTable(matchItem)
 			end
 		end
 	end
-	-- Sort by iLevel
-	sort(matchTable, function(a,b) return select(4, GetItemInfo(a)) > select(4, GetItemInfo(b)) end)
+	-- Remove duplicates
+	matchTable = kAuction:RemoveTableDuplicates(matchTable)
 	if matchTable then
+		-- Sort by iLevel
+		sort(matchTable, function(a,b) return select(4, GetItemInfo(a)) > select(4, GetItemInfo(b)) end)
 		return matchTable;
 	else
 		return nil;
 	end
+end
+function kAuction:RemoveTableDuplicates(table)
+	local i, index;
+	if not table or not (#table > 0) then return nil end
+	for i = #table,1,-1 do
+		for index = #table,1,-1 do
+			if (kAuction:Item_GetItemIdFromItemLink(table[i])==kAuction:Item_GetItemIdFromItemLink(table[index])) then
+				if i ~= index then
+					tremove(table,index);
+				end					
+			end
+		end
+	end
+	return table;
 end
 function kAuction:Item_GetPlayerWonItemList(player, bidType)
 	local objItems = {};
