@@ -1,5 +1,5 @@
-## Title: kAuction |cffb5a5d5[2.0.156]|r |cff7fff7fAce3|r 
-## Version: 2.0.156
+## Title: kAuction |cffb5a5d5[2.0.157]|r |cff7fff7fAce3|r 
+## Version: 2.0.157
 ## Author: Kulldam
 ## Notes: Simple item auctioning system.
 ## Interface: 40000

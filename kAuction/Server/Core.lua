@@ -34,6 +34,7 @@ function kAuction:Server_AddBidVote(sender, auction, bid)
 		return;
 	end
 	local iAuction, iBid = kAuction:Client_GetAuctionBidIndexByBidId(bid.id);
+	if not iAuction or not iBid then return nil end
 	if self.auctions[iAuction].bids[iBid] then
 		if kAuction:IsLootCouncilMember(self.auctions[iAuction], sender) then
 			kAuction:ClearLootCouncilVoteFromAuction(self.auctions[iAuction], sender);
