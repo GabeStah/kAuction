@@ -155,9 +155,9 @@ function kAuction:Item_GetItemWhitelistData(item)
 		return
 	end
 	-- Check if item is in local cache
-	local name = GetItemInfo(item);
+	local id = kAuction:Item_GetItemIdFromItemLink(select(2, GetItemInfo(item)));
 	for iList,vList in pairs(self.db.profile.items.whiteList) do
-		if vList.name == name then
+		if vList.id == id then
 			return vList;
 		end
 	end

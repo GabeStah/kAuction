@@ -166,8 +166,8 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 	end
 	local currentItemLink = false;
 	local whitelistData = kAuction:Item_GetItemWhitelistData(itemLink) or kAuction:Item_GetItemTypeWhitelistData(itemLink) or {};
-	if whitelistData.name then
-		kAuction:Debug("FUNC: Create auction, whitelist Data found, name: " .. whitelistData.name, 1);
+	if whitelistData.id then
+		kAuction:Debug("FUNC: Create auction, whitelist Data found, id: " .. whitelistData.id, 1);
 	end
 	--[[
 	if IsEquippableItem(itemLink) or whitelistData.currentItemSlot then
@@ -629,6 +629,90 @@ function kAuction:Server_RequestRaidAuraCancel(id)
 	if not GetSpellInfo(tonumber(id)) then return end
 	-- Valid, send request
 	kAuction:SendCommunication("RequestAuraCancel", tonumber(id));
+end
+kAuction.channel = "GUILD"
+function kAuction:Server_StartVcpAttendanceCheck()
+	if not kAuction:Client_IsServer() then
+		return;
+	end
+	if not kAuction.enabled then
+		return;
+	end
+	-- Create attendance table from vcp members
+	table.sort(kAuction.db.profile.vcp.raiders, function(a,b) return a<b end)
+	for i,raider in pairs(kAuction.db.profile.vcp.raiders) do
+		tinsert(kAuction.vcp.attendance, {name=raider, online = false, iterationFound = 1});
+	end
+	-- Create initial attendance check timer for 5 minutes and announce
+	kAuction:CreateTimer("Server_VcpAttendanceCheck", 300, false, {nil, 1});
+	-- Announcement
+	SendChatMessage("[VCP] - Initial availability snapshot in 5 minutes.  All VCP Raiders should remain online to receive 100% attendance credit.", kAuction.channel)
+end
+function kAuction:Server_VcpAttendanceCheck(iter)
+	-- Count number online
+	local iCountOnlineBefore = 0;
+	local iCountOnlineAfter = 0;
+	for iR,vR in pairs(kAuction.vcp.attendance) do
+		if vR.online == true then
+			iCountOnlineBefore = iCountOnlineBefore + 1;
+		end
+	end
+	-- Query roster
+	GuildRoster();
+	local _, iCount = GetNumGuildMembers();
+	local strUnaccounted;
+	for i = 1, iCount do
+		local name,_, _, _, _, _, note, _, online = GetGuildRosterInfo(i);
+		-- Check for match
+		for iRaider,vRaider in pairs(kAuction.vcp.attendance) do
+			local f1, f2 = string.find(strlower(name), '%s*'..strlower(vRaider.name)..'%s*'), string.find(strlower(note), '%s*[[({][Aa][])}]%s*'..strlower(vRaider.name)..'%s*');
+			if f1 or f2 then
+				if online and vRaider.online == false then
+					-- Match and online
+					kAuction.vcp.attendance[iRaider].online = true;
+					kAuction.vcp.attendance[iRaider].iterationFound = iter;
+				end
+			end
+		end
+	end
+	for iRa,vRa in pairs(kAuction.vcp.attendance) do
+		if vRa.online == true then
+			iCountOnlineAfter = iCountOnlineAfter + 1;
+		else
+			if strUnaccounted then
+				strUnaccounted = strUnaccounted .. ", " .. vRa.name;
+			else
+				strUnaccounted = vRa.name;
+			end
+		end
+	end
+	-- Announcement
+	if iCountOnlineAfter == 11 then -- Don't run again
+		if iter == 1 then
+			SendChatMessage("[VCP] - Initial availability snapshot complete and all VCP Raiders are accounted for.", kAuction.channel)
+		elseif iter == 2 then
+			SendChatMessage("[VCP] - 20 minute availability snapshot complete and all VCP Raiders are accounted for.", kAuction.channel)
+		elseif iter == 3 then
+			SendChatMessage("[VCP] - 40 minute availability snapshot complete and all VCP Raiders are accounted for.", kAuction.channel)
+		elseif iter == 4 then
+			SendChatMessage("[VCP] - Final availability snapshot complete and all VCP Raiders are accounted for.", kAuction.channel)
+		end
+	else -- Run again in another iteration
+		local strRaider = " Raiders"
+		if 11-iCountOnlineAfter == 1 then strRaider = " Raider" end
+		if iter == 1 then
+			kAuction:CreateTimer("Server_VcpAttendanceCheck", 1200, false, {nil, iter+1});
+			SendChatMessage("[VCP] - Initial availability snapshot complete, "..11-iCountOnlineAfter..strRaider.." unaccounted for: "..strUnaccounted..".  Next snapshot in 20 minutes.", kAuction.channel)
+		elseif iter == 2 then
+			kAuction:CreateTimer("Server_VcpAttendanceCheck", 1200, false, {nil, iter+1});
+			SendChatMessage("[VCP] - 20 minute availability snapshot complete, "..11-iCountOnlineAfter..strRaider.." unaccounted for: "..strUnaccounted..".  Next snapshot in 20 minutes.", kAuction.channel)
+		elseif iter == 3 then
+			kAuction:CreateTimer("Server_VcpAttendanceCheck", 1200, false, {nil, iter+1});
+			SendChatMessage("[VCP] - 40 minute availability snapshot complete, "..11-iCountOnlineAfter..strRaider.." unaccounted for: "..strUnaccounted..".  Final snapshot in 20 minutes.", kAuction.channel)
+		elseif iter == 4 then
+			SendChatMessage("[VCP] - Final availability snapshot complete, "..11-iCountOnlineAfter..strRaider.." unaccounted for: "..strUnaccounted..".", kAuction.channel)
+		end
+	end
 end
 function kAuction:Server_StartRaidTracking()
 	if not kAuction:Client_IsServer() then

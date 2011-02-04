@@ -1,7 +1,7 @@
 -- Author      : Gabe
 -- Create Date : 2/15/2009 7:20:42 PM
-kAuction.minRequiredVersion = '2.0.157';
-kAuction.version = '2.0.157';
+kAuction.minRequiredVersion = '2.0.156';
+kAuction.version = '2.0.165';
 kAuction.versions = {};
 
 kAuction.const = {};
@@ -127,14 +127,36 @@ kAuction.defaults = {
 			itemTypeWhiteListSelected = 1,
 			whiteList = { -- Items		
 				--MISC
-				{name = "Archivum Data Disc", auctionType = 1},
+				{id=67423, auctionType=2, currentItemSlot=5},
+				{id=67424, auctionType=2, currentItemSlot=5},
+				{id=67425, auctionType=2, currentItemSlot=5},
+				{id=65000, auctionType=2, currentItemSlot=1},
+				{id=65001, auctionType=2, currentItemSlot=1},
+				{id=65002, auctionType=2, currentItemSlot=1},
+				{id=66998, auctionType=2, currentItemSlot={1,3,5,7,10}},
+				{id=67429, auctionType=2, currentItemSlot=10},
+				{id=67430, auctionType=2, currentItemSlot=10},
+				{id=67431, auctionType=2, currentItemSlot=10},
+				{id=63683, auctionType=2, currentItemSlot=1},
+				{id=63684, auctionType=2, currentItemSlot=1},
+				{id=63685, auctionType=2, currentItemSlot=1},
+				{id=67428, auctionType=2, currentItemSlot=7},
+				{id=67427, auctionType=2, currentItemSlot=7},
+				{id=67426, auctionType=2, currentItemSlot=7},
+				{id=64315, auctionType=2, currentItemSlot=3},
+				{id=64314, auctionType=2, currentItemSlot=3},
+				{id=64316, auctionType=2, currentItemSlot=3},
+				{id=65088, auctionType=2, currentItemSlot=3},
+				{id=65087, auctionType=2, currentItemSlot=3},
+				{id=65089, auctionType=2, currentItemSlot=3},
+				--[[{name = "Archivum Data Disc", auctionType = 1},
 				{name = "Heroic Key to the Focusing Iris", auctionType = 1, currentItemSlot = 2}, -- Random, Neck
 				{name = "Key to the Focusing Iris", auctionType = 1, currentItemSlot = 2}, -- Random, Neck
 				{name = "Large Satchel of Spoils", auctionType = 1}, -- Random
 				{name = "Reins of the Twilight Drake", auctionType = 1}, -- Random
 				{name = "Reply-Code Alpha", auctionType = 1}, -- Random
 				{name = "Satchel of Spoils", auctionType = 1}, -- Random
-				{name = "Trophy of the Crusade", auctionType = 2},
+				{name = "Trophy of the Crusade", auctionType = 2},]]
 			},	
 			whiteListConfig = {
 				add = {
@@ -216,7 +238,22 @@ kAuction.defaults = {
 				"Throne of the Four Winds",
 			},
 			zoneSelected = 1,
-		}
+		},
+		vcp = {
+			raiders = {
+				"Ansum",
+				"Bauser",
+				"Boheem",
+				"Bunny",
+				"Duux",
+				"Guide",
+				"Harkle",
+				"Kainhighwind",
+				"Kilwenn",
+				"Kulldon",
+				"Vikrum",
+			},
+		},
 	},
 };
 kAuction.guids = {};
@@ -961,6 +998,18 @@ kAuction.options = {
 					type = 'execute',
 					desc = 'Create a test auction of a random item.',
 					func = function() kAuction:Server_CreateTestAuction() end,
+				},
+				vcpInvite = {
+					name = 'VCP Invite',
+					type = 'execute',
+					desc = 'Invite the raid based on current VCP standings.',
+					func = function() end,
+				},
+				vcpAttendance = {
+					name = 'VCP Attendance',
+					type = 'execute',
+					desc = 'Begin the VCP attendance process.',
+					func = function() kAuction:Server_StartVcpAttendanceCheck() end,
 				},
 			},
 		},			

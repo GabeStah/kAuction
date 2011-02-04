@@ -12,6 +12,8 @@ kAuction.updates[2] = 0;
 kAuction.currentZone = false;
 kAuction.currentItemWidgetHeight = 34;
 kAuction.itemsWonWidgetHeight = 20;
+kAuction.vcp = {};
+kAuction.vcp.attendance = {};
 local sharedMedia = LibStub:GetLibrary("LibSharedMedia-3.0")
 kAuction.sharedMedia = sharedMedia
 function kAuction:OnInitialize()
@@ -45,6 +47,8 @@ function kAuction:OnInitialize()
 	self.playerName = UnitName("player");
 	-- Menu
 	self.menu = CreateFrame("Frame", "Test_DropDown", UIParent, "UIDropDownMenuTemplate");
+	self.updateFrame = CreateFrame("Frame", "kAuctionUpdateFrame", UIParent);
+	kAuctionUpdateFrame:SetScript("OnUpdate", function(frame,elapsed) kAuction:OnUpdate(1, elapsed) end)
 	-- Init council list
 	self:Server_InitializeCouncilMemberList();
 end
@@ -61,7 +65,7 @@ function kAuction:InitializeEvents()
 	--kAuction:RegisterEvent("CHAT_MSG_WHISPER");
 	
 	-- Update
-	_G[self.db.profile.gui.frames.main.name]:SetScript("OnUpdate", function(frame,elapsed) kAuction:OnUpdate(1, elapsed) end)
+	--_G[self.db.profile.gui.frames.main.name]:SetScript("OnUpdate", function(frame,elapsed) kAuction:OnUpdate(1, elapsed) end)
 	-- Color Hex codes
 	kAuction.colorHex['green'] = kAuction:RGBToHex(0,255,0);
 	kAuction.colorHex['red'] = kAuction:RGBToHex(255,0,0);
