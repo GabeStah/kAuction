@@ -166,9 +166,6 @@ function kAuction:Server_AuctionItem(id, corpseGuid, corpseName)
 	end
 	local currentItemLink = false;
 	local whitelistData = kAuction:Item_GetItemWhitelistData(itemLink) or kAuction:Item_GetItemTypeWhitelistData(itemLink) or {};
-	if whitelistData.id then
-		kAuction:Debug("FUNC: Create auction, whitelist Data found, id: " .. whitelistData.id, 1);
-	end
 	--[[
 	if IsEquippableItem(itemLink) or whitelistData.currentItemSlot then
 		if self.db.profile.bidding.autoPopulateCurrentItem then
@@ -358,12 +355,16 @@ function kAuction:Server_GetRandomItemId()
 	end
 	return itemId;
 end
-function kAuction:Server_CreateTestAuction()
+function kAuction:Server_CreateTestAuction(id)
 	if not kAuction:Client_IsServer() then
 		return;
 	end
+	local itemId = id;
+	if not itemId then
+		itemId = kAuction:Server_GetRandomItemId();
+	end
 	-- Create test auction
-	kAuction:Server_AuctionItem(kAuction:Server_GetRandomItemId(), kAuction:Server_GetUniqueAuctionId(), "test corpse");
+	kAuction:Server_AuctionItem(itemId, kAuction:Server_GetUniqueAuctionId(), "test corpse");
 end
 function kAuction:Server_IsPreviousRaidClosed() -- Not finished
 	if not kAuction:Client_IsServer() then

@@ -1,7 +1,7 @@
 -- Author      : Gabe
 -- Create Date : 2/15/2009 7:20:42 PM
-kAuction.minRequiredVersion = '2.0.156';
-kAuction.version = '2.0.165';
+kAuction.minRequiredVersion = '2.0.169';
+kAuction.version = '2.0.169';
 kAuction.versions = {};
 
 kAuction.const = {};
