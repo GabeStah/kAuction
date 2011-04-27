@@ -965,8 +965,9 @@ function kAuction:Server_VersionReceived(sender, version)
 	if not kAuction:Client_IsServer() then
 		return;
 	end
-	self.versions[sender] = version;
-	kAuction:Debug("FUNC: Server_VersionReceived sender: "..sender.. ", version: " .. version,1);
+	local v = kAuction:Server_VersionToInteger(version);
+	self.versions[sender] = v;
+	kAuction:Debug("FUNC: Server_VersionReceived sender: "..sender.. ", version: " .. v,1);
 	kAuction:Server_VerifyVersions();
 end
 function kAuction:Server_CheckVersion(curr,old)
@@ -981,6 +982,9 @@ function kAuction:Server_CheckVersion(curr,old)
    end
    return false
 end
+function kAuction:Server_VersionToInteger(version)
+   return tonumber(strjoin("", strsplit('.', version)));
+end
 function kAuction:Server_VerifyVersions(outputResult)
 	if not kAuction:Client_IsServer() then
 		return;
@@ -988,18 +992,21 @@ function kAuction:Server_VerifyVersions(outputResult)
 	local booIncompatibleFound = false;
 	
 	for name,version in pairs(kAuction.versions) do
+		-- If client version doesn't exist
 		if version == false then
 			if outputResult then
 				kAuction:Print("|cFF"..kAuction:RGBToHex(255,0,0).."No kAuction Install Found|r: " .. name);
 			end
 			booIncompatibleFound = true;
-		elseif kAuction:Server_CheckVersion(kAuction.version, version) then
+		elseif kAuction:Server_VersionToInteger(kAuction.version) > kAuction:Server_VersionToInteger(version) then
+		-- Check if server version is greater than client version
 			booIncompatibleFound = true;
-			if kAuction:Server_CheckVersion(kAuction.minRequiredVersion, version) then
+			-- Check if server min required version > client version
+			if kAuction:Server_VersionToInteger(kAuction.minRequiredVersion) > kAuction:Server_VersionToInteger(version) then
 				if outputResult then
 					kAuction:Print("|cFF"..kAuction:RGBToHex(255,0,0).."Incompatible Version|r: " .. name .. " [" .. version .. "]");
 				end
-				kAuction:SendCommunication("VersionInvalid", kAuction:Serialize(name, kAuction.minRequiredVersion, kAuction.version));
+				kAuction:SendCommunication("VersionInvalid", kAuction:Serialize(name, kAuction:Server_VersionToInteger(kAuction.minRequiredVersion), kAuction:Server_VersionToInteger(kAuction.version)));
 			else
 				if outputResult then
 					kAuction:Print("|cFF"..kAuction:RGBToHex(255,255,0).."Out of Date Version|r: " .. name .. " [" .. version .. "]");

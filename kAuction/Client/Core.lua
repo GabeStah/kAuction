@@ -347,6 +347,10 @@ end
 function kAuction:Client_VersionInvalidReceived(sender, data)
 	if not self.hasRunVersionCheck then
 		local success, name, minRequiredVersion, serverVersion = kAuction:Deserialize(data);
+		-- Check if version is lesser
+		if kAuction:Server_VersionToInteger(self.version) >= kAuction:Server_VersionToInteger(minRequiredVersion) then
+			return;
+		end
 		kAuction:Debug("FUNC: Client_VersionInvalidReceived, name, minRequiredVersion, serverVersion " .. name.. minRequiredVersion..serverVersion, 1);
 		if name ~= self.playerName then
 			return;
@@ -375,5 +379,5 @@ function kAuction:Client_IsPlayerInRaid(name)
 	return nil
 end
 function kAuction:Client_VersionRequestReceived(sender, version)
-	kAuction:SendCommunication("Version", self.version);
+	kAuction:SendCommunication("Version", kAuction:Server_VersionToInteger(self.version));
 end

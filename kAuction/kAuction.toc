@@ -1,8 +1,8 @@
-## Title: kAuction |cffb5a5d5[2.0.169]|r |cff7fff7fAce3|r 
-## Version: 2.0.169
+## Title: kAuction |cffb5a5d5[2.0.181]|r |cff7fff7fAce3|r 
+## Version: 2.0.181
 ## Author: Kulldam
 ## Notes: Simple item auctioning system.
-## Interface: 40000
+## Interface: 40100
 ## SavedVariables: kAuctionDB, kAuctionRaidDB
 
 Embeds.xml

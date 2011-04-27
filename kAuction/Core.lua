@@ -57,6 +57,7 @@ function kAuction:InitializeEvents()
 	self.enabled = false;
 	self.isActiveRaid = false;
 	self.isInRaid = false;
+	kAuction:RegisterEvent("PLAYER_ENTERING_WORLD");
 	kAuction:RegisterEvent("LOOT_OPENED");
 	kAuction:RegisterEvent("LOOT_CLOSED");
 	kAuction:RegisterEvent("UNIT_SPELLCAST_SENT");
@@ -207,6 +208,9 @@ function kAuction:OnEnable()
 end
 function kAuction:OnDisable()
     -- Called when the addon is disabled
+end
+function kAuction:PLAYER_ENTERING_WORLD()
+	RegisterAddonMessagePrefix("kAuction")
 end
 function kAuction:LOOT_CLOSED()
 	kAuction:Debug("EVENT: LOOT_CLOSED", 3)
@@ -904,9 +908,11 @@ function kAuction:GetAuctionStateArray(frame)
 		end
 	end
 	if localAuctionData.bid and timeLeft then -- Bid, not closed, show Cancel button
+		kAuction:Debug("FUNC: GetAuctionStateArray, bid exists, show cancel button", 1)
 		states.bidType = localAuctionData.bidType
 		states.bid = true
 	elseif not localAuctionData.bid and timeLeft then -- No Bid, not closed, show Cancel button
+		kAuction:Debug("FUNC: GetAuctionStateArray, NO bid exists, show cancel button", 1)
 		states.noBid = true
 	end		
 	-- Council
